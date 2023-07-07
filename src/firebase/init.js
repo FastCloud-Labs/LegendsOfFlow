@@ -5,13 +5,13 @@ import 'firebase/functions'
 import 'firebase/analytics'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDzhqUkFad_0tYCZyw_PWgd-adepZgnbK8",
-  authDomain: "pvplegends.firebaseapp.com",
-  databaseURL: "https://pvplegends-default-rtdb.firebaseio.com",
-  projectId: "pvplegends",
-  storageBucket: "pvplegends.appspot.com",
-  messagingSenderId: "31740588377",
-  appId: "1:31740588377:web:be8460734a1e48727fdc48"
+  apiKey: import.meta.env.VITE_APP_FBDB_APIKEY,
+  authDomain: import.meta.env.VITE_APP_FBDB_authDomain,
+  projectId: import.meta.env.VITE_APP_FBDB_projectId,
+  storageBucket: import.meta.env.VITE_APP_FBDB_storageBucket,
+  messagingSenderId: import.meta.env.VITE_APP_FBDB_messagingSenderId,
+  appId: import.meta.env.VITE_APP_FBDB_appId,
+  measurementId: import.meta.env.VITE_APP_FBDB_measurementId,
 
 }
 
