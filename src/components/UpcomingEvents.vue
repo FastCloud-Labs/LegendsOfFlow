@@ -1,0 +1,12 @@
+<template>
+  <v-container class="fill-height">
+    <v-responsive class="align-center text-center fill-height">
+      <h2>Upcoming Events</h2>
+
+    </v-responsive>
+  </v-container>
+</template>
+
+<script setup>
+//
+</script>

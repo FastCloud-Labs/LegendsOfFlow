@@ -1,10 +1,18 @@
 <template>
-  <v-layout class="rounded rounded-md">
+  <v-layout class="rounded rounded-md fill-height">
     <v-app-bar>
       <v-img max-width="200" class="ml-4" src="@/assets/logo-horizontal.png"/>
       <v-spacer/>
+      <v-chip color="success" class="mr-1">XP Points: {{ user.profile?.xpPoints || 0 }}
+      </v-chip>
+      <v-chip color="warning" class="mr-1">
+        <v-icon icon="fas fa-coins" class="mr-1"/>
+        LF Tokens: {{ user.profile?.tokens || 0 }}
+      </v-chip>
+
       <v-menu>
-        <template v-slot:activator="{ props }">
+        <template v-slot:activator=" { props }
+      ">
           <v-btn
             v-bind="props"
           >
@@ -34,7 +42,26 @@
 
     <v-navigation-drawer>
       <v-list>
-        <v-list-item title="Navigation drawer"></v-list-item>
+        <v-list-item @click="myEvents">
+          <v-icon icon="fas fa-calendar-check" class="mr-1 pa-2 ma-2" size="x-small"/>
+          My Events
+        </v-list-item>
+        <v-list-item @click="upcomingEvents">
+          <v-icon icon="fas fa-calendar-days" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Upcoming Events
+        </v-list-item>
+        <v-list-item @click="showMoments">
+          <v-icon icon="fas fa-address-card" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Moments
+        </v-list-item>
+        <v-list-item @click="showLeaderboard">
+          <v-icon icon="fas fa-list-ul" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Leaderboards
+        </v-list-item>
+        <v-list-item @click="showFriendsFoes">
+          <v-icon icon="fas fa-users" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Friends & Foes
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -42,12 +69,22 @@
       <div v-if="showDapperConnect">
         <Dapper :user="user"/>
       </div>
+      <div v-if="showMyEventComponent">
+        <MyEvents :user="user"/>
+      </div>
+      <div v-if="showUpcomingEventComponent">
+        <UpcomingEvents :user="user"/>
+      </div>
       <div v-if="showMomentsComponent">
         <Moments :user="user"/>
       </div>
-      <div v-else>
-        Main Content
+      <div v-if="showLeaderboardComponent">
+        <Leaderboards :user="user"/>
       </div>
+      <div v-if="showFriendsFoesComponent">
+        <FriendsFoes :user="user"/>
+      </div>
+
       <br>
     </v-main>
   </v-layout>
@@ -58,8 +95,13 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
-import Dapper from '@/components/ConnectDapper.vue'
+import MyEvents from '@/components/MyEvents.vue'
+import UpcomingEvents from '@/components/UpcomingEvents.vue'
 import Moments from '@/components/Moments.vue'
+import Leaderboards from "@/components/Leaderboards.vue"
+import FriendsFoes from "@/components/FriendsFoes.vue"
+
+import Dapper from '@/components/ConnectDapper.vue'
 import {useUserStore} from '@/store/app.js'
 
 export default {
@@ -67,16 +109,22 @@ export default {
     const auth = firebase.auth()
   },
   components: {
+    MyEvents,
+    UpcomingEvents,
+    Moments,
+    Leaderboards,
+    FriendsFoes,
     Dapper,
-    Moments
   },
   data() {
     return {
+      showMyEventComponent: true,
       showDapperConnect: false,
+      showUpcomingEventComponent: false,
       showMomentsComponent: false,
+      showLeaderboardComponent: false,
+      showFriendsFoesComponent: false,
       user: {},
-      email: '',
-      password: ''
     }
   },
   mounted() {
@@ -96,10 +144,35 @@ export default {
         });
     },
 
-    showMoments() {
+    closeAll() {
+      this.showMyEventComponent = false
       this.showDapperConnect = false
+      this.showMomentsComponent = false
+      this.showUpcomingEventComponent = false
+      this.showLeaderboardComponent = false
+      this.showFriendsFoesComponent = false
+    },
+    myEvents() {
+      this.closeAll()
+      this.showMyEventComponent = true
+    },
+    upcomingEvents() {
+      this.closeAll()
+      this.showUpcomingEventComponent = true
+    },
+    showMoments() {
+      this.closeAll()
       this.showMomentsComponent = true
+    },
+    showLeaderboard() {
+      this.closeAll()
+      this.showLeaderboardComponent = true
+    },
+    showFriendsFoes() {
+      this.closeAll()
+      this.showFriendsFoesComponent = true
     }
+
   }
 }
 </script>
