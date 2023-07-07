@@ -17,12 +17,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const firebaseApp = firebase.initializeApp(firebaseConfig)
-firebase.analytics()
+const analytics = getAnalytics(app);
 
 // test on local emulator
 // firebase.functions().useEmulator('localhost', 4000)
 // console.log('***** USING EMULATED FUNCTIONS!')
 
-const db = firebaseApp.firestore()
+const db = firebaseApp.firestore();
 
 export default db
