@@ -22,7 +22,6 @@ import db from '@/firebase/init.js'
 
 export default {
   setup() {
-
     fcl.config({
       'discovery.wallet': 'https://accounts.meetdapper.com/fcl/authn-restricted',
       'discovery.wallet.method': 'POP/RPC',

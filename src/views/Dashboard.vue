@@ -15,9 +15,15 @@
           <v-list-item v-if="!user.profile?.dapperAddress">
             <v-list-item-title @click="showDapperConnect=true">Connect Dapper Wallet</v-list-item-title>
           </v-list-item>
-          <v-list-item v-else>
+
+          <v-list-item v-if="user.profile?.dapperAddress" @click="showMoments()">
             <v-list-item-title>Dapper Account: <br>{{ user.profile?.dapperAddress }}</v-list-item-title>
           </v-list-item>
+
+          <v-list-item v-if="user.profile?.dapperAddress" @click="showMoments()">
+            <v-list-item-title>View My Moments</v-list-item-title>
+          </v-list-item>
+
           <v-divider></v-divider>
           <v-list-item>
             <v-list-item-title @click="logout">Logout</v-list-item-title>
@@ -36,6 +42,9 @@
       <div v-if="showDapperConnect">
         <Dapper :user="user"/>
       </div>
+      <div v-if="showMomentsComponent">
+        <Moments :user="user"/>
+      </div>
       <div v-else>
         Main Content
       </div>
@@ -50,6 +59,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
 import Dapper from '@/components/ConnectDapper.vue'
+import Moments from '@/components/Moments.vue'
 import {useUserStore} from '@/store/app.js'
 
 export default {
@@ -57,12 +67,13 @@ export default {
     const auth = firebase.auth()
   },
   components: {
-    Dapper
+    Dapper,
+    Moments
   },
   data() {
     return {
-      dialogLogin: false,
       showDapperConnect: false,
+      showMomentsComponent: false,
       user: {},
       email: '',
       password: ''
@@ -85,8 +96,9 @@ export default {
         });
     },
 
-    connectDapper() {
-      console.log('connect dapper')
+    showMoments() {
+      this.showDapperConnect = false
+      this.showMomentsComponent = true
     }
   }
 }

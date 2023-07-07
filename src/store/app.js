@@ -32,7 +32,6 @@ export const useUserStore = defineStore('user', {
             .doc(user.uid)
             .get()
             .then(doc => {
-              console.log(doc.data())
               this.profile = doc.data()
             })
             .catch(error => {
@@ -41,7 +40,6 @@ export const useUserStore = defineStore('user', {
           this.loading = false
         } else {
           console.log('onAuthState Observer: user not logged in or created yet')
-
           this.loading = false
         }
       })
