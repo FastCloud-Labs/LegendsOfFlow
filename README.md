@@ -41,4 +41,20 @@ pnpm build
 
 ### Customize configuration
 
-See [Configuration Reference](https://vitejs.dev/config/).
+## Deploy
+
+### Using Firebase
+
+`firebase login`
+
+Initiate your project
+Run this command from your app's root directory:
+
+`firebase init`
+
+When you're ready, deploy your web app
+Put your static files (e.g., HTML, CSS, JS) in your app's deploy directory (the default is "dist"). Then, run this command from your app's root directory:
+
+`firebase deploy`
+After deploying, view your app at https://pvplegends.web.app
+
