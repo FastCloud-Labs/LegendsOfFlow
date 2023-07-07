@@ -16,8 +16,8 @@ const firebaseConfig = {
 }
 
 // Initialize Firebase
-const firebaseApp = firebase.initializeApp(firebaseConfig)
-const analytics = getAnalytics(app);
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+firebase.analytics();
 
 // test on local emulator
 // firebase.functions().useEmulator('localhost', 4000)

@@ -13,11 +13,12 @@
         </template>
         <v-list>
           <v-list-item v-if="!user.profile?.dapperAddress">
-            <v-list-item-title @click="connectDapper">Connect Dapper Wallet</v-list-item-title>
+            <v-list-item-title @click="showDapperConnect=true">Connect Dapper Wallet</v-list-item-title>
           </v-list-item>
           <v-list-item v-else>
-            <v-list-item-title>{{ user.profile.dapperAddress }}</v-list-item-title>
+            <v-list-item-title>Dapper Account: <br>{{ user.profile?.dapperAddress }}</v-list-item-title>
           </v-list-item>
+          <v-divider></v-divider>
           <v-list-item>
             <v-list-item-title @click="logout">Logout</v-list-item-title>
           </v-list-item>
@@ -32,7 +33,13 @@
     </v-navigation-drawer>
 
     <v-main class="d-flex align-center justify-center" style="min-height: 300px;">
-      Main Content
+      <div v-if="showDapperConnect">
+        <Dapper :user="user"/>
+      </div>
+      <div v-else>
+        Main Content
+      </div>
+      <br>
     </v-main>
   </v-layout>
 </template>
@@ -42,19 +49,27 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
-import db from '@/firebase/init.js'
+import Dapper from '@/components/ConnectDapper.vue'
+import {useUserStore} from '@/store/app.js'
 
 export default {
   setup() {
     const auth = firebase.auth()
   },
+  components: {
+    Dapper
+  },
   data() {
     return {
       dialogLogin: false,
+      showDapperConnect: false,
       user: {},
       email: '',
       password: ''
     }
+  },
+  mounted() {
+    this.user = useUserStore()
   },
   methods: {
     logout() {
@@ -62,6 +77,7 @@ export default {
         .then(() => {
           this.user = ''
           console.log('logged out')
+          useUserStore().$reset()
           this.$router.push('/')
         })
         .catch((error) => {
