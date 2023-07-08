@@ -11,12 +11,12 @@
 
       <v-dialog
         v-model="dialogLogin"
-        width="auto"
+        width="33%"
         min-width="300"
       >
-        <v-card>
+        <v-card class="ma-2">
           <v-card-text class="ma-1">
-            <h4 class="ma-2 mb-4">Login</h4>
+            <h3 class="ma-2 mb-2">Login</h3>
             <v-text-field
               v-model="email"
               label="Email"
@@ -25,18 +25,19 @@
               v-model="password"
               label="Password"
               type="password"></v-text-field>
-            <v-btn color="success" block @click="login" elevation="4">Login</v-btn>
+            <v-spacer/>
+            <v-btn color="success" block @click="login" elevation="4" class="mb-2">Login</v-btn>
           </v-card-text>
         </v-card>
       </v-dialog>
 
       <v-dialog
         v-model="dialogSignUp"
-        width="auto"
+        width="33%"
         min-width="300"
       >
         <v-card>
-          <v-card-text class="ma-1">
+          <v-card-text class="ma-2">
             <h4 class="ma-2 mb-4">SignUp</h4>
             <v-text-field
               v-model="email"
@@ -46,7 +47,7 @@
               v-model="password"
               label="Password"
               type="password"></v-text-field>
-            <v-btn color="success" block @click="signup" elevation="4">SignUp</v-btn>
+            <v-btn color="success" block @click="signup" elevation="4" class="mb-2">SignUp</v-btn>
           </v-card-text>
         </v-card>
       </v-dialog>

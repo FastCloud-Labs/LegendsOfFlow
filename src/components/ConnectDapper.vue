@@ -1,6 +1,5 @@
 <template>
   <div class="mx-auto text-center">
-    {{ user }}
     <h4 class="ma-2">Dapper Account</h4>
     <div v-if="dapperAddress">
       {{ dapperAddress }}
@@ -50,8 +49,11 @@ export default {
         .then(e => {
           this.dapperAddress = e.addr
           console.log(this.dapperAddress)
-          const fields = {dapperAddress: e.addr}
-          fields.dapperAddressCreated = firebase.firestore.FieldValue.serverTimestamp()
+          const fields = {
+            dapperAddress: e.addr,
+            dapperAddressCreated: firebase.firestore.FieldValue.serverTimestamp()
+          }
+
           db.collection('profiles')
             .doc(useUserStore().user.uid)
             .set(fields, {merge: true})

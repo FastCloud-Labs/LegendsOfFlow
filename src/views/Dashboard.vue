@@ -1,15 +1,18 @@
 <template>
   <v-layout class="rounded rounded-md fill-height">
     <v-app-bar>
-      <v-img max-width="200" class="ml-4" src="@/assets/logo-horizontal.png"/>
+      <v-img max-width="200" class="ml-4 hidden-sm-and-down" src="@/assets/logo-horizontal.png"
+             @click.stop="drawer = !drawer"/>
+      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-spacer/>
-      <v-chip color="success" class="mr-1">XP Points: {{ user.profile?.xpPoints || 0 }}
+      <v-chip color="success" class="mr-1">
+        <v-icon icon="fas fa-shield-halved" class="mr-1"/>
+        XP Points: {{ user.profile?.xpPoints || 0 }}
       </v-chip>
       <v-chip color="warning" class="mr-1">
         <v-icon icon="fas fa-coins" class="mr-1"/>
         LF Tokens: {{ user.profile?.tokens || 0 }}
       </v-chip>
-
       <v-menu>
         <template v-slot:activator=" { props }
       ">
@@ -21,7 +24,7 @@
         </template>
         <v-list>
           <v-list-item v-if="!user.profile?.dapperAddress">
-            <v-list-item-title @click="showDapperConnect=true">Connect Dapper Wallet</v-list-item-title>
+            <v-list-item-title @click="showDapper()">Connect Dapper Wallet</v-list-item-title>
           </v-list-item>
 
           <v-list-item v-if="user.profile?.dapperAddress" @click="showMoments()">
@@ -40,7 +43,7 @@
       </v-menu>
     </v-app-bar>
 
-    <v-navigation-drawer>
+    <v-navigation-drawer v-model="drawer">
       <v-list>
         <v-list-item @click="myEvents">
           <v-icon icon="fas fa-calendar-check" class="mr-1 pa-2 ma-2" size="x-small"/>
@@ -65,7 +68,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main class="d-flex align-center justify-center" style="min-height: 300px;">
+    <v-main class="d-flex justify-center">
       <div v-if="showDapperConnect">
         <Dapper :user="user"/>
       </div>
@@ -118,6 +121,7 @@ export default {
   },
   data() {
     return {
+      drawer: true,
       showMyEventComponent: true,
       showDapperConnect: false,
       showUpcomingEventComponent: false,
@@ -171,6 +175,10 @@ export default {
     showFriendsFoes() {
       this.closeAll()
       this.showFriendsFoesComponent = true
+    },
+    showDapper() {
+      this.closeAll()
+      this.showDapperConnect = true
     }
 
   }

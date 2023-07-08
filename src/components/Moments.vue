@@ -1,39 +1,47 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-center text-center fill-height">
-      <h2>Moments </h2>
-      <v-row class="mb-6">
-        <v-col cols="4" class="v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in momentsLaLiga" :key="moment.id">
-          <v-card
-            class="mx-auto ma-2 fill-height"
-            max-width="344"
-            variant="outlined"
-          >
-            <v-card-item>
-              <div>
-                <div class="text-h6 mb-0 text-truncate">
-                  {{ moment.PlayerFirstName }} {{ moment.PlayerLastName }}
+    <v-responsive class="align-top text-center fill-height">
+      <h2>Moments</h2>
+      <SelectionSlider :blocked="true" @showSport="whichSport"></SelectionSlider>
+      <v-progress-circular v-if="loading" indeterminate
+                           color="success"></v-progress-circular>
+      <h4 v-if="!sport ">Choose a sport</h4>
+      <div v-else>
+        <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
+                      v-model="search"></v-text-field>
+        <v-row class="mb-6">
+          <v-col cols="4" class="v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in filteredMoments" :key="moment.id">
+            <v-card
+              class="mx-auto ma-2 fill-height"
+              max-width="344"
+              variant="outlined"
+            >
+              <v-card-item>
+                <div>
+                  <div class="text-h6 mb-0 text-truncate">
+                    {{ moment.PlayerFirstName }} {{ moment.PlayerLastName }}
+                  </div>
+                  {{ moment.MatchHighlightedTeam }}
+                  <br>
+                  <v-avatar size="80" class="aborder ma-2">
+                    <v-img
+                      class="moment-stretch"
+                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${moment.PlayDataID}/play_${moment.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                  </v-avatar>
+                  <div class="text-caption">{{ moment.description }}</div>
+                  <div class="text-overline mb-0">
+                    <v-chip size="small" class="laligachip mr-1" :class="moment.PlayType">{{ moment.PlayType }}</v-chip>
+                    <v-chip size="small" class="laligachip ml-1" :class="moment.editionTier">{{
+                        moment.editionTier
+                      }}
+                    </v-chip>
+                  </div>
                 </div>
-                {{ moment.MatchHighlightedTeam }}
-                <br>
-                <v-avatar size="120" class="aborder ma-2">
-                  <v-img
-                    class="moment-stretch"
-                    v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=180,height=180,quality=100/https://assets.laligagolazos.com/editions/${moment.PlayDataID}/play_${moment.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
-                </v-avatar>
-                <div class="text-caption">{{ moment.description }}</div>
-                <div class="text-overline mb-0">
-                  <v-chip size="small" class="laligachip mr-1" :class="moment.PlayType">{{ moment.PlayType }}</v-chip>
-                  <v-chip size="small" class="laligachip ml-1" :class="moment.editionTier">{{
-                      moment.editionTier
-                    }}
-                  </v-chip>
-                </div>
-              </div>
-            </v-card-item>
-          </v-card>
-        </v-col>
-      </v-row>
+              </v-card-item>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
     </v-responsive>
   </v-container>
 </template>
@@ -41,6 +49,8 @@
 <script>
 import * as fcl from '@onflow/fcl'
 import {t} from "@onflow/fcl";
+import SelectionSlider from "@/components/SelectionSlider.vue";
+import {useUserStore} from "@/store/app";
 
 fcl.config({
   'discovery.wallet': 'https://accounts.meetdapper.com/fcl/authn-restricted',
@@ -48,21 +58,50 @@ fcl.config({
   'accessNode.api': 'https://access-mainnet-beta.onflow.org',
 })
 export default {
+  components: {SelectionSlider},
   props: {
     user: Object
   },
   data() {
     return {
-      momentsLaLiga: []
+      momentsLaLiga: [],
+      momentsStrike: [],
+      loading: false,
+      sport: '',
+      search: '',
     }
   },
   mounted() {
-    this.queryMomentsUFC()
-    this.queryMomentsLaLiga()
+    if (useUserStore().profile?.lastSport) {
+      this.whichSport(useUserStore().profile.lastSport)
+    }
+  },
+  computed: {
+    filteredMoments() {
+      return this.momentsLaLiga.filter((moment) => {
+        return moment.PlayerFirstName.toLowerCase().includes(this.search.toLowerCase()) ||
+          moment.PlayerLastName.toLowerCase().includes(this.search.toLowerCase()) ||
+          moment.MatchHighlightedTeam.toLowerCase().includes(this.search.toLowerCase()) ||
+          moment.PlayType.toLowerCase().includes(this.search.toLowerCase()) ||
+          moment.editionTier.toLowerCase().includes(this.search.toLowerCase())
+      })
+    }
   },
   methods: {
+    whichSport(sport) {
+      this.sport = sport
+      if (sport === 'LaLiga') {
+        this.queryMomentsLaLiga()
+      } else if (sport === 'UFC') {
+        this.queryMomentsUFC()
+      } else if (sport === 'NBA') {
+        this.queryMomentsNBA()
+      } else if (sport === 'NFL') {
+        this.queryMomentsNBA()
+      }
+    },
     async queryMomentsUFC() {
-
+      this.loading = true
       // get owned NFT metadata
       const idsResponse = await fcl.send([
         fcl.script`
@@ -155,9 +194,14 @@ export default {
         `,
         fcl.args([fcl.arg(this.user.profile.dapperAddress, t.Address)]),
       ])
-      let moments = await fcl.decode(idsResponse)
+      this.momentsStrike = await fcl.decode(idsResponse)
+      this.loading = false
+
+
     },
     async queryMomentsLaLiga() {
+      console.log('show la liga parent')
+      this.loading = true
       // get owned NFT metadata
       const idsResponse = await fcl.send([
         fcl.script`
@@ -206,6 +250,7 @@ export default {
         })
         momentObj.push(traitList)
         this.momentsLaLiga.push(traitList)
+        this.loading = false
       }
     }
   }
