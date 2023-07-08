@@ -95,7 +95,7 @@
 
 
 <script>
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
 import 'firebase/firestore'
 import 'firebase/auth'
 import MyEvents from '@/components/MyEvents.vue'

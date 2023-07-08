@@ -46,7 +46,7 @@ import {useUserStore} from "@/store/app";
 import moment from "moment";
 import SelectionSlider from "@/components/SelectionSlider";
 import GameDetailView from "@/components/GameDetailView.vue";
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
 import 'firebase/firestore'
 import 'firebase/auth'
 import db from '@/firebase/init.js'

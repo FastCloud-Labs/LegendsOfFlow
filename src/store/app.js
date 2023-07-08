@@ -1,6 +1,6 @@
 // Utilities
 import {defineStore} from 'pinia'
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
 import 'firebase/firestore'
 import 'firebase/auth'
 import db from '@/firebase/init.js'
