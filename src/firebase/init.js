@@ -19,7 +19,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 // test on local emulator
-// firebase.functions().useEmulator('localhost', 4000)
+firebase.functions().useEmulator('localhost', 4000)
 // console.log('***** USING EMULATED FUNCTIONS!')
 
 const db = firebaseApp.firestore();

@@ -71,18 +71,6 @@ export default {
   data() {
     return {
       user: {},
-      axiosOptions: {
-        method: 'GET',
-        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-        params: {
-          league: '140',
-          season: '2023'
-        },
-        headers: {
-          'X-RapidAPI-Key': import.meta.env.VITE_APP_API_FOOTBALL,
-          'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
-        }
-      },
       sport: '',
       laLigaFixtures: [],
       loading: false,
@@ -115,14 +103,14 @@ export default {
     },
     async getLaLigaFixtures() {
       this.loading = true
-      try {
-        const response = await axios.request(this.axiosOptions);
-        this.laLigaFixtures = response.data.response;
-        this.loading = false
-      } catch (error) {
-        console.error(error);
-        this.loading = false
-      }
+      console.log('get form fb')
+      db.collection('fixtures')
+        .doc('LaLiga')
+        .get()
+        .then(fixtures => {
+          this.laLigaFixtures = fixtures.data().response
+          this.loading = false
+        })
     },
     getUFCFixtures() {
       //todo

@@ -95,7 +95,6 @@ export default {
         .then((userCredential) => {
           // Signed in
           this.user = userCredential.user;
-          console.log(this.user)
           this.$router.push('/dashboard')
         })
         .catch((error) => {
@@ -109,7 +108,6 @@ export default {
         .then((userCredential) => {
           // Signed in
           this.user = userCredential.user;
-          console.log(this.user)
           this.$router.push('/dashboard')
         })
         .catch((error) => {
