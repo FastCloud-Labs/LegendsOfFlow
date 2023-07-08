@@ -38,7 +38,7 @@
                 <v-divider class="ma-3"></v-divider>
                 <h4>Choose LineUp</h4>
               </div>
-              <v-btn v-if="momentLocked" color="success" @click="chooseMoment">Lock Moment</v-btn>
+              <v-btn v-if="!momentLocked" color="success" @click="chooseMoment" class="ma-4">Choose Moment</v-btn>
             </div>
             <div v-else>
               Choose Game Type:
