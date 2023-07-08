@@ -103,7 +103,6 @@ export default {
     },
     async getLaLigaFixtures() {
       this.loading = true
-      console.log('get form fb')
       db.collection('fixtures')
         .doc('LaLiga')
         .get()
@@ -121,7 +120,7 @@ export default {
     getNFLFixtures() {
       //todo
     },
-    addEvent(match) {
+    async addEvent(match) {
       let fixtureId = match.fixture.id
       let profileFields = {
         lastSport: this.sport,
@@ -143,7 +142,7 @@ export default {
         eventDetails: match,
       }
 
-      db.collection('events')
+      await db.collection('events')
         .where('fixtureId', '==', fixtureId)
         .get()
         .then(querySnapshot => {
@@ -165,8 +164,8 @@ export default {
             this.createEvent(eventFields)
           }
         }).catch(error => {
-        console.log('Error getting mfc tournaments: ', error)
-      })
+          console.log('Error getting mfc tournaments: ', error)
+        })
     },
     createEvent(eventFields) {
       console.log('Create Doc', eventFields)
@@ -174,7 +173,7 @@ export default {
         .add(eventFields)
         .then(docRef => {
           console.log("Document written with ID: ", docRef.id);
-          this.selectedEvent = docRef.data()
+          this.selectedEvent = eventFields
           this.detailView(docRef.id)
         })
     },
