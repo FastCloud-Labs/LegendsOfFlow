@@ -10,14 +10,16 @@
   "dependencies": {
     "@mdi/font": "7.0.96",
     "@onflow/fcl": "^1.4.1",
+    "axios": "^1.4.0",
     "firebase": "^8.10.1",
-    "firebase-tools": "^8.20.0",
+    "firebase-tools": "^12.4.3",
     "moment": "^2.29.4",
     "pinia": "^2.0.23",
+    "protobufjs": "^7.2.4",
     "roboto-fontface": "*",
     "vue": "^3.2.0",
     "vue-router": "^4.0.0",
-    "vuetify": "^3.0.0",
+    "vuetify": "^3.3.7",
     "webfontloader": "^1.0.0",
     "xmlhttprequest": "^1.8.0"
   },
