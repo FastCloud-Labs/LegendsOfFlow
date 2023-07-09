@@ -1,11 +1,6 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-top text-center fill-height">
-      <div v-if="showDetailView">
-        <GameDetailView :event="selectedEvent" :eventId="selectedEventId"
-                        @close="showDetailView = false"></GameDetailView>
-      </div>
-      <div v-else>
+    <v-responsive class="align-top text-center fill-height" max-width="600px">
         <h2>Upcoming Events</h2>
         <SelectionSlider :blocked="false" @showSport="whichSport"></SelectionSlider>
         <v-progress-circular v-if="loading" indeterminate
@@ -13,13 +8,13 @@
         <h4 v-if="!sport ">Choose a sport</h4>
 
         <v-text-field v-if="sport && !loading" placeholder="Search Teams" width="auto" v-model="search"></v-text-field>
-        <v-card v-for="match in filteredFixtures" class="mb-4 border mx-auto" width="100%"
+        <v-card v-for="match in filteredFixtures" class="mb-4 border mx-auto"
                 :class="{playing:match.playing}">
           <div v-if="match.playing" class="playing-status">
             Playing
           </div>
-          <v-card-text>
-            <v-chip class="ma-2">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY [at] HH:mm a") }}</v-chip>
+          <v-card-text class="ma-0 pa-0">
+            <v-chip class="mb-1 mt-0">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY") }}</v-chip>
             <v-row class="ma-2">
               <v-col cols="5" class="mx-auto text-center">
                 <h3>{{ match.teams.home.name }}</h3>
@@ -37,6 +32,8 @@
                     <v-btn color="success" @click="addEvent(match)" class="mx-auto mt-2">Play</v-btn>
                   </div>
                 </div>
+                <v-progress-circular v-if="loading" size="small" indeterminate
+                                     color="success" class="ma-4"></v-progress-circular>
               </v-col>
               <v-col cols="5" class="mx-auto text-center">
                 <h3>{{ match.teams.away.name }}</h3>
@@ -45,7 +42,6 @@
             </v-row>
           </v-card-text>
         </v-card>
-      </div>
     </v-responsive>
   </v-container>
 </template>
@@ -125,6 +121,24 @@ export default {
               if (querySnapshot.size) {
                 querySnapshot.forEach(doc => {
                   console.log(doc.data().fixtureId)
+                  this.laLigaFixtures.forEach(match => {
+                    if (match.fixture.id === doc.data().fixtureId) {
+                      match.playing = true
+                      match.eventId = doc.id
+                    }
+                  })
+                })
+              }
+              this.loading = false
+            }).catch(error => {
+            console.log('Error getting fame: ', error)
+          })
+          db.collection('events')
+            .where('opponent', '==', useUserStore().user.uid)
+            .get()
+            .then(querySnapshot => {
+              if (querySnapshot.size) {
+                querySnapshot.forEach(doc => {
                   this.laLigaFixtures.forEach(match => {
                     if (match.fixture.id === doc.data().fixtureId) {
                       match.playing = true
@@ -219,17 +233,13 @@ export default {
 
 <style scoped>
 .playing {
-  background-color: rgba(187, 243, 187, 0.2);
-  border: 1px solid green !important;
-}
-
-
-element.style {
+  background-color: rgba(187, 243, 187, 0.05);
+  border: 1px solid #4caf50 !important;
 }
 
 .playing-status {
   font-size: 12px;
-  background: green;
+  background: #4caf50;
   width: 51px;
   height: 21px;
   border-radius: 0 0 6px;

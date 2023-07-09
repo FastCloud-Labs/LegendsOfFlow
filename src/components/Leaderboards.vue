@@ -3,7 +3,7 @@
     <v-responsive class="align-top text-center fill-height">
       <h2>Leaderboards</h2>
       <v-text-field
-        class="leaderboard-search"
+        class="leaderboard-search mt-2"
         v-if="filteredData.length > 0"
         placeholder="Search Players"
         v-model="searchQuery"
@@ -43,8 +43,9 @@
 
 <style>
 .leaderboard-table {
-  margin-top: 20px;
-  width: 70vw;
+  margin-top: 0px;
+  width: 90vw;
+  max-width: 800px !important;
 }
 
 .leaderboard-header {
@@ -63,8 +64,7 @@
 }
 
 .leaderboard-search {
-  margin-top: 30px;
-  width: 300px;
+  max-width: 100%;
 }
 </style>
 

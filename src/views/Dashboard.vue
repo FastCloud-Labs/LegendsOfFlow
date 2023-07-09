@@ -1,9 +1,9 @@
 <template>
   <v-layout class="rounded rounded-md fill-height">
     <v-app-bar>
-      <v-img max-width="200" class="ml-4 hidden-sm-and-down" src="@/assets/logo-horizontal.png"
-             @click.stop="drawer = !drawer"/>
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-img @click="showMyEvents" max-width="200" class="ml-4 hidden-sm-and-down" src="@/assets/logo-horizontal.png"/>
+      <v-img max-width="200" class="ml-4 hidden-md-and-up" src="@/assets/favicon.ico"
+             @click="showMyEvents"/>
       <v-spacer/>
       <v-chip color="success" class="mr-1">
         <v-icon icon="fas fa-shield-halved" class="mr-1"/>
@@ -42,14 +42,38 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-
-    <v-navigation-drawer v-model="drawer">
+    <div class="deskop-menu hidden-sm-and-down fill-height" width="200" height="100%">
       <v-list>
-        <v-list-item @click="myEvents">
+        <v-list-item @click="showMyEvents">
           <v-icon icon="fas fa-calendar-check" class="mr-1 pa-2 ma-2" size="x-small"/>
-          My Events
+          My Games
         </v-list-item>
-        <v-list-item @click="upcomingEvents">
+        <v-list-item @click="showUpcomingEvents">
+          <v-icon icon="fas fa-calendar-days" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Upcoming Events
+        </v-list-item>
+        <v-list-item @click="showMoments">
+          <v-icon icon="fas fa-address-card" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Moments
+        </v-list-item>
+        <v-list-item @click="showLeaderboard">
+          <v-icon icon="fas fa-list-ul" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Leaderboards
+        </v-list-item>
+        <v-list-item @click="showFriendsFoes">
+          <v-icon icon="fas fa-users" class="mr-1 pa-2 ma-2" size="x-small"/>
+          Friends & Foes
+        </v-list-item>
+      </v-list>
+    </div>
+
+    <v-navigation-drawer v-model="drawer" location="bottom" temporary="true" class="mobile-menu hidden-md-and-up">
+      <v-list>
+        <v-list-item @click="showMyEvents">
+          <v-icon icon="fas fa-calendar-check" class="mr-1 pa-2 ma-2" size="x-small"/>
+          My Games
+        </v-list-item>
+        <v-list-item @click="showUpcomingEvents">
           <v-icon icon="fas fa-calendar-days" class="mr-1 pa-2 ma-2" size="x-small"/>
           Upcoming Events
         </v-list-item>
@@ -68,12 +92,12 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex justify-center" :width="width">
       <div v-if="showDapperConnect">
         <Dapper :user="user"/>
       </div>
       <div v-if="showMyEventComponent">
-        <MyEvents :user="user"/>
+        <MyEvents :user="user" @showUpcomingGames="showUpcomingEvents" @showGameView="showGame"/>
       </div>
       <div v-if="showUpcomingEventComponent">
         <UpcomingEvents :user="user" @showGameView="showGame"/>
@@ -91,9 +115,14 @@
       <div v-if="showGameViewComponent">
         <GameDetailView :user="user" :gameId="gameId"/>
       </div>
-
       <br>
     </v-main>
+    <div class="mobile-menu-btn hidden-md-and-up">
+      <v-btn @click.stop="drawer = !drawer" block>
+        <v-icon icon="fas fa-bars" class="mr-1 pa-2 ma-2" size="x-small"/>
+        Menu
+      </v-btn>
+    </div>
   </v-layout>
 </template>
 
@@ -113,9 +142,6 @@ import {useUserStore} from '@/store/app.js'
 import GameDetailView from "@/components/GameDetailView.vue";
 
 export default {
-  setup() {
-    const auth = firebase.auth()
-  },
   components: {
     GameDetailView,
     MyEvents,
@@ -127,7 +153,7 @@ export default {
   },
   data() {
     return {
-      drawer: true,
+      drawer: false,
       showMyEventComponent: true,
       showDapperConnect: false,
       showUpcomingEventComponent: false,
@@ -137,10 +163,15 @@ export default {
       showGameViewComponent: false,
       user: {},
       gameId: null,
+      width: 600,
     }
   },
   mounted() {
     this.user = useUserStore()
+    this.width = window.innerWidth
+    if (this.width > 800) {
+      this.width = 600
+    }
   },
   methods: {
     logout() {
@@ -157,6 +188,7 @@ export default {
     },
 
     closeAll() {
+      this.drawer = false
       this.showMyEventComponent = false
       this.showDapperConnect = false
       this.showMomentsComponent = false
@@ -165,11 +197,11 @@ export default {
       this.showFriendsFoesComponent = false
       this.showGameViewComponent = false
     },
-    myEvents() {
+    showMyEvents() {
       this.closeAll()
       this.showMyEventComponent = true
     },
-    upcomingEvents() {
+    showUpcomingEvents() {
       this.closeAll()
       this.showUpcomingEventComponent = true
     },
@@ -199,3 +231,26 @@ export default {
   }
 }
 </script>
+
+<style>
+.mobile-menu-btn {
+  z-index: 99;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  float: revert;
+  border: 2px solid green;
+  text-align: center;
+  background: green;
+}
+
+.mobile-menu {
+  position: fixed !important;
+}
+
+.deskop-menu {
+  background: #212121;
+  margin-top: 63px;
+  width: 230px;
+}
+</style>

@@ -1,16 +1,17 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-top text-center fill-height">
+    <v-responsive class="align-top text-center fill-height" :width="width">
       <h2>Moments</h2>
       <SelectionSlider :blocked="true" @showSport="whichSport"></SelectionSlider>
       <v-progress-circular v-if="loading" indeterminate
                            color="success"></v-progress-circular>
       <h4 v-if="!sport ">Choose a sport</h4>
-      <div v-else>
+      <div v-else >
         <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
                       v-model="search"></v-text-field>
-        <v-row class="mb-6">
-          <v-col cols="4" class="v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in filteredMoments" :key="moment.id">
+        <v-row class="mb-6" >
+          <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in filteredMoments"
+                 :key="moment.id">
             <v-card
               class="mx-auto ma-2 fill-height"
               max-width="344"
@@ -69,12 +70,18 @@ export default {
       loading: false,
       sport: '',
       search: '',
+      width:600
     }
   },
   mounted() {
+    this.width = window.innerWidth
+    if (this.width > 800) {
+      this.width = 800
+    }
     if (useUserStore().profile?.lastSport) {
       this.whichSport(useUserStore().profile.lastSport)
     }
+
   },
   computed: {
     filteredMoments() {

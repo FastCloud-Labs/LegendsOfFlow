@@ -1,7 +1,8 @@
 <template>
   <v-sheet
     class="mx-auto ma-4"
-    width="100%"
+    :width="width"
+    max-width="100%"
     rounded
   >
     <v-slide-group
@@ -75,6 +76,17 @@ export default {
     blocked: {
       type: Boolean,
       default: false
+    }
+  },
+  data() {
+    return {
+      width: 600
+    }
+  },
+  mounted() {
+    this.width = window.innerWidth
+    if (this.width > 800) {
+      this.width = 800
     }
   },
   methods: {
