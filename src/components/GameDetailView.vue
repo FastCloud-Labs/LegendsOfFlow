@@ -62,11 +62,7 @@ import {useUserStore} from '@/store/app.js'
 
 export default {
   props: {
-    event: {
-      type: Object,
-      required: true
-    },
-    eventId: {
+    gameId: {
       type: String,
       required: true
     }
@@ -86,18 +82,26 @@ export default {
     }
   },
   mounted() {
-    this.match = this.event.eventDetails
-    this.loading = false
-    if (this.event.owner == useUserStore().user.uid) {
-      this.isOwner = true
-    }
-    if (this.isOwner) {
-      this.teamPicked = this.event.ownerSelectedTeam
-    } else {
-      this.teamPicked = this.event.opponentSelectedTeam
-    }
+    this.getGame()
   },
   methods: {
+    getGame() {
+      db.collection('events')
+        .doc(this.gameId)
+        .get().then((doc) => {
+        this.event = doc.data()
+        this.match = this.event.eventDetails
+        this.loading = false
+        if (this.event.owner == useUserStore().user.uid) {
+          this.isOwner = true
+        }
+        if (this.isOwner) {
+          this.teamPicked = this.event.ownerSelectedTeam
+        } else {
+          this.teamPicked = this.event.opponentSelectedTeam
+        }
+      })
+    },
     pickTeam(team) {
       this.teamPicked = team
       let eventFields = {}
@@ -111,7 +115,7 @@ export default {
         }
       }
       db.collection('events')
-        .doc(this.eventId)
+        .doc(this.gameId)
         .set(eventFields, {merge: true})
     }
   }

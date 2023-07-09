@@ -76,7 +76,7 @@
         <MyEvents :user="user"/>
       </div>
       <div v-if="showUpcomingEventComponent">
-        <UpcomingEvents :user="user"/>
+        <UpcomingEvents :user="user" @showGameView="showGame"/>
       </div>
       <div v-if="showMomentsComponent">
         <Moments :user="user"/>
@@ -86,6 +86,10 @@
       </div>
       <div v-if="showFriendsFoesComponent">
         <FriendsFoes :user="user"/>
+      </div>
+
+      <div v-if="showGameViewComponent">
+        <GameDetailView :user="user" :gameId="gameId"/>
       </div>
 
       <br>
@@ -106,12 +110,14 @@ import FriendsFoes from "@/components/FriendsFoes.vue"
 
 import Dapper from '@/components/ConnectDapper.vue'
 import {useUserStore} from '@/store/app.js'
+import GameDetailView from "@/components/GameDetailView.vue";
 
 export default {
   setup() {
     const auth = firebase.auth()
   },
   components: {
+    GameDetailView,
     MyEvents,
     UpcomingEvents,
     Moments,
@@ -128,7 +134,9 @@ export default {
       showMomentsComponent: false,
       showLeaderboardComponent: false,
       showFriendsFoesComponent: false,
+      showGameViewComponent: false,
       user: {},
+      gameId: null,
     }
   },
   mounted() {
@@ -155,6 +163,7 @@ export default {
       this.showUpcomingEventComponent = false
       this.showLeaderboardComponent = false
       this.showFriendsFoesComponent = false
+      this.showGameViewComponent = false
     },
     myEvents() {
       this.closeAll()
@@ -179,6 +188,12 @@ export default {
     showDapper() {
       this.closeAll()
       this.showDapperConnect = true
+    },
+    showGame(gameId) {
+      console.log('show game', gameId)
+      this.gameId = gameId
+      this.closeAll()
+      this.showGameViewComponent = true
     }
 
   }

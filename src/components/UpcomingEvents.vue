@@ -9,11 +9,15 @@
         <h2>Upcoming Events</h2>
         <SelectionSlider :blocked="false" @showSport="whichSport"></SelectionSlider>
         <v-progress-circular v-if="loading" indeterminate
-                             color="success"></v-progress-circular>
+                             color="success" class="ma-1 mb-4"></v-progress-circular>
         <h4 v-if="!sport ">Choose a sport</h4>
 
         <v-text-field v-if="sport && !loading" placeholder="Search Teams" width="auto" v-model="search"></v-text-field>
-        <v-card v-for="match in filteredFixtures" class="mb-4 border mx-auto" width="100%">
+        <v-card v-for="match in filteredFixtures" class="mb-4 border mx-auto" width="100%"
+                :class="{playing:match.playing}">
+          <div v-if="match.playing" class="playing-status">
+            Playing
+          </div>
           <v-card-text>
             <v-chip class="ma-2">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY [at] HH:mm a") }}</v-chip>
             <v-row class="ma-2">
@@ -22,11 +26,17 @@
                 <v-img :src="match.teams.home.logo" width="50" height="50" class="mx-auto ma-2"/>
               </v-col>
               <v-col cols="2">
-                <v-chip size="small" class="mb-1 mt-0">{{ match.fixture.status.short }}</v-chip>
-                <p class="fill-height align-center text-center mx-auto">VS
+                <div v-if="!loading">
+                  <v-chip size="small" class="mb-1 mt-0">{{ match.fixture.status.short }}</v-chip>
+                  <p class="fill-height align-center text-center mx-auto">VS</p>
                   <br>
-                  <v-btn color="success" @click="addEvent(match)" class="mx-auto mt-2">Play</v-btn>
-                </p>
+                  <div v-if="match.playing">
+                    <v-btn color="success" @click="viewEvent(match.eventId)" class="mx-auto mt-2">View</v-btn>
+                  </div>
+                  <div v-else>
+                    <v-btn color="success" @click="addEvent(match)" class="mx-auto mt-2">Play</v-btn>
+                  </div>
+                </div>
               </v-col>
               <v-col cols="5" class="mx-auto text-center">
                 <h3>{{ match.teams.away.name }}</h3>
@@ -108,7 +118,25 @@ export default {
         .get()
         .then(fixtures => {
           this.laLigaFixtures = fixtures.data().response
-          this.loading = false
+          db.collection('events')
+            .where('owner', '==', useUserStore().user.uid)
+            .get()
+            .then(querySnapshot => {
+              if (querySnapshot.size) {
+                querySnapshot.forEach(doc => {
+                  console.log(doc.data().fixtureId)
+                  this.laLigaFixtures.forEach(match => {
+                    if (match.fixture.id === doc.data().fixtureId) {
+                      match.playing = true
+                      match.eventId = doc.id
+                    }
+                  })
+                })
+              }
+              this.loading = false
+            }).catch(error => {
+            console.log('Error getting fame: ', error)
+          })
         })
     },
     getUFCFixtures() {
@@ -164,23 +192,46 @@ export default {
             this.createEvent(eventFields)
           }
         }).catch(error => {
-          console.log('Error getting mfc tournaments: ', error)
+          console.log('Error getting events: ', error)
         })
     },
-    createEvent(eventFields) {
+    async createEvent(eventFields) {
       console.log('Create Doc', eventFields)
-      db.collection('events')
+      await db.collection('events')
         .add(eventFields)
         .then(docRef => {
-          console.log("Document written with ID: ", docRef.id);
+          console.log("Document written with ID: ", docRef.id)
           this.selectedEvent = eventFields
           this.detailView(docRef.id)
         })
     },
     detailView(docId) {
       this.selectedEventId = docId
-      this.showDetailView = true
+      this.$emit('showGameView', docId)
+    },
+    viewEvent(docId) {
+      this.selectedEventId = docId
+      this.$emit('showGameView', docId)
     }
   }
 };
 </script>
+
+<style scoped>
+.playing {
+  background-color: rgba(187, 243, 187, 0.2);
+  border: 1px solid green !important;
+}
+
+
+element.style {
+}
+
+.playing-status {
+  font-size: 12px;
+  background: green;
+  width: 51px;
+  height: 21px;
+  border-radius: 0 0 6px;
+}
+</style>
