@@ -6,11 +6,11 @@
       <v-progress-circular v-if="loading" indeterminate
                            color="success"></v-progress-circular>
       <h4 v-if="!sport ">Choose a sport</h4>
-      <div v-else >
+      <div v-else>
         <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
                       v-model="search"></v-text-field>
-        <v-row class="mb-6" >
-          <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in filteredMoments"
+        <v-row class="mb-6">
+          <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
                  :key="moment.id">
             <v-card
               class="mx-auto ma-2 fill-height"
@@ -42,6 +42,11 @@
             </v-card>
           </v-col>
         </v-row>
+
+        <v-pagination
+          v-model="page"
+          :length="Math.ceil(pages.length/perPage)"
+        ></v-pagination>
       </div>
     </v-responsive>
   </v-container>
@@ -65,12 +70,14 @@ export default {
   },
   data() {
     return {
+      page: 1,
+      perPage: 12,
       momentsLaLiga: [],
       momentsStrike: [],
       loading: false,
       sport: '',
       search: '',
-      width:600
+      width: 600
     }
   },
   mounted() {
@@ -84,6 +91,12 @@ export default {
 
   },
   computed: {
+    paginatedMoments() {
+      return this.pages.slice((this.page - 1) * this.perPage, this.page * this.perPage)
+    },
+    pages() {
+      return this.filteredMoments
+    },
     filteredMoments() {
       return this.momentsLaLiga.filter((moment) => {
         return moment.PlayerFirstName.toLowerCase().includes(this.search.toLowerCase()) ||

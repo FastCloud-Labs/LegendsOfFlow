@@ -1,47 +1,52 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-top text-center fill-height" max-width="600px">
-        <h2>Upcoming Events</h2>
-        <SelectionSlider :blocked="false" @showSport="whichSport"></SelectionSlider>
-        <v-progress-circular v-if="loading" indeterminate
-                             color="success" class="ma-1 mb-4"></v-progress-circular>
-        <h4 v-if="!sport ">Choose a sport</h4>
+      <h2>Upcoming Events</h2>
+      <SelectionSlider :blocked="false" @showSport="whichSport"></SelectionSlider>
+      <v-progress-circular v-if="loading" indeterminate
+                           color="success" class="ma-1 mb-4"></v-progress-circular>
+      <h4 v-if="!sport ">Choose a sport</h4>
 
-        <v-text-field v-if="sport && !loading" placeholder="Search Teams" width="auto" v-model="search"></v-text-field>
-        <v-card v-for="match in filteredFixtures" class="mb-4 border mx-auto"
-                :class="{playing:match.playing}">
-          <div v-if="match.playing" class="playing-status">
-            Playing
-          </div>
-          <v-card-text class="ma-0 pa-0">
-            <v-chip class="mb-1 mt-0">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY") }}</v-chip>
-            <v-row class="ma-2">
-              <v-col cols="5" class="mx-auto text-center">
-                <h3>{{ match.teams.home.name }}</h3>
-                <v-img :src="match.teams.home.logo" width="50" height="50" class="mx-auto ma-2"/>
-              </v-col>
-              <v-col cols="2">
-                <div v-if="!loading">
-                  <v-chip size="small" class="mb-1 mt-0">{{ match.fixture.status.short }}</v-chip>
-                  <p class="fill-height align-center text-center mx-auto">VS</p>
-                  <br>
-                  <div v-if="match.playing">
-                    <v-btn color="success" @click="viewEvent(match.eventId)" class="mx-auto mt-2">View</v-btn>
-                  </div>
-                  <div v-else>
-                    <v-btn color="success" @click="addEvent(match)" class="mx-auto mt-2">Play</v-btn>
-                  </div>
+      <v-text-field v-if="sport && !loading" placeholder="Search Teams" width="auto" v-model="search"></v-text-field>
+      <v-card v-for="match in paginatedFixtures" class="mb-4 border mx-auto"
+              :class="{playing:match.playing}">
+        <div v-if="match.playing" class="playing-status-upcoming mb-0 pb-0">
+          Playing
+        </div>
+        <v-card-text>
+          <v-chip class="mb-1 mt-0">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY") }}</v-chip>
+          <v-row class="ma-2">
+            <v-col cols="5" class="mx-auto text-center">
+              <h3>{{ match.teams.home.name }}</h3>
+              <v-img :src="match.teams.home.logo" width="50" height="50" class="mx-auto ma-2"/>
+            </v-col>
+            <v-col cols="2">
+              <div v-if="!loading">
+                <v-chip size="small" class="mb-1 mt-0">{{ match.fixture.status.short }}</v-chip>
+                <p class="fill-height align-center text-center mx-auto">VS</p>
+                <br>
+                <div v-if="match.playing">
+                  <v-btn color="success" @click="viewEvent(match.eventId)" class="mx-auto mt-2">View</v-btn>
                 </div>
-                <v-progress-circular v-if="loading" size="small" indeterminate
-                                     color="success" class="ma-4"></v-progress-circular>
-              </v-col>
-              <v-col cols="5" class="mx-auto text-center">
-                <h3>{{ match.teams.away.name }}</h3>
-                <v-img :src="match.teams.away.logo" width="50" height="50" class="mx-auto ma-2"/>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+                <div v-else>
+                  <v-btn color="success" @click="addEvent(match)" class="mx-auto mt-2">Play</v-btn>
+                </div>
+              </div>
+              <v-progress-circular v-if="loading" size="small" indeterminate
+                                   color="success" class="ma-4"></v-progress-circular>
+            </v-col>
+            <v-col cols="5" class="mx-auto text-center">
+              <h3>{{ match.teams.away.name }}</h3>
+              <v-img :src="match.teams.away.logo" width="50" height="50" class="mx-auto ma-2"/>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+
+      <v-pagination
+        v-model="page"
+        :length="Math.ceil(pages.length/perPage)"
+      ></v-pagination>
     </v-responsive>
   </v-container>
 </template>
@@ -59,12 +64,17 @@ import db from '@/firebase/init.js'
 
 export default {
   components: {
-    SelectionSlider,
-    GameDetailView,
+    SelectionSlider
   },
   computed: {
     moment() {
       return moment
+    },
+    paginatedFixtures() {
+      return this.pages.slice((this.page - 1) * this.perPage, this.page * this.perPage)
+    },
+    pages() {
+      return this.filteredFixtures
     },
     filteredFixtures() {
       return this.laLigaFixtures.filter((match) => {
@@ -76,6 +86,8 @@ export default {
 
   data() {
     return {
+      page: 1,
+      perPage: 10,
       user: {},
       sport: '',
       laLigaFixtures: [],
@@ -237,11 +249,12 @@ export default {
   border: 1px solid #4caf50 !important;
 }
 
-.playing-status {
+.playing-status-upcoming {
   font-size: 12px;
   background: #4caf50;
   width: 51px;
   height: 21px;
   border-radius: 0 0 6px;
+  margin-bottom: -20px !important;
 }
 </style>

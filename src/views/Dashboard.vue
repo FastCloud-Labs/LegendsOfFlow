@@ -67,7 +67,7 @@
       </v-list>
     </div>
 
-    <v-navigation-drawer v-model="drawer" location="bottom" temporary="true" class="mobile-menu hidden-md-and-up">
+    <v-navigation-drawer v-model="drawer" location="bottom" temporary class="mobile-menu hidden-md-and-up">
       <v-list>
         <v-list-item @click="showMyEvents">
           <v-icon icon="fas fa-calendar-check" class="mr-1 pa-2 ma-2" size="x-small"/>
