@@ -1,6 +1,6 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-top text-center fill-height">
+    <v-responsive class="align-top text-center fill-height" width="800">
       <h2 class="mb-2">Selected Game</h2>
       <v-progress-circular v-if="loading" indeterminate color="success"></v-progress-circular>
       <div class="game-wrapper">
@@ -70,9 +70,10 @@
             </div>
           </v-card-text>
         </v-card>
-        <v-dialog v-model="momentPicker">
-          Moments:
-          <Moments/>
+        <v-dialog v-model="momentPicker" width="auto">
+          <v-card>
+            <Moments :user="user"/>
+          </v-card>
         </v-dialog>
       </div>
     </v-responsive>
@@ -108,8 +109,9 @@ export default {
       momentLocked: false,
       gameType: [{text: 'Win/Loss'}, {text: 'Team Points'}],
       game: {},
-      width: 800,
+      width: 700,
       momentPicker: false,
+      user: {},
     }
   },
   computed: {
@@ -118,11 +120,12 @@ export default {
     }
   },
   mounted() {
-    this.getGame()
     this.width = window.innerWidth
-    if (this.width > 800) {
-      this.width = 800
+    if (this.width > 700) {
+      this.width = 700
     }
+    this.getGame()
+    this.user = useUserStore()
   },
   methods: {
     getGame() {

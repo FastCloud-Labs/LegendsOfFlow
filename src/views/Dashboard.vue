@@ -9,7 +9,7 @@
         <v-icon icon="fas fa-shield-halved" class="mr-1"/>
         XP Points: {{ user.profile?.xpPoints || 0 }}
       </v-chip>
-      <v-chip color="warning" class="mr-1">
+      <v-chip color="warning" class="mr-2">
         <v-icon icon="fas fa-coins" class="mr-1"/>
         LF Tokens: {{ user.profile?.tokens || 0 }}
       </v-chip>
@@ -18,6 +18,8 @@
       ">
           <v-btn
             v-bind="props"
+            size="small"
+            class="ma-0 pa-0 mr-2"
           >
             <v-icon icon="fas fa-cog"/>
           </v-btn>
@@ -163,7 +165,7 @@ export default {
       showGameViewComponent: false,
       user: {},
       gameId: null,
-      width: 600,
+      width: 800,
     }
   },
   mounted() {
@@ -252,5 +254,9 @@ export default {
   background: #212121;
   margin-top: 63px;
   width: 230px;
+}
+
+.v-overlay.v-overlay--active.v-theme--dark.v-locale--is-ltr.v-dialog.v-overlay--scroll-blocked {
+  background: #002d0596;
 }
 </style>

@@ -14,29 +14,27 @@
             <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
                    :key="moment.id">
               <v-card
-                class="mx-auto ma-2 fill-height"
-                max-width="344"
+                class="mx-auto fill-height"
                 variant="outlined"
               >
                 <v-card-item>
                   <div>
-                    <div class="text-h6 mb-0 text-truncate">
+                    <div class="font-weight-bold mb-0 text-truncate">
                       {{ moment.PlayerFirstName }} {{ moment.PlayerLastName }}
                     </div>
-                    {{ moment.MatchHighlightedTeam }}
-                    <br>
-                    <v-avatar size="80" class="aborder ma-2">
+                    <p class="text-truncate text-sm-caption">{{ moment.MatchHighlightedTeam }}</p>
+                    <v-avatar size="80" class="aborder ma-1">
                       <v-img
                         class="moment-stretch"
                         v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${moment.PlayDataID}/play_${moment.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                     </v-avatar>
                     <div class="text-caption">{{ moment.description }}</div>
                     <div class="text-overline mb-0">
-                      <v-chip size="small" class="laligachip mr-1" :class="moment.PlayType">{{
+                      <v-chip size="x-small" class="laligachip mr-1" :class="moment.PlayType">{{
                           moment.PlayType
                         }}
                       </v-chip>
-                      <v-chip size="small" class="laligachip ml-1" :class="moment.editionTier">{{
+                      <v-chip size="x-small" class="laligachip ml-1" :class="moment.editionTier">{{
                           moment.editionTier
                         }}
                       </v-chip>
@@ -82,7 +80,7 @@ export default {
       loading: false,
       sport: '',
       search: '',
-      width: 600
+      width: 800
     }
   },
   mounted() {

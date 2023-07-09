@@ -2,7 +2,6 @@
   <v-sheet
     class="mx-auto ma-4"
     :width="width"
-    max-width="100%"
     rounded
   >
     <v-slide-group
@@ -18,7 +17,7 @@
           variant="outlined"
           @click="showLocked"
         >
-          Locked Moments
+          Locked
         </v-btn>
       </v-slide-group-item>
       <v-slide-group-item
@@ -80,13 +79,13 @@ export default {
   },
   data() {
     return {
-      width: 600
+      width: 735
     }
   },
   mounted() {
     this.width = window.innerWidth
-    if (this.width > 800) {
-      this.width = 800
+    if (this.width > 735) {
+      this.width = 735
     }
   },
   methods: {

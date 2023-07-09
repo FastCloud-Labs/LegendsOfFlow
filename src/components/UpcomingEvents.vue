@@ -1,6 +1,6 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-top text-center fill-height">
+    <v-responsive class="align-top text-center fill-height" :width="width">
       <h2>Upcoming Events</h2>
       <SelectionSlider :blocked="false" @showSport="whichSport"></SelectionSlider>
       <v-progress-circular v-if="loading" indeterminate
@@ -97,10 +97,15 @@ export default {
       showDetailView: false,
       selectedEvent: '',
       selectedEventId: '',
+      width: 800,
     }
   },
 
   mounted() {
+    this.width = window.innerWidth
+    if (this.width > 800) {
+      this.width = 800
+    }
     this.user = useUserStore().user
     if (useUserStore().profile?.lastSport) {
       this.whichSport(useUserStore().profile.lastSport)
@@ -245,6 +250,11 @@ export default {
 </script>
 
 <style scoped>
+.upcoming-wrapper {
+  margin: auto;
+  width: 92%;
+}
+
 .playing {
   background-color: rgba(187, 243, 187, 0.05);
   border: 1px solid #4caf50 !important;
@@ -257,10 +267,5 @@ export default {
   height: 21px;
   border-radius: 0 0 6px;
   margin-bottom: -20px !important;
-}
-
-.upcoming-wrapper {
-  margin: auto;
-  width: 92%;
 }
 </style>
