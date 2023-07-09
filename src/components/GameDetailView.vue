@@ -1,9 +1,9 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-top text-center fill-height">
+    <v-responsive class="align-top text-center fill-height" :width="width">
       <h2 class="mb-2">Selected Game</h2>
       <v-progress-circular v-if="loading" indeterminate color="success"></v-progress-circular>
-      <v-card>
+      <v-card >
         <v-card-text v-if="match?.fixture">
           <v-chip class="ma-2">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY [at] HH:mm a") }}</v-chip>
           <v-row class="ma-2">
@@ -25,10 +25,31 @@
               <v-img :src="match.teams.away.logo" width="50" height="50" class="mx-auto ma-2"/>
             </v-col>
           </v-row>
-          <v-divider class="ma-4 mt-6"></v-divider>
           <p v-if="!teamPicked" class="text-green">Select team</p>
           <div v-else class="ma-4">
-            <h3 class="text-left mb-0 pb-0">Game Type</h3>
+            <v-divider class="ma-4 mt-6"></v-divider>
+            <h3 class="text-left mb-0 pb-0" @click="changeGameType">Game Type</h3>
+            <v-progress-circular v-if="loadingInner" indeterminate color="success" size="small"></v-progress-circular>
+            <div v-if="!game.gameType">
+
+              <div
+                class="mx-auto mt-0 pa-2"
+                max-width="300"
+              >
+                <p>Choose Game Type:</p>
+                <div
+                  v-for="(item, i) in gameType"
+                  :key="i"
+                  color="primary"
+                  rounded="xl"
+                  class="mt-1"
+                >
+                  <v-btn variant="outlined" elevation="2" sixe="small" class="ma-1 pa-2"
+                         @click="setGameType(item.text )">{{ item.text }}
+                  </v-btn>
+                </div>
+              </div>
+            </div>
             <div v-if="game.gameType" clas="mt-0 pt-0">
               <v-chip color="info" @click="changeGameType" class="mb-3 mt-0 pt-0">{{ game.gameType }}</v-chip>
               <div v-if="game.gameType == 'Win/Loss'">
@@ -39,33 +60,19 @@
                 Your opponent can choose the same team, highest scoring lineup wins.
                 <v-divider class="ma-3"></v-divider>
                 <h4>Choose LineUp</h4>
+                <LineUpView/>
               </div>
             </div>
-            <v-divider class="ma-2 mt-4"></v-divider>
+            <v-divider class="ma-3 mt-4"></v-divider>
             <h3 class="text-left">Stake</h3>
             <v-btn v-if="!momentLocked" color="success" @click="chooseMoment" class="ma-4">Choose Moment</v-btn>
-            <div v-else>
-
-              <div
-                class="mx-auto border mt-8 pa-4"
-                max-width="300"
-              >
-                <h3>Choose Game Type:</h3>
-                <div
-                  v-for="(item, i) in gameType"
-                  :key="i"
-                  color="primary"
-                  rounded="xl"
-                >
-                  <v-btn variant="outlined" elevation="2" sixe="small" class="ma-2 pa-2"
-                         @click="setGameType(item.text )">{{ item.text }}
-                  </v-btn>
-                </div>
-              </div>
-            </div>
           </div>
         </v-card-text>
       </v-card>
+      <v-dialog v-model="momentPicker">
+        Moments:
+        <Moments/>
+      </v-dialog>
     </v-responsive>
   </v-container>
 </template>
@@ -74,8 +81,15 @@
 import moment from "moment";
 import db from "@/firebase/init";
 import {useUserStore} from '@/store/app.js'
+import LineUpView from "@/components/LineUpView.vue";
+import Moments from "@/components/Moments.vue";
+
 
 export default {
+  components: {
+    Moments,
+    LineUpView
+  },
   props: {
     gameId: {
       type: String,
@@ -86,11 +100,14 @@ export default {
     return {
       match: {},
       loading: true,
+      loadingInner: false,
       teamPicked: '',
       isOwner: false,
       momentLocked: false,
       gameType: [{text: 'Win/Loss'}, {text: 'Team Points'}],
-      game: {}
+      game: {},
+      width: 800,
+      momentPicker: false,
     }
   },
   computed: {
@@ -100,6 +117,10 @@ export default {
   },
   mounted() {
     this.getGame()
+    this.width = window.innerWidth
+    if (this.width > 800) {
+      this.width = 800
+    }
   },
   methods: {
     getGame() {
@@ -137,17 +158,23 @@ export default {
         .doc(this.gameId)
         .set(eventFields, {merge: true})
     },
-    setGameType(gameType) {
-      db.collection('events')
+    async setGameType(gameType) {
+      this.loadingInner = true
+      await db.collection('events')
         .doc(this.gameId)
         .set({gameType: gameType}, {merge: true}).then(() => {
-        this.game.gameType = gameType
-      })
+          this.game.gameType = gameType
+        })
+      this.loadingInner = false
     },
     changeGameType() {
       console.log("reset")
       this.game.gameType = ''
     },
+    chooseMoment(){
+      console.log('choose moment')
+      this.momentPicker = true
+    }
   }
 }
 </script>
