@@ -7,46 +7,51 @@
                            color="success"></v-progress-circular>
       <h4 v-if="!sport ">Choose a sport</h4>
       <div v-else>
-        <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
-                      v-model="search"></v-text-field>
-        <v-row class="mb-6">
-          <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
-                 :key="moment.id">
-            <v-card
-              class="mx-auto ma-2 fill-height"
-              max-width="344"
-              variant="outlined"
-            >
-              <v-card-item>
-                <div>
-                  <div class="text-h6 mb-0 text-truncate">
-                    {{ moment.PlayerFirstName }} {{ moment.PlayerLastName }}
+        <div class="moment-wrapper">
+          <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
+                        v-model="search"></v-text-field>
+          <v-row class="mb-6">
+            <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
+                   :key="moment.id">
+              <v-card
+                class="mx-auto ma-2 fill-height"
+                max-width="344"
+                variant="outlined"
+              >
+                <v-card-item>
+                  <div>
+                    <div class="text-h6 mb-0 text-truncate">
+                      {{ moment.PlayerFirstName }} {{ moment.PlayerLastName }}
+                    </div>
+                    {{ moment.MatchHighlightedTeam }}
+                    <br>
+                    <v-avatar size="80" class="aborder ma-2">
+                      <v-img
+                        class="moment-stretch"
+                        v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${moment.PlayDataID}/play_${moment.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                    </v-avatar>
+                    <div class="text-caption">{{ moment.description }}</div>
+                    <div class="text-overline mb-0">
+                      <v-chip size="small" class="laligachip mr-1" :class="moment.PlayType">{{
+                          moment.PlayType
+                        }}
+                      </v-chip>
+                      <v-chip size="small" class="laligachip ml-1" :class="moment.editionTier">{{
+                          moment.editionTier
+                        }}
+                      </v-chip>
+                    </div>
                   </div>
-                  {{ moment.MatchHighlightedTeam }}
-                  <br>
-                  <v-avatar size="80" class="aborder ma-2">
-                    <v-img
-                      class="moment-stretch"
-                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${moment.PlayDataID}/play_${moment.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
-                  </v-avatar>
-                  <div class="text-caption">{{ moment.description }}</div>
-                  <div class="text-overline mb-0">
-                    <v-chip size="small" class="laligachip mr-1" :class="moment.PlayType">{{ moment.PlayType }}</v-chip>
-                    <v-chip size="small" class="laligachip ml-1" :class="moment.editionTier">{{
-                        moment.editionTier
-                      }}
-                    </v-chip>
-                  </div>
-                </div>
-              </v-card-item>
-            </v-card>
-          </v-col>
-        </v-row>
+                </v-card-item>
+              </v-card>
+            </v-col>
+          </v-row>
 
-        <v-pagination
-          v-model="page"
-          :length="Math.ceil(pages.length/perPage)"
-        ></v-pagination>
+          <v-pagination
+            v-model="page"
+            :length="Math.ceil(pages.length/perPage)"
+          ></v-pagination>
+        </div>
       </div>
     </v-responsive>
   </v-container>
@@ -278,6 +283,12 @@ export default {
 </script>
 
 <style>
+
+.moment-wrapper {
+  margin: auto;
+  width: 92%;
+}
+
 .moment-stretch img {
   object-fit: none !important;
 }

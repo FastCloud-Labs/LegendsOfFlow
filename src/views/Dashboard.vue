@@ -170,7 +170,7 @@ export default {
     this.user = useUserStore()
     this.width = window.innerWidth
     if (this.width > 800) {
-      this.width = 600
+      this.width = 800
     }
   },
   methods: {
