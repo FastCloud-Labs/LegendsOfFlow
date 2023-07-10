@@ -60,12 +60,22 @@
           </div>
           <div v-else>
             <p>No upcoming games...</p>
-            <v-btn class="ma-2" color="green" @click="upcoming">Choose a match to play</v-btn>
+            <v-btn class="ma-2 mt-4" color="green" @click="upcoming">Choose a match to play</v-btn>
             <br>
             <v-img class="mx-auto" max-width="400" width="auto" src="@/assets/intro.jpg"/>
           </div>
         </div>
       </div>
+      <v-dialog v-model="showUsername" width="auto" min-width="300"
+      >
+        <v-card class="pa-2">
+          <v-card-title>Choose a username:</v-card-title>
+          <v-card-text>
+            <v-text-field v-model="username" label="Username" type="text"></v-text-field>
+            <v-btn @click="saveUsername(username)" color="success">Save</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-responsive>
   </v-container>
 </template>
@@ -86,6 +96,8 @@ export default {
       search: '',
       loading: true,
       width: 800,
+      showUsername: false,
+      username: ''
     }
   },
   computed: {
@@ -108,8 +120,26 @@ export default {
     }
     this.user = useUserStore().user
     this.getMyEvents()
+    if (!useUserStore()?.profile?.name) {
+      this.chooseUsername()
+    } else {
+      this.username = useUserStore()?.profile?.name
+    }
   },
   methods: {
+    chooseUsername() {
+      this.showUsername = true
+    },
+    saveUsername(username) {
+      const fields = {
+        username: username
+      }
+
+      db.collection('profiles')
+        .doc(useUserStore().user.uid)
+        .set(fields, {merge: true})
+      this.showUsername = false
+    },
     async getMyEvents() {
       console.log('get my events', this.user.uid)
       if (!this.user.uid) {
