@@ -30,26 +30,33 @@
           </v-list-item>
 
           <v-list-item @click="showDapper()">
-            <v-list-item-title>Account:
-              <br>
-              <v-chip @click="showDapper()" class="text-truncate" size="small" color="success" variant="outlined">{{
-                  user.profile?.username
-                }}
-              </v-chip>
-              <br>
-              <v-chip @click="showDapper()" class="text-truncate mt-2" size="small" color="primary" variant="outlined">
-                {{ user.profile?.dapperAddress }}
-              </v-chip>
-            </v-list-item-title>
+            <v-card>
+              <v-card-text class="mx-auto text-center">
+                <h3>Account:</h3>
+                <v-avatar class="border ma-2">
+                  <div v-html="avatar"></div>
+                </v-avatar>
+                <br>
+                <v-chip @click="showDapper()" class="text-truncate" size="small" color="success" variant="outlined">{{
+                    user.profile?.username
+                  }}
+                </v-chip>
+                <br>
+                <v-chip @click="showDapper()" class="text-truncate mt-2" size="small" color="primary"
+                        variant="outlined">
+                  {{ user.profile?.dapperAddress }}
+                </v-chip>
+              </v-card-text>
+            </v-card>
           </v-list-item>
-
+          <v-divider></v-divider>
           <v-list-item v-if="user.profile?.dapperAddress" @click="showMoments()">
             <v-list-item-title>View My Moments</v-list-item-title>
           </v-list-item>
 
           <v-divider></v-divider>
-          <v-list-item>
-            <v-list-item-title @click="logout">Logout</v-list-item-title>
+          <v-list-item @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -166,6 +173,7 @@ import Dapper from '@/components/ConnectDapper.vue'
 import {useUserStore} from '@/store/app.js'
 import GameDetailView from "@/components/GameDetailView.vue";
 import db from "@/firebase/init";
+import {toSvg} from "jdenticon";
 
 export default {
   components: {
@@ -188,30 +196,50 @@ export default {
       showFriendsFoesComponent: false,
       showGameViewComponent: false,
       user: {},
+      profile: {},
       gameId: null,
       width: 800,
       showUsername: false,
       email: null,
       newEmail: null,
       username: null,
+      avatar: null,
     }
   },
   mounted() {
+
     this.width = window.innerWidth
     if (this.width > 800) {
       this.width = 800
     }
     this.user = useUserStore()
-    this.email = this.user.user.email
-
-    if (this.user.uuid && !useUserStore()?.profile?.username) {
-      this.chooseUsername()
-    } else {
-      this.username = useUserStore()?.profile?.username
-    }
+    this.checkUser(this.user)
 
   },
   methods: {
+    checkUser(user) {
+      this.user = user
+      this.profile = user.profile
+      this.email = this.user.user.email
+      if (!this.profile?.avatar) {
+        if (this.profile?.dapperAddress) {
+          const svgString = toSvg(this.profile?.dapperAddress, 60);
+          this.avatar = svgString
+        } else {
+          const svgString = toSvg(this.profile?.username, 60);
+          this.avatar = svgString
+        }
+      }
+
+      if (this.user.user.uid && !this.profile?.username) {
+        this.chooseUsername()
+      } else if (this.user.user.uid && !this.user.user.email) {
+        this.chooseUsername()
+        this.username = this.profile?.username
+      } else {
+        this.username = this.profile?.username
+      }
+    },
     chooseUsername() {
       this.showUsername = true
     },

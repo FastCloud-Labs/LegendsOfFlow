@@ -1,24 +1,37 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-top text-center fill-height">
-      <h2 class="ma-4">Account</h2>
-      <div v-if="dapperAddress" class="ma-4">
-        <v-chip color="primary" variant="outlined">Dapper Address: {{ dapperAddress }}</v-chip>
-        <br>
-      </div>
-      <div class="ma-4">
-        <v-chip color="success" variant="outlined">Username: {{ user.profile.username }}</v-chip>
-        <br>
-      </div>
-      <v-btn @click="changeUsername" variant="outlined">Change Username</v-btn>
-      <br>
-      <v-btn @click="upcoming" color="success" class="ma-4">Start a Game</v-btn>
-      <v-btn v-if="dapperAddress" @click="moments" color="success" class="ma-4">View Moments</v-btn>
-      <br>
-      <v-btn v-if="dapperAddress" @click="logoutDapper" color="primary" class="ma-1">Dis-connect Dapper Account</v-btn>
-      <div v-if="!dapperAddress">
-        <v-btn @click="connectDapper" color="primary" variant="outlined">Connect Dapper Account</v-btn>
-      </div>
+      <v-card>
+        <v-card-text class="mx-auto text-center">
+          <h2>Account:</h2>
+          <v-avatar class="border ma-2" size="60">
+            <div v-html="avatar"></div>
+          </v-avatar>
+          <br>
+          <v-chip @click="showDapper()" class="text-truncate" size="small" color="success" variant="outlined">{{
+              user.profile?.username
+            }}
+          </v-chip>
+          <br>
+          <v-chip @click="showDapper()" class="text-truncate mt-2" size="small" color="primary"
+                  variant="outlined">
+            {{ user.profile?.dapperAddress }}
+          </v-chip>
+          <br>
+          <br>
+          <v-btn @click="changeUsername" variant="outlined">Change Username</v-btn>
+          <br>
+          <v-btn @click="upcoming" color="success" class="ma-4">Start a Game</v-btn>
+          <v-btn v-if="dapperAddress" @click="moments" color="success" class="ma-4">View Moments</v-btn>
+          <br>
+          <v-btn v-if="dapperAddress" @click="logoutDapper" color="primary" class="ma-1">Dis-connect Dapper Account
+          </v-btn>
+          <div v-if="!dapperAddress">
+            <v-btn @click="connectDapper" color="primary" variant="outlined">Connect Dapper Account</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+
     </v-responsive>
   </v-container>
 </template>
@@ -31,6 +44,7 @@ import 'firebase/auth'
 import * as fcl from '@onflow/fcl'
 import {useUserStore} from '@/store/app.js'
 import db from '@/firebase/init.js'
+import {toSvg} from "jdenticon";
 
 export default {
   setup() {
@@ -52,10 +66,21 @@ export default {
     return {
       dialogLogin: false,
       dapperAddress: '',
+      avatar: null,
     }
   },
   mounted() {
     this.dapperAddress = useUserStore()?.profile?.dapperAddress
+    if (!useUserStore()?.profile?.avatar) {
+      if (this.dapperAddress) {
+        const svgString = toSvg(this.dapperAddress, 60);
+        this.avatar = svgString
+      } else {
+        const svgString = toSvg(useUserStore()?.profile?.username, 60);
+        this.avatar = svgString
+      }
+    }
+
   },
   methods: {
     connectDapper() {

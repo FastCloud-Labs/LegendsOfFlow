@@ -19,7 +19,7 @@
                 {{ match.status || 'Pending' }}
               </div>
 
-              <v-card-text class="ma-md-0 pa-md-0 mt-sm-2">
+              <v-card-text class="mt-md-0 pt-md-0 mt-sm-2">
                 <v-chip class="mb-4 mt-md-0 mt-lg-0 mt-sm-2">{{
                     moment(match.eventDetails.fixture.date).format("ddd MMM DD, YYYY")
                   }}
@@ -150,7 +150,6 @@ export default {
         })
         this.loading = false
       } else {
-        console.log('no user')
         this.$router.push('/')
       }
     },

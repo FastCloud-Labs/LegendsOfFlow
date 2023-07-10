@@ -23,7 +23,7 @@ export const useUserStore = defineStore('user', {
           console.log('onAuthState Observer: user signed in...')
           const {displayName, email, photoURL, emailVerified, uid} = user // get what you need from the user object
           this.user = {displayName, email, photoURL, emailVerified, uid}
-          db.collection('profiles')
+          await db.collection('profiles')
             .doc(user.uid)
             .get()
             .then(doc => {

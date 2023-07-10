@@ -224,7 +224,6 @@ export default {
 
     },
     async queryMomentsLaLiga() {
-      console.log('show la liga parent')
       this.loading = true
       // get owned NFT metadata
       const idsResponse = await fcl.send([
