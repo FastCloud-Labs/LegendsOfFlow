@@ -94,21 +94,19 @@ export default {
 </script>
 <style>
 .lineup {
-  background: url('./soccer-field-1.png');
+  background: url('/soccer-field-1.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  width: 345px;
+  width: 332px;
   height: 300px;
-
-
 }
 
 .lineup-rows {
   width: 220px;
   margin: auto;
   margin-top: 38px;
-  margin-left: 61px;
+  margin-left: 55px;
 }
 
 .lineup-rows .v-avatar.border {

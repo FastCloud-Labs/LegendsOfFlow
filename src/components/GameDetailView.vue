@@ -25,113 +25,114 @@
                 <v-img :src="match.teams.away.logo" class="mx-auto ma-2" height="50" width="50"/>
               </v-col>
             </v-row>
-            <p v-if="!teamPicked" class="text-green">Select a team</p>
-            <div v-else class="ma-4">
-              <v-expansion-panels v-model="pickedPanel" :disabled="!teamPicked" :multiple="true">
-                <v-expansion-panel>
-                  <v-expansion-panel-title><h3>Game Type</h3></v-expansion-panel-title>
-                  <v-expansion-panel-text>
-                    <v-progress-circular v-if="loadingInner" color="success" indeterminate
-                                         size="small"></v-progress-circular>
-
-                    <div v-if="!game.gameType">
-                      <div
-                        class="mx-auto mt-0 pa-2"
-                        max-width="300"
-                      >
-                        <p>Choose Game Type:</p>
-                        <div
-                          v-for="(item, i) in gameType"
-                          :key="i"
-                          class="mt-1"
-                          color="primary"
-                          rounded="xl"
-                        >
-                          <v-btn class="ma-1 pa-2" elevation="2" sixe="small" variant="outlined"
-                                 @click="setGameType(item.text )">{{ item.text }}
-                          </v-btn>
-                        </div>
-                      </div>
-                    </div>
-                    <div v-if="game.gameType" clas="mt-0 pt-0">
-                      <v-chip class="mb-3 mt-0 pt-0" color="info" @click="changeGameType">{{ game.gameType }}</v-chip>
-                      <div v-if="game.gameType == 'Win/Loss'">
-                        <p class="ma-1">You've chosen {{ teamPicked }} to win.</p>
-                      </div>
-                      <div v-if="game.gameType == 'Team Points'">
-                        <p class="ma-1">You've chosen {{ teamPicked }}.</p>
-                        Opponents can choose the same team, highest scoring lineup wins.
-                        <v-divider class="ma-3"></v-divider>
-                        <h4>Choose LineUp</h4>
-                        <LineUpView/>
-                      </div>
-                    </div>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-                <v-expansion-panel>
-                  <v-expansion-panel-title><h3>Game Mode</h3></v-expansion-panel-title>
-                  <v-expansion-panel-text>
-                    <p class="mt-2">Choose PvP mode, Community or both.</p>
-                    <v-row class="mode-check-box">
-                      <v-col cols="6">
-                        <v-checkbox v-model="pvpMode" class="mx-auto" color="success" label="PvP"
-                                    @click="setGameMode('pvpMode')"></v-checkbox>
-                        <p class="text-sm-caption ma-0 pa-0">Compete a against a friend or foe.</p>
-                      </v-col>
-                      <v-col cols="6">
-                        <v-checkbox v-model="communityMode" color="success" label="Community"
-                                    @click="setGameMode('communityMode')"></v-checkbox>
-                        <p class="text-sm-caption ma-0 pa-0">Compete against all players in the community.</p>
-                      </v-col>
-                    </v-row>
-                    <div v-if="pvpMode">
-                      <h3 class="ma-2">Choose Opponent:</h3>
-                      <v-autocomplete
-                        :items="opponentList"
-                        item-title="username"
-                        item-value="uid"
-                        label="Opponent"
-                      >
-                        <template v-slot:chip="{ props, item }">
-                          <v-chip
-                            :prepend-avatar="item.dapperAddress"
-                            :text="item.raw.name"
-                            v-bind="props"
-                          ></v-chip>
-                        </template>
-                      </v-autocomplete>
-                      <v-btn border @click="inviteUser=true">Invite User</v-btn>
-                    </div>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-                <v-expansion-panel>
-                  <v-expansion-panel-title><h3>Stake</h3></v-expansion-panel-title>
-                  <v-expansion-panel-text>
-                    <div v-if="pvpMode || communityMode">
-                      <v-row>
-                        <v-col v-if="pvpMode">
-                          <h4>PVP Stake</h4>
-                          <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
-                                 variant="outlined" @click="chooseMoment('pvpStake')">Choose
-                            Moment
-                          </v-btn>
-                        </v-col>
-                        <v-col v-if="communityMode">
-                          <h4>Community Stake</h4>
-                          <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
-                                 variant="outlined" @click="chooseMoment('pvpCommunity')">Choose
-                            Moment
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                    </div>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-              </v-expansion-panels>
-            </div>
-
           </v-card-text>
         </v-card>
+        <p v-if="!teamPicked" class="text-green">Select a team</p>
+        <div v-else class="mx-0 my-4">
+          <v-expansion-panels v-model="pickedPanel" :disabled="!teamPicked" :multiple="true"
+                              class="mx-0 px-0 game-panels">
+            <v-expansion-panel class="mx-0 px-0 game-type-panel">
+              <v-expansion-panel-title><h3>Game Type</h3></v-expansion-panel-title>
+              <v-expansion-panel-text class="mx-0 px-0">
+                <v-progress-circular v-if="loadingInner" color="success" indeterminate
+                                     size="small"></v-progress-circular>
+
+                <div v-if="!game.gameType" class="mx-0 px-2">
+                  <div
+                    class="mx-auto mt-0 pa-2"
+                    max-width="300"
+                  >
+                    <p>Choose Game Type:</p>
+                    <div
+                      v-for="(item, i) in gameType"
+                      :key="i"
+                      class="mt-1"
+                      color="primary"
+                      rounded="xl"
+                    >
+                      <v-btn class="ma-1 pa-2" elevation="2" sixe="small" variant="outlined"
+                             @click="setGameType(item.text )">{{ item.text }}
+                      </v-btn>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="game.gameType">
+                  <v-chip class="mb-3 mt-2 pt-0" color="info" @click="changeGameType">{{ game.gameType }}</v-chip>
+                  <div v-if="game.gameType == 'Win/Loss'">
+                    <p class="ma-1">You've chosen {{ teamPicked }} to win.</p>
+                  </div>
+                  <div v-if="game.gameType == 'Team Points'">
+                    <p class="ma-1">You've chosen {{ teamPicked }}.</p>
+                    Opponents can choose the same team, highest scoring lineup wins.
+                    <v-divider class="ma-3"></v-divider>
+                    <h4>Choose LineUp</h4>
+                    <LineUpView/>
+                  </div>
+                </div>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+            <v-expansion-panel>
+              <v-expansion-panel-title><h3>Game Mode</h3></v-expansion-panel-title>
+              <v-expansion-panel-text>
+                <p class="mt-2">Choose PvP mode, Community or both.</p>
+                <v-row class="mode-check-box mx-0 px-0">
+                  <v-col cols="6" class="mx-0 px-0">
+                    <v-checkbox v-model="pvpMode" class="mx-auto" color="success" label="PvP"
+                                @click="setGameMode('pvpMode')"></v-checkbox>
+                    <p class="text-sm-caption ma-0 pa-0">Compete a against a friend or foe.</p>
+                  </v-col>
+                  <v-col cols="6" class="mx-0 px-0">
+                    <v-checkbox v-model="communityMode" color="success" label="Community"
+                                @click="setGameMode('communityMode')"></v-checkbox>
+                    <p class="text-sm-caption ma-0 pa-0">Compete against all players in the community.</p>
+                  </v-col>
+                </v-row>
+                <div v-if="pvpMode">
+                  <h3 class="ma-2 mt-4">Choose Opponent:</h3>
+                  <v-autocomplete
+                    v-model="selectedOpponent"
+                    :items="opponentList"
+                    item-title="username"
+                    item-value="uid"
+                    label="Opponent"
+                  >
+                    <template v-slot:chip="{ props, item }">
+                      <v-chip
+                        :prepend-avatar="item.dapperAddress"
+                        :text="item.raw.name"
+                        v-bind="props"
+                      ></v-chip>
+                    </template>
+                  </v-autocomplete>
+                  <v-btn v-if="!selectedOpponent" border @click="inviteUser=true">Invite User</v-btn>
+                </div>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+            <v-expansion-panel>
+              <v-expansion-panel-title><h3>Stake</h3></v-expansion-panel-title>
+              <v-expansion-panel-text>
+                <div v-if="pvpMode || communityMode">
+                  <v-row>
+                    <v-col v-if="pvpMode">
+                      <h4>PVP Stake</h4>
+                      <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
+                             variant="outlined" @click="chooseMoment('pvpStake')">Choose
+                        Moment
+                      </v-btn>
+                    </v-col>
+                    <v-col v-if="communityMode">
+                      <h4>Community Stake</h4>
+                      <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
+                             variant="outlined" @click="chooseMoment('pvpCommunity')">Choose
+                        Moment
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </div>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </div>
         <v-dialog v-model="momentPicker" width="auto">
           <v-card>
             <Moments :user="user"/>
@@ -192,7 +193,8 @@ export default {
       emailBody: '',
       emailBtn: '',
       pickedPanel: null,
-      opponentList: []
+      opponentList: [],
+      selectedOpponent: null
     }
   },
   computed: {
@@ -346,5 +348,14 @@ export default {
 
 .mode-check-box .v-input {
   margin-bottom: -30px !important;
+}
+
+.game-type-panel .v-expansion-panel-text__wrapper {
+  margin: 0;
+  padding: 0;
+}
+
+.mode-check-box .text-sm-caption {
+  font-size: 11px;
 }
 </style>
