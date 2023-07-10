@@ -19,8 +19,8 @@
                 {{ match.status || 'Pending' }}
               </div>
 
-              <v-card-text class="ma-0">
-                <v-chip class="mb-5">{{
+              <v-card-text class="ma-0 pt-0">
+                <v-chip class="mb-5 mt-md-0 mt-lg-0 mt-sm-1">{{
                     moment(match.eventDetails.fixture.date).format("ddd MMM DD, YYYY")
                   }}
                 </v-chip>
