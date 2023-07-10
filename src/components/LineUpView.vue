@@ -94,7 +94,7 @@ export default {
 </script>
 <style>
 .lineup {
-  background: url(src/assets/soccer-field-1.png);
+  background: url('./soccer-field-1.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

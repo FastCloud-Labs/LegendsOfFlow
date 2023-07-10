@@ -6,7 +6,8 @@
         <v-btn class="mt-2 mr-2" color="success" size="x-large" elevation="4" @click="dialogSignUp=true">SignUp</v-btn>
         <v-btn class="mt-2 ml-2" color="info" size="x-large" elevation="4" @click="dialogLogin=true">Login</v-btn>
       </div>
-
+      <h4 class="mt-6 ma-2">Or</h4>
+      <LoginDapper/>
       <div class="py-14"/>
 
       <v-dialog
@@ -72,11 +73,12 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore'
 import 'firebase/auth'
+import LoginDapper from '@/components/LoginDapper.vue'
 
 
 export default {
-  setup() {
-    const auth = firebase.auth()
+  components: {
+    LoginDapper,
   },
   data() {
     return {

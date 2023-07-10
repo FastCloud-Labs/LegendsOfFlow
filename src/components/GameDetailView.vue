@@ -317,6 +317,7 @@ export default {
       this.momentPicker = true
     },
     sendEmail() {
+      this.inviteUser = false
       const site = 'Legends%20of%20Flow'
       const url = 'https%3A%2F%2Fpvplegends.web.app%2F%3FgameId%3D' + this.gameId
       this.emailSubject = "You%20have%20been%20challenged%20to%20a%20game%20on%20" + site
