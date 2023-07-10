@@ -1,17 +1,23 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-top text-center fill-height">
-      <h2 class="ma-4">Dapper Account</h2>
-      <div v-if="dapperAddress">
-        <v-chip>{{ dapperAddress }}</v-chip>
+      <h2 class="ma-4">Account</h2>
+      <div v-if="dapperAddress" class="ma-4">
+        <v-chip color="primary" variant="outlined">Dapper Address: {{ dapperAddress }}</v-chip>
         <br>
-        <v-btn @click="moments" color="success" size="small" class="ma-4">View Moments</v-btn>
-        <v-btn @click="upcoming" color="success" size="small" class="ma-4">Start a Game</v-btn>
-
-        <v-btn @click="logoutDapper" color="primary" size="small" class="ma-4">Dis-connect Dapper Account</v-btn>
       </div>
-      <div v-else>
-        <v-btn @click="connectDapper" color="primary">Connect Dapper Account</v-btn>
+      <div class="ma-4">
+        <v-chip color="success" variant="outlined">Username: {{ user.profile.username }}</v-chip>
+        <br>
+      </div>
+      <v-btn @click="changeUsername" variant="outlined">Change Username</v-btn>
+      <br>
+      <v-btn @click="upcoming" color="success" class="ma-4">Start a Game</v-btn>
+      <v-btn v-if="dapperAddress" @click="moments" color="success" class="ma-4">View Moments</v-btn>
+      <br>
+      <v-btn v-if="dapperAddress" @click="logoutDapper" color="primary" class="ma-1">Dis-connect Dapper Account</v-btn>
+      <div v-if="!dapperAddress">
+        <v-btn @click="connectDapper" color="primary" variant="outlined">Connect Dapper Account</v-btn>
       </div>
     </v-responsive>
   </v-container>
@@ -25,7 +31,6 @@ import 'firebase/auth'
 import * as fcl from '@onflow/fcl'
 import {useUserStore} from '@/store/app.js'
 import db from '@/firebase/init.js'
-import {useRoute} from "vue-router";
 
 export default {
   setup() {
@@ -55,11 +60,9 @@ export default {
   methods: {
     connectDapper() {
       console.log('connect dapper')
-      console.log(useUserStore().user.uid)
       fcl.authenticate()
         .then(e => {
           this.dapperAddress = e.addr
-          console.log(this.dapperAddress)
           const fields = {
             dapperAddress: e.addr,
             dapperAddressCreated: firebase.firestore.FieldValue.serverTimestamp()
@@ -71,12 +74,10 @@ export default {
         })
     },
     logoutDapper() {
-      console.log('connect dapper')
-      console.log(useUserStore().user.uid)
+      console.log('logout dapper')
       fcl.unauthenticate()
 
       this.dapperAddress = ''
-      console.log(this.dapperAddress)
       const fields = {
         dapperAddress: this.dapperAddress,
       }
@@ -91,7 +92,9 @@ export default {
     moments() {
       this.$emit('showMoments')
     },
-
+    changeUsername() {
+      this.$emit('changeUsername')
+    }
   }
 }
 </script>

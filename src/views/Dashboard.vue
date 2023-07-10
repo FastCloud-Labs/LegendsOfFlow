@@ -29,8 +29,18 @@
             <v-list-item-title @click="showDapper()">Connect Dapper Wallet</v-list-item-title>
           </v-list-item>
 
-          <v-list-item v-if="user.profile?.dapperAddress" @click="showDapper()">
-            <v-list-item-title>Dapper Account: <br>{{ user.profile?.dapperAddress }}</v-list-item-title>
+          <v-list-item @click="showDapper()">
+            <v-list-item-title>Account:
+              <br>
+              <v-chip @click="showDapper()" class="text-truncate" size="small" color="success" variant="outlined">{{
+                  user.profile?.username
+                }}
+              </v-chip>
+              <br>
+              <v-chip @click="showDapper()" class="text-truncate mt-2" size="small" color="primary" variant="outlined">
+                {{ user.profile?.dapperAddress }}
+              </v-chip>
+            </v-list-item-title>
           </v-list-item>
 
           <v-list-item v-if="user.profile?.dapperAddress" @click="showMoments()">
@@ -96,7 +106,8 @@
 
     <v-main class="d-flex justify-center" :width="width">
       <div v-if="showDapperConnect">
-        <Dapper :user="user" @showUpcomingGames="showUpcomingEvents" @showMoments="showMoments"/>
+        <Dapper :user="user" @showUpcomingGames="showUpcomingEvents" @showMoments="showMoments"
+                @changeUsername="chooseUsername"/>
       </div>
       <div v-if="showMyEventComponent">
         <MyEvents :user="user" @showUpcomingGames="showUpcomingEvents" @showGameView="showGame"/>
@@ -125,6 +136,18 @@
         Menu
       </v-btn>
     </div>
+    <v-dialog v-model="showUsername" width="auto" min-width="300"
+    >
+      <v-card class="pa-2">
+        <v-card-title><span v-if="!email"> Email &</span> Username:</v-card-title>
+        <v-card-text>
+          <v-text-field v-if="!email" v-model="newEmail" label="Email" type="text"></v-text-field>
+          <v-text-field v-model="username" label="Username" type="text"></v-text-field>
+          <v-btn v-if="email" @click="saveUsername(username)" color="success" :disabled="!username">Save</v-btn>
+          <v-btn v-else @click="saveUsername(username)" color="success" :disabled="!newEmail&&!username">Save</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -142,6 +165,7 @@ import FriendsFoes from "@/components/FriendsFoes.vue"
 import Dapper from '@/components/ConnectDapper.vue'
 import {useUserStore} from '@/store/app.js'
 import GameDetailView from "@/components/GameDetailView.vue";
+import db from "@/firebase/init";
 
 export default {
   components: {
@@ -166,16 +190,58 @@ export default {
       user: {},
       gameId: null,
       width: 800,
+      showUsername: false,
+      email: null,
+      newEmail: null,
+      username: null,
     }
   },
   mounted() {
-    this.user = useUserStore()
     this.width = window.innerWidth
     if (this.width > 800) {
       this.width = 800
     }
+    this.user = useUserStore()
+    this.email = this.user.user.email
+
+    if (this.user.uuid && !useUserStore()?.profile?.username) {
+      this.chooseUsername()
+    } else {
+      this.username = useUserStore()?.profile?.username
+    }
+
   },
   methods: {
+    chooseUsername() {
+      this.showUsername = true
+    },
+    async saveUsername(username) {
+      const fields = {
+        username: username,
+      }
+      db.collection('profiles')
+        .doc(useUserStore().user.uid)
+        .set(fields, {merge: true})
+        .then(() => {
+          console.log('username updated')
+          useUserStore().profile.username = username
+          this.showUsername = false
+        }).catch((error) => {
+        console.log('error updating username', error)
+      })
+      if (this.newEmail) {
+        await firebase.auth().currentUser.updateEmail(this.newEmail).then(() => {
+          console.log('email updated')
+          this.email = this.newEmail
+          this.user.email = this.newEmail
+          this.showUsername = false
+        }).catch((error) => {
+          console.log('error updating email', error)
+        })
+      } else {
+        this.showUsername = false
+      }
+    },
     logout() {
       firebase.auth().signOut()
         .then(() => {

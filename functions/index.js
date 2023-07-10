@@ -57,17 +57,12 @@ exports.getJWTToken = onRequest(async (request, response) => {
       response.status(400).send("Denied");
     }
     const body = request.body;
-    logger.info("get uid!", body.uid);
-    logger.info("get cid!", body.cid);
-    logger.info("get ts!", body.ts);
     const uid = body.uid;
     const cid = body.cid;
     const ts = body.ts;
     const dateTs = new Date(ts);
     const oneMinute = dateTs.setMinutes(dateTs.getMinutes() + 2);
     const now = Date.now();
-    console.log(oneMinute);
-    console.log(now);
     if (now > oneMinute) {
       console.log("too old");
       response.status(400).send("Denied");
@@ -76,7 +71,7 @@ exports.getJWTToken = onRequest(async (request, response) => {
       console.log("good", uid);
       await admin.auth().createCustomToken(uid)
           .then((customToken) => {
-            console.log("token", customToken);
+            console.log("got token!");
             response.status(200).send({cid: cid, token: customToken});
             return;
           })

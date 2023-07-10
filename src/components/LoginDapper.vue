@@ -1,9 +1,8 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-top text-center fill-height">
-      <v-btn @click="connectDapper" color="primary">Connect Dapper Account</v-btn>
+      <v-btn @click="connectDapper" color="primary" size="large">Login using Dapper</v-btn>
       <v-dialog v-model="dapperLogin">
-
       </v-dialog>
     </v-responsive>
   </v-container>
@@ -17,6 +16,7 @@ import 'firebase/auth'
 import * as fcl from '@onflow/fcl'
 import {useUserStore} from '@/store/app.js'
 import axios from "axios";
+import db from "@/firebase/init";
 
 
 export default {
@@ -44,25 +44,27 @@ export default {
       console.log('connect dapper')
       fcl.authenticate()
         .then(async e => {
-          console.log(e)
           this.dapperAddress = e.addr
-          console.log(this.dapperAddress)
-          console.log('get token')
-          //const url = 'https://us-central1-pvplegends.cloudfunctions.net/getJWTToken'
-          const url = 'http://127.0.0.1:5001/pvplegends/us-central1/getJWTToken'
-          console.log(url)
+          const url = 'https://us-central1-pvplegends.cloudfunctions.net/getJWTToken'
           const data = {
             ts: Date.now(),
             cid: e.cid,
             uid: e.addr,
           }
-          console.log(data)
-          await axios.post(url, data).then((response) => {
-            console.log(response);
-            firebase.auth().signInWithCustomToken(this.dapperAddress)
-              .then((userCredential) => {
+          await axios.post(url, data).then(async (response) => {
+            await firebase.auth().signInWithCustomToken(response.data.token)
+              .then(userCredential => {
                 var user = userCredential.user;
                 console.log(user)
+                const fields = {
+                  dapperAddress: this.dapperAddress,
+                  dapperAddressCreated: firebase.firestore.FieldValue.serverTimestamp()
+                }
+                console.log(fields)
+                db.collection('profiles')
+                  .doc(this.dapperAddress)
+                  .set(fields, {merge: true})
+
                 this.dapperLogin = true
               })
               .catch((error) => {
@@ -72,18 +74,6 @@ export default {
             .catch(function (error) {
               console.log(error);
             });
-
-          /*
-          const fields = {
-            dapperAddress: e.addr,
-            dapperAddressCreated: firebase.firestore.FieldValue.serverTimestamp()
-          }
-
-                    db.collection('profiles')
-                      .doc(useUserStore().user.uid)
-                      .set(fields, {merge: true})
-
-           */
         })
     },
 

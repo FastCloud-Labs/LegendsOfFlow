@@ -5,8 +5,10 @@
       <SelectionSlider :blocked="false" @showSport="whichSport"></SelectionSlider>
       <v-progress-circular v-if="loading" indeterminate
                            color="success" class="ma-1 mb-4"></v-progress-circular>
-      <h4 v-if="!sport ">Choose a sport</h4>
-      <div class="upcoming-wrapper">
+      <h4 v-if="!sport" class="text-green">Choose a sport
+        <v-icon icon="fas fa-arrow-up"></v-icon>
+      </h4>
+      <div v-else class="upcoming-wrapper">
         <v-text-field v-if="sport && !loading" placeholder="Search Teams" width="auto" v-model="search"></v-text-field>
         <v-card v-for="match in paginatedFixtures" class="mb-4 ma-4 border mx-auto"
                 :class="{playing:match.playing}">
@@ -44,6 +46,7 @@
         </v-card>
 
         <v-pagination
+          v-if="sport && !loading"
           class="mb-12"
           v-model="page"
           :length="Math.ceil(pages.length/perPage)"
@@ -54,11 +57,9 @@
 </template>
 
 <script>
-import axios from 'axios'
 import {useUserStore} from "@/store/app";
 import moment from "moment";
 import SelectionSlider from "@/components/SelectionSlider";
-import GameDetailView from "@/components/GameDetailView.vue";
 import firebase from 'firebase/app';
 import 'firebase/firestore'
 import 'firebase/auth'
@@ -139,7 +140,6 @@ export default {
             .then(querySnapshot => {
               if (querySnapshot.size) {
                 querySnapshot.forEach(doc => {
-                  console.log(doc.data().fixtureId)
                   this.laLigaFixtures.forEach(match => {
                     if (match.fixture.id === doc.data().fixtureId) {
                       match.playing = true
@@ -182,6 +182,7 @@ export default {
       //todo
     },
     async addEvent(match) {
+      console.log(match)
       let fixtureId = match.fixture.id
       let profileFields = {
         lastSport: this.sport,
@@ -189,7 +190,9 @@ export default {
       }
       db.collection('profiles')
         .doc(useUserStore().user.uid)
-        .set(profileFields, {merge: true})
+        .set(profileFields, {merge: true}).then(() => {
+        useUserStore().profile.lastSport = this.sport
+      })
 
       const eventFields = {
         fixtureId: fixtureId,

@@ -5,7 +5,7 @@
       <SelectionSlider :blocked="true" @showSport="whichSport"></SelectionSlider>
       <v-progress-circular v-if="loading" indeterminate
                            color="success"></v-progress-circular>
-      <h4 v-if="!sport ">Choose a sport</h4>
+      <h4 v-if="!sport" class="text-green">Choose a spor <v-icon ></v-icon></h4>
       <div v-else>
         <div class="moment-wrapper">
           <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"

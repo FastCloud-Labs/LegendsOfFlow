@@ -66,16 +66,6 @@
           </div>
         </div>
       </div>
-      <v-dialog v-model="showUsername" width="auto" min-width="300"
-      >
-        <v-card class="pa-2">
-          <v-card-title>Choose a username:</v-card-title>
-          <v-card-text>
-            <v-text-field v-model="username" label="Username" type="text"></v-text-field>
-            <v-btn @click="saveUsername(username)" color="success">Save</v-btn>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
     </v-responsive>
   </v-container>
 </template>
@@ -96,8 +86,9 @@ export default {
       search: '',
       loading: true,
       width: 800,
-      showUsername: false,
-      username: ''
+      username: '',
+      email: '',
+      newEmail: '',
     }
   },
   computed: {
@@ -118,33 +109,13 @@ export default {
     if (this.width > 800) {
       this.width = 800
     }
-    this.user = useUserStore().user
     this.getMyEvents()
-    if (!useUserStore()?.profile?.username) {
-      this.chooseUsername()
-    } else {
-      this.username = useUserStore()?.profile?.username
-    }
+    this.user = useUserStore().user
   },
   methods: {
-    chooseUsername() {
-      this.showUsername = true
-    },
-    saveUsername(username) {
-      const fields = {
-        username: username
-      }
-
-      db.collection('profiles')
-        .doc(useUserStore().user.uid)
-        .set(fields, {merge: true})
-      this.showUsername = false
-    },
     async getMyEvents() {
-      console.log('get my events', this.user.uid)
       if (!this.user.uid) {
         this.user = firebase.auth().currentUser
-        console.log('get user from fb', this.user)
       }
       if (this.user?.uid) {
         await db.collection('events')

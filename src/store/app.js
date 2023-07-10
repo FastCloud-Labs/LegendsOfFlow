@@ -6,12 +6,6 @@ import 'firebase/auth'
 import db from '@/firebase/init.js'
 import router from "@/router";
 
-export const useAppStore = defineStore('app', {
-  state: () => ({
-    //
-  }),
-})
-
 export const useUserStore = defineStore('user', {
   state: () => {
     return {
@@ -39,7 +33,6 @@ export const useUserStore = defineStore('user', {
               console.log('Error getting documents: ', error)
             })
           this.loading = false
-          console.log(user)
           router.push('/dashboard')
         } else {
           console.log('onAuthState Observer: user not logged in or created yet')

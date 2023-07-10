@@ -3,8 +3,8 @@
     <v-responsive class="align-center text-center fill-height">
       <v-img max-width="400" class="mx-auto" src="@/assets/intro.jpg"/>
       <div class="mt-6">
-        <v-btn class="mt-2 mr-2" color="success" size="x-large" elevation="4" @click="dialogSignUp=true">SignUp</v-btn>
-        <v-btn class="mt-2 ml-2" color="info" size="x-large" elevation="4" @click="dialogLogin=true">Login</v-btn>
+        <v-btn class="mt-2 mr-2" color="success" size="large" elevation="4" @click="dialogSignUp=true">SignUp</v-btn>
+        <v-btn class="mt-2 ml-2" color="info" size="large" elevation="4" @click="dialogLogin=true">Login</v-btn>
       </div>
       <h4 class="mt-6 ma-2">Or</h4>
       <LoginDapper/>
