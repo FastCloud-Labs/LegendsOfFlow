@@ -120,10 +120,10 @@ export default {
     }
     this.user = useUserStore().user
     this.getMyEvents()
-    if (!useUserStore()?.profile?.name) {
+    if (!useUserStore()?.profile?.username) {
       this.chooseUsername()
     } else {
-      this.username = useUserStore()?.profile?.name
+      this.username = useUserStore()?.profile?.username
     }
   },
   methods: {
