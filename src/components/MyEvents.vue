@@ -32,7 +32,7 @@
                       <v-img :src="match.ownerSelectedTeamLogo" width="50" height="50" class="mx-auto ma-2"/>
                     </div>
                   </v-col>
-                  <v-col cols="2">
+                  <v-col cols="2" class="ma-0 pa-0 mt-7">
                     <div v-if="!loading">
                       <v-chip size="small" class="mb-1 mt-0">{{ match.eventDetails.fixture.status.short }}</v-chip>
                       <p class="fill-height align-center text-center mx-auto">VS</p>

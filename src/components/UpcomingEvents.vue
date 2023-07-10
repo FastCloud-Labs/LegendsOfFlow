@@ -13,14 +13,14 @@
           <div v-if="match.playing" class="playing-status-upcoming mb-0 pb-0">
             Playing
           </div>
-          <v-card-text>
-            <v-chip class="mb-1 mt-0">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY") }}</v-chip>
-            <v-row class="ma-2">
-              <v-col cols="5" class="mx-auto text-center">
+          <v-card-text class="mx-0">
+            <v-chip class="mb-2 mt-0">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY") }}</v-chip>
+            <v-row class="mx-0">
+              <v-col cols="5" class="mx-auto text-center mx-0 px-0">
                 <h3>{{ match.teams.home.name }}</h3>
                 <v-img :src="match.teams.home.logo" width="50" height="50" class="mx-auto ma-2"/>
               </v-col>
-              <v-col cols="2">
+              <v-col cols="2" class="mx-0 px-0 mt-7">
                 <div v-if="!loading">
                   <v-chip size="small" class="mb-1 mt-0">{{ match.fixture.status.short }}</v-chip>
                   <p class="fill-height align-center text-center mx-auto">VS</p>
@@ -35,7 +35,7 @@
                 <v-progress-circular v-if="loading" size="small" indeterminate
                                      color="success" class="ma-4"></v-progress-circular>
               </v-col>
-              <v-col cols="5" class="mx-auto text-center">
+              <v-col cols="5" class="mx-auto text-center mx-0 px-0">
                 <h3>{{ match.teams.away.name }}</h3>
                 <v-img :src="match.teams.away.logo" width="50" height="50" class="mx-auto ma-2"/>
               </v-col>
@@ -44,6 +44,7 @@
         </v-card>
 
         <v-pagination
+          class="mb-12"
           v-model="page"
           :length="Math.ceil(pages.length/perPage)"
         ></v-pagination>

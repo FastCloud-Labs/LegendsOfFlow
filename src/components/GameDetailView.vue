@@ -1,6 +1,6 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive class="align-top text-center fill-height" width="800">
+    <v-responsive class="align-top text-center fill-height" :width="width">
       <h2 class="mb-2">Selected Game</h2>
       <v-progress-circular v-if="loading" indeterminate color="success"></v-progress-circular>
       <div class="game-wrapper">
@@ -15,8 +15,7 @@
                 <v-img :src="match.teams.home.logo" width="50" height="50" class="mx-auto ma-2"/>
               </v-col>
               <v-col cols="2">
-                <v-chip size="small" class="mb-1 mt-0">{{ match.fixture.status.short }}</v-chip>
-                <p class="fill-height align-center text-center mx-auto">VS
+                <p class="fill-height align-center text-center mx-auto mt-8">VS
                 </p>
               </v-col>
               <v-col cols="5" class="mx-auto text-center border"

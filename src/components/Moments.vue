@@ -46,6 +46,7 @@
           </v-row>
 
           <v-pagination
+            class="mb-12"
             v-model="page"
             :length="Math.ceil(pages.length/perPage)"
           ></v-pagination>

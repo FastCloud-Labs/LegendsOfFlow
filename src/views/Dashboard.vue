@@ -29,7 +29,7 @@
             <v-list-item-title @click="showDapper()">Connect Dapper Wallet</v-list-item-title>
           </v-list-item>
 
-          <v-list-item v-if="user.profile?.dapperAddress" @click="showMoments()">
+          <v-list-item v-if="user.profile?.dapperAddress" @click="showDapper()">
             <v-list-item-title>Dapper Account: <br>{{ user.profile?.dapperAddress }}</v-list-item-title>
           </v-list-item>
 
@@ -96,7 +96,7 @@
 
     <v-main class="d-flex justify-center" :width="width">
       <div v-if="showDapperConnect">
-        <Dapper :user="user"/>
+        <Dapper :user="user" @showUpcomingGames="showUpcomingEvents" @showMoments="showMoments"/>
       </div>
       <div v-if="showMyEventComponent">
         <MyEvents :user="user" @showUpcomingGames="showUpcomingEvents" @showGameView="showGame"/>
