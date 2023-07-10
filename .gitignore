@@ -9,6 +9,7 @@ node_modules
 .env.*.local
 .firebaserc
 .firebaserc*
+pvplegends-firebase-adminsdk-6yilp-05d547c457.json
 
 # Log files
 npm-debug.log*

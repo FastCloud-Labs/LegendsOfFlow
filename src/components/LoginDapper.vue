@@ -48,7 +48,8 @@ export default {
           this.dapperAddress = e.addr
           console.log(this.dapperAddress)
           console.log('get token')
-          const url = 'https://us-central1-pvplegends.cloudfunctions.net/getJWTToken'
+          //const url = 'https://us-central1-pvplegends.cloudfunctions.net/getJWTToken'
+          const url = 'http://127.0.0.1:5001/pvplegends/us-central1/getJWTToken'
           console.log(url)
           const data = {
             ts: Date.now(),
