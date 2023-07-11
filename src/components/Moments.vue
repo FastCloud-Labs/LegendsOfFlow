@@ -17,7 +17,7 @@
                             v-model="search"></v-text-field>
             </v-col>
             <v-col cols="4" class="my-0 py-0">
-              <v-btn-group class="float-right mt-3">
+              <v-btn-group class="float-right mt-1">
                 <v-btn @click="changeView('list')" size="small" :disabled="view.list">
                   <v-icon icon="fas fa-list-ul"></v-icon>
                 </v-btn>
@@ -74,18 +74,27 @@
                       item-value="name"
                       class="elevation-1 ma-0 pa-0 mb-4 pb-4"
                       hide-default-footer
+                      density="compact"
           >
             <template v-slot:item.PlayerFirstName="{ item }">
-              <p class="text-left mt-2 text-truncate">
-                {{ item.selectable.PlayerJerseyName }}
-              </p>
-              <div v-if="momentsInPlay.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber)"
-                   class="text-left mb-2 mt-1">
-                <v-btn size="x-small" color="red" variant="outlined" @click="removePlayer(item)">Remove</v-btn>
+              <div v-if="filterPosition">
+                <p class="text-left mt-1 text-truncate">
+                  {{ item.selectable.PlayerFirstName }} {{ item.selectable.PlayerLastName }}
+                </p>
+                <div v-if="momentsInPlay.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber)"
+                     class="text-left mb-2 mt-1">
+                  <v-btn size="x-small" color="red" variant="outlined" @click="removePlayer(item)">Remove</v-btn>
+                </div>
+                <div v-else class="text-left mb-2 mt-1">
+                  <v-btn size="x-small" color="green" variant="outlined" @click="selectPlayer(item)">Select</v-btn>
+                </div>
               </div>
-              <div v-else class="text-left mb-2 mt-1">
-                <v-btn size="x-small" color="green" variant="outlined" @click="selectPlayer(item)">Select</v-btn>
+              <div v-else>
+                <h3 class="text-left mt-2 text-truncate text-lg-body-2">
+                  {{ item.selectable.PlayerFirstName }} {{ item.selectable.PlayerLastName }}
+                </h3>
               </div>
+
             </template>
             <template v-slot:item.MatchHighlightedTeam="{ item }">
               <p class="text-left mt-0 pt-0 text-truncate">

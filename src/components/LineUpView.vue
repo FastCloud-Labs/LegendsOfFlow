@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="lineup mx-auto mt-0 pt-0">
+    <div class="lineup mx-auto mt-0 pt-0">
       <div class="lineup-rows">
         <v-row clas="mt-0">
           <v-col cols="3">
@@ -214,7 +214,7 @@
           </v-col>
         </v-row>
       </div>
-    </v-card>
+    </div>
     <v-dialog v-model="momentPickerLineup" width="auto">
       <v-card>
         <Moments :user="user" :force-sport="sport" :position="position" :subPosition="subPosition" :game="game"
@@ -305,7 +305,7 @@ export default {
 .lineup-rows {
   width: 250px;
   margin: auto;
-  margin-top: 30px;
+  padding-top: 60px;
   margin-left: 40px;
 }
 
@@ -316,14 +316,14 @@ export default {
     background-repeat: no-repeat;
     background-position: center;
     width: 450px;
-    height: 450px;
+    height: 480px;
   }
 
   .lineup-rows {
-    width: 300px;
+    width: 350px;
     margin: auto;
-    margin-top: 60px;
-    margin-left: 75px;
+    padding-top: 160px;
+    margin-left: 50px;
   }
 }
 
