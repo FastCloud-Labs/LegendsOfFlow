@@ -26,8 +26,7 @@
               </v-btn-group>
             </v-col>
           </v-row>
-          <h3 v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}'s</h3>
-          {{ subPosition }}
+          <h3 v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}s</h3>
           <div v-if="view.grid">
             <v-row class="mb-6 mt-0 pt-0">
               <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
