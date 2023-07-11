@@ -111,17 +111,17 @@
                 </div>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel class="mx-0 px-0">
               <v-expansion-panel-title><h4>Stake</h4></v-expansion-panel-title>
-              <v-expansion-panel-text>
+              <v-expansion-panel-text class="mx-0 px-0">
                 <div v-if="pvpMode || communityMode">
-                  <v-row>
-                    <v-col v-if="pvpMode">
+                  <v-row class="mx-0 px-0">
+                    <v-col v-if="pvpMode" class="mx-0 px-0">
                       <h4>PVP Stake</h4>
-                      <v-btn-group class="ma-2">
+                      <v-btn-group class="my-2 mx-0 px-0" size="small">
                         <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
                                @click="chooseStake('pvp','StakeMoment')">
-                          Stake a Moment
+                          Stake Moment
                         </v-btn>
                         <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
                                @click="chooseStake('pvp','StakeTokens')">
@@ -134,12 +134,12 @@
                         </v-btn>
                       </v-btn-group>
                     </v-col>
-                    <v-col v-if="communityMode">
+                    <v-col v-if="communityMode" class="mx-0 px-0">
                       <h4>Community Stake</h4>
-                      <v-btn-group class="ma-2">
+                      <v-btn-group class="my-2 x-0 px-0">
                         <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
                                @click="chooseStake('community','StakeMoment')">
-                          Stake a Moment
+                          Stake Moment
                         </v-btn>
                         <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
                                @click="chooseStake('community','StakeTokens')">
