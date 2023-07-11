@@ -394,18 +394,25 @@ export default {
         this.view.list = false
       }
     },
-    selectPlayer(item) {
+    async selectPlayer(item) {
+      this.$emit('closeMoment')
       this.selectedPlayer = item
-      this.saveMomentInPlay(item, true)
+      await this.removePreviousMomentInPlay().then(() => {
+        this.saveMomentInPlay(item, true)
+      })
+
     },
-    removePlayer(item) {
+    async removePlayer(item) {
       this.selectedPlayer = item
-      this.saveMomentInPlay(item, false)
+      await this.saveMomentInPlay(item, false).then(() => {
+        this.getMomentsInPlay()
+      })
     },
     getMomentsInPlay() {
       db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
         .where('inPlay', '==', true)
+        .where('lastFixture', '==', this.game.fixtureId)
         .onSnapshot((querySnapshot) => {
           let momentsInPlay = []
           querySnapshot.forEach((doc) => {
@@ -414,12 +421,36 @@ export default {
           this.momentsInPlay = momentsInPlay
         })
     },
-    async saveMomentInPlay(item, inPlay) {
-      console.log('momentsInPlayLaLiga', item)
-      console.log('game', this.game.fixtureId)
-      console.log('subPosition', this.subPosition)
+    async removePreviousMomentInPlay() {
+      console.log('remove momentsInPlayLaLiga')
       if (useUserStore().user.uid) {
-        console.log(useUserStore().user.uid)
+        await db.collection('momentsInPlayLaLiga')
+          .where('owner', '==', useUserStore().user.uid)
+          .where('inPlay', '==', true)
+          .where('lastFixture', '==', this.game.fixtureId)
+          .where('subPosition', '==', this.subPosition)
+          .get()
+          .then(async querySnapshot => {
+            if (querySnapshot.size) {
+              querySnapshot.forEach(async doc => {
+                let fields = {
+                  inPlay: false,
+                  inPlayLastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                  lastFixture: this.game.fixtureId,
+                  subPosition: this.subPosition,
+                }
+                await db.collection('momentsInPlayLaLiga')
+                  .doc(doc.id)
+                  .set(fields, {merge: true}).then(() => {
+                    console.log('previous players removed!')
+                  })
+              })
+            }
+          })
+      }
+    },
+    async saveMomentInPlay(item, inPlay) {
+      if (useUserStore().user.uid) {
         let fields = {
           inPlay: inPlay,
           inPlayLastModified: firebase.firestore.FieldValue.serverTimestamp(),
@@ -435,7 +466,6 @@ export default {
           .doc(momentId)
           .set(fields, {merge: true}).then(() => {
             console.log('Document successfully written!')
-            this.$emit('closeMoment')
           })
       }
     }

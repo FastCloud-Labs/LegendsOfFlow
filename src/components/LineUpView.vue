@@ -218,7 +218,7 @@
     <v-dialog v-model="momentPickerLineup" width="auto">
       <v-card>
         <Moments :user="user" :force-sport="sport" :position="position" :subPosition="subPosition" :game="game"
-                 @closeMoment="closeMoment"/>
+                 @closeMoment="closeMoment" v-click-outside="clickOff"/>
       </v-card>
     </v-dialog>
   </div>
@@ -260,7 +260,6 @@ export default {
   },
   methods: {
     openMomentPicker(position, subPosition) {
-      console.log(subPosition)
       this.position = position
       this.subPosition = subPosition
       this.momentPickerLineup = true
@@ -269,7 +268,11 @@ export default {
       this.momentPickerLineup = false
       this.updateLineUp()
     },
+    clickOff() {
+      this.updateLineUp()
+    },
     updateLineUp() {
+      this.momentsInPlay = {}
       console.log('update lineup')
       db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
@@ -277,15 +280,12 @@ export default {
         .where('lastFixture', '==', this.game.fixtureId)
         .onSnapshot((querySnapshot) => {
           let momentsInPlay = []
-          console.log('momentsInPlay', momentsInPlay)
           querySnapshot.forEach((doc) => {
             momentsInPlay.push(doc.data())
           })
           momentsInPlay.forEach(e => {
-            console.log(e['subPosition'])
             this.momentsInPlay[e['subPosition']] = e
           })
-          console.log('momentsInPlay', this.momentsInPlay)
         })
     }
   }

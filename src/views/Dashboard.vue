@@ -3,7 +3,7 @@
     <v-app-bar>
       <v-img @click="showMyEvents" max-width="200" class="ml-4 hidden-sm-and-down" src="@/assets/logo-horizontal.png"/>
       <v-img max-width="200" class="ml-4 hidden-md-and-up" src="@/assets/favicon.ico"
-             @click="showMyEvents"/>
+             @click.stop="drawer = !drawer" />
       <v-spacer/>
       <v-chip color="success" class="mr-1">
         <v-icon icon="fas fa-shield-halved" class="mr-1"/>
