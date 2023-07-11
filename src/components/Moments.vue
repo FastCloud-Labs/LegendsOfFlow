@@ -3,9 +3,15 @@
     <v-responsive class="align-top text-center fill-height" :width="width">
       <h2><span v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}</span> Moments</h2>
       <SelectionSlider v-if="!forceSport" :blocked="true" @showSport="whichSport"></SelectionSlider>
-      <v-progress-circular v-if="loading" indeterminate
+      <v-progress-circular v-if="loading && user.profile.dapperAddress" indeterminate
                            color="success" class="mt-2"></v-progress-circular>
-      <h4 v-if="!sport" class="text-green">Choose a sport
+      <div v-if="!user.profile.dapperAddress" class="mt-2">
+        <p class="ma-2">Connect Wallet to Access Moments</p>
+
+        <v-btn color="success" @click="dapperAccount">Connect Wallet</v-btn>
+
+      </div>
+      <h4 v-else-if="!sport" class="text-green">Choose a sport
         <v-icon icon="fas fa-arrow-up"></v-icon>
       </h4>
       <div v-else>
@@ -191,8 +197,8 @@ export default {
       this.view.grid = false
       this.filterPosition = this.position
       this.forcePositionFilter = true
+      this.getMomentsInPlay()
     }
-    this.getMomentsInPlay()
 
   },
   computed: {
@@ -217,14 +223,16 @@ export default {
   methods: {
     whichSport(sport) {
       this.sport = sport
-      if (sport === 'LaLiga') {
-        this.queryMomentsLaLiga()
-      } else if (sport === 'UFC') {
-        this.queryMomentsUFC()
-      } else if (sport === 'NBA') {
-        this.queryMomentsNBA()
-      } else if (sport === 'NFL') {
-        this.queryMomentsNBA()
+      if (this.user.profile.dapperAddress) {
+        if (sport === 'LaLiga') {
+          this.queryMomentsLaLiga()
+        } else if (sport === 'UFC') {
+          this.queryMomentsUFC()
+        } else if (sport === 'NBA') {
+          this.queryMomentsNBA()
+        } else if (sport === 'NFL') {
+          this.queryMomentsNBA()
+        }
       }
     },
     async queryMomentsUFC() {
@@ -327,7 +335,6 @@ export default {
 
     },
     async queryMomentsLaLiga() {
-      this.loading = true
       this.tabelLoading = true
       // get owned NFT metadata
       const idsResponse = await fcl.send([
@@ -473,7 +480,11 @@ export default {
             console.log('Document successfully written!')
           })
       }
-    }
+    },
+    dapperAccount() {
+      console.log('show dapper moment')
+      this.$emit('showDapperView')
+    },
   },
 }
 </script>

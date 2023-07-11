@@ -219,7 +219,7 @@
     <v-dialog v-model="momentPickerLineup" width="auto">
       <v-card>
         <Moments :user="user" :force-sport="sport" :position="position" :subPosition="subPosition" :game="game"
-                 @closeMoment="closeMoment" v-click-outside="clickOff"/>
+                 @closeMoment="closeMoment" v-click-outside="clickOff" @showDapperView="showDapper"/>
       </v-card>
     </v-dialog>
   </div>
@@ -313,7 +313,11 @@ export default {
           this.updateLineupCount(querySnapshot.size)
         })
 
-    }
+    },
+    showDapper() {
+      console.log('show dapper lineup')
+      this.$emit('showDapper')
+    },
   }
 }
 </script>

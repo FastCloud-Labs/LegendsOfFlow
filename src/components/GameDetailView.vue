@@ -67,7 +67,7 @@
                     Opponents can choose the same team, highest scoring lineup wins.
                     <v-divider class="ma-3"></v-divider>
                     <h4>Choose LineUp</h4>
-                    <LineUpView :game="game" :gameId="gameId"/>
+                    <LineUpView :game="game" :gameId="gameId" @showDapper="showDapper"/>
                   </div>
                 </div>
                 <br>
@@ -118,23 +118,49 @@
                   <v-row>
                     <v-col v-if="pvpMode">
                       <h4>PVP Stake</h4>
-                      <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
-                             variant="outlined" @click="chooseMoment('pvpStake')">Choose
-                        Moment
-                      </v-btn>
+                      <v-btn-group class="ma-2">
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('pvp','StakeMoment')">
+                          Stake a Moment
+                        </v-btn>
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('pvp','StakeTokens')">
+                          Stake Tokens
+                        </v-btn>
+
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('pvp','StakeXP')">
+                          Stake XP
+                        </v-btn>
+                      </v-btn-group>
                     </v-col>
                     <v-col v-if="communityMode">
                       <h4>Community Stake</h4>
-                      <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
-                             variant="outlined" @click="chooseMoment('pvpCommunity')">Choose
-                        Moment
-                      </v-btn>
+                      <v-btn-group class="ma-2">
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('community','StakeMoment')">
+                          Stake a Moment
+                        </v-btn>
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('community','StakeTokens')">
+                          Stake Tokens
+                        </v-btn>
+
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('community','StakeXP')">
+                          Stake XP
+                        </v-btn>
+                      </v-btn-group>
                     </v-col>
                   </v-row>
                 </div>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
+          <br>
+          <br>
+          <br>
+          <br>
         </div>
         <v-dialog v-model="momentPicker" width="auto">
           <v-card>
@@ -333,9 +359,11 @@ export default {
         this.game.gameType = ''
       }
     },
-    chooseMoment() {
-      console.log('choose moment')
-      this.momentPicker = true
+    chooseStake(gameType, stake) {
+      console.log('stake', gameType, stake)
+      if (stake === 'StakeMoment') {
+        this.momentPicker = true
+      }
     },
     saveOpponent() {
       console.log('save opponent', this.selectedOpponent)
@@ -350,7 +378,11 @@ export default {
       this.emailSubject = "You%20have%20been%20challenged%20to%20a%20game%20on%20" + site
       this.emailBody = "Join%20" + site + "%20to%20play%20.%0D%0A%0D%0AMatch%3A%20" + this.match.teams.home.name + "%20vs%20" + this.match.teams.away.name + "%0D%0A%0D%0AClick%20the%20link%20to%20accept%20Challenge:%20" + url
       window.open('mailto:' + this.email + '?subject=' + this.emailSubject + '&body=' + this.emailBody)
-    }
+    },
+    showDapper() {
+      console.log('show dapper game d')
+      this.$emit('showDapperView')
+    },
   }
 }
 </script>

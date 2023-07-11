@@ -124,7 +124,7 @@
         <UpcomingEvents :user="user" @showGameView="showGame"/>
       </div>
       <div v-if="showMomentsComponent">
-        <Moments :user="user"/>
+        <Moments :user="user" @showDapperView="showDapper"/>
       </div>
       <div v-if="showLeaderboardComponent">
         <Leaderboards :user="user"/>
@@ -134,7 +134,7 @@
       </div>
 
       <div v-if="showGameViewComponent">
-        <GameDetailView :user="user" :gameId="gameId"/>
+        <GameDetailView :user="user" :gameId="gameId" @showDapperView="showDapper"/>
       </div>
       <br>
     </v-main>
@@ -206,7 +206,6 @@ export default {
     }
   },
   mounted() {
-
     this.width = window.innerWidth
     if (this.width > 800) {
       this.width = 800
