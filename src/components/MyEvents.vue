@@ -9,7 +9,7 @@
 
         <div v-else>
           <div v-if="myEvents.length">
-            <v-text-field v-if="!loading" placeholder="Search Games" width="auto" v-model="search"
+            <v-text-field v-if="!loading" placeholder="Search Games" width="auto" v-model="search" variant="underlined"
                           class="mt-4"></v-text-field>
             <v-card v-for="match in filteredFixtures" class="mb-4 border mx-auto playing">
               <div class="gametype ma-0 pa-0" :class="match.gameType||'Win/Loss'">

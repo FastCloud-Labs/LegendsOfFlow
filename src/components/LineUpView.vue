@@ -18,7 +18,7 @@
             <br>
             <v-chip v-if="momentsInPlay['LF']" @click="openMomentPicker('Forward', 'LF')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['LF']?.detail?.PlayerJerseyName
               }}
             </v-chip>
@@ -26,7 +26,7 @@
           <v-col cols="3">
             <v-btn @click="openMomentPicker('Forward', 'RF')" variant="plain" icon="LF" class="mb-0 pb-0">
 
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['RF']"
                   class="moment-stretch mb-0 pb-0"
@@ -37,36 +37,36 @@
             <br>
             <v-chip v-if="momentsInPlay['RF']" @click="openMomentPicker('Forward', 'RF')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['RF']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Midfielder', 'LM')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['LM']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['LM']?.detail?.PlayDataID}/play_${momentsInPlay['LM']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>LM</span>
               </v-avatar>
             </v-btn>
             <v-chip v-if="momentsInPlay['LM']" @click="openMomentPicker('Midfielder', 'LM')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['LM']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Midfielder', 'LCM')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['LCM']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['LCM']?.detail?.PlayDataID}/play_${momentsInPlay['LCM']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>LCM</span>
               </v-avatar>
@@ -74,17 +74,17 @@
             <br>
             <v-chip v-if="momentsInPlay['LCM']" @click="openMomentPicker('Midfielder', 'LCM')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['LCM']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Midfielder', 'RCM')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['RCM']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['RCM']?.detail?.PlayDataID}/play_${momentsInPlay['RCM']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>RCM</span>
               </v-avatar>
@@ -92,17 +92,17 @@
             <br>
             <v-chip v-if="momentsInPlay['RCM']" @click="openMomentPicker('Midfielder', 'RCM')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['RCM']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Midfielder', 'RM')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['RM']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['RM']?.detail?.PlayDataID}/play_${momentsInPlay['RM']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>RM</span>
               </v-avatar>
@@ -110,36 +110,36 @@
             <br>
             <v-chip v-if="momentsInPlay['RM']" @click="openMomentPicker('Midfielder', 'RM')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['RM']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Defender', 'LB')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['LB']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['LB']?.detail?.PlayDataID}/play_${momentsInPlay['LB']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>LB</span>
               </v-avatar>
             </v-btn>
             <v-chip v-if="momentsInPlay['LB']" @click="openMomentPicker('Defender', 'LB')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['LB']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Defender', 'LCB')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['LCB']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['LCB']?.detail?.PlayDataID}/play_${momentsInPlay['LCB']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>LCB</span>
               </v-avatar>
@@ -147,17 +147,17 @@
             <br>
             <v-chip v-if="momentsInPlay['LCB']" @click="openMomentPicker('Defender', 'LCB')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['LCB']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Defender', 'RCB')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['RCB']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['RCB']?.detail?.PlayDataID}/play_${momentsInPlay['RCB']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>RCB</span>
               </v-avatar>
@@ -165,17 +165,17 @@
             <br>
             <v-chip v-if="momentsInPlay['RCB']" @click="openMomentPicker('Defender', 'RCB')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['RCB']?.detail?.PlayerJerseyName
               }}
             </v-chip>
           </v-col>
-          <v-col cols="3" class="ma-0 pa-0">
+          <v-col cols="3" class="">
             <v-btn @click="openMomentPicker('Defender', 'RB')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['RB']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['RB']?.detail?.PlayDataID}/play_${momentsInPlay['RB']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>RB</span>
               </v-avatar>
@@ -183,7 +183,7 @@
             <br>
             <v-chip v-if="momentsInPlay['RB']" @click="openMomentPicker('Defender', 'RB')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['RB']?.detail?.PlayerJerseyName
               }}
             </v-chip>
@@ -192,12 +192,12 @@
         <v-row>
           <v-col cols="4">
           </v-col>
-          <v-col cols="4">
-            <v-btn @click="openMomentPicker('Goalkeeper', 'GK')" variant="plain" icon="LF" class="mb-0 pb-0">
-              <v-avatar class="border font-weight-bold ma-0 pa-0">
+          <v-col cols="4" class="">
+            <v-btn @click="openMomentPicker('Goalkeeper', 'GK')" variant="plain" icon="GK" class="">
+              <v-avatar class="border font-weight-bold ">
                 <v-img
                   v-if="momentsInPlay['GK']"
-                  class="moment-stretch ma-0 pa-0"
+                  class="moment-stretch "
                   v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=60,height=60,quality=100/https://assets.laligagolazos.com/editions/${momentsInPlay['GK']?.detail?.PlayDataID}/play_${momentsInPlay['GK']?.detail?.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
                 <span v-else>GK</span>
               </v-avatar>
@@ -205,7 +205,7 @@
             <br>
             <v-chip v-if="momentsInPlay['GK']" @click="openMomentPicker('GoalKeeper', 'GK')" size="x-small"
                     variant="outlined"
-                    class="jersyname text-truncate ma-0 pa-0 px-1">{{
+                    class="jersyname text-truncate  px-1">{{
                 momentsInPlay['GK']?.detail?.PlayerJerseyName
               }}
             </v-chip>
@@ -297,15 +297,16 @@ export default {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  width: 332px;
-  height: 320px;
+  width: 330px;
+  height: 380px;
+  margin-bottom: 20px;
 }
 
 .lineup-rows {
-  width: 220px;
+  width: 250px;
   margin: auto;
-  margin-top: 38px;
-  margin-left: 55px;
+  margin-top: 30px;
+  margin-left: 40px;
 }
 
 @media only screen and (min-width: 600px) {
@@ -321,7 +322,7 @@ export default {
   .lineup-rows {
     width: 300px;
     margin: auto;
-    margin-top: 80px;
+    margin-top: 60px;
     margin-left: 75px;
   }
 }

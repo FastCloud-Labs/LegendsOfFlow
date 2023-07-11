@@ -9,7 +9,8 @@
         <v-icon icon="fas fa-arrow-up"></v-icon>
       </h4>
       <div v-else class="upcoming-wrapper">
-        <v-text-field v-if="sport && !loading" placeholder="Search Teams" width="auto" v-model="search"></v-text-field>
+        <v-text-field v-if="sport && !loading" placeholder="Search Teams" width="auto" v-model="search"
+                      variant="underlined"></v-text-field>
         <v-card v-for="match in paginatedFixtures" class="mb-4 ma-4 border mx-auto"
                 :class="{playing:match.playing}">
           <div v-if="match.playing" class="playing-status-upcoming mb-0 pb-0">

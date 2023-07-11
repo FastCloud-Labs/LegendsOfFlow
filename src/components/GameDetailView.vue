@@ -6,7 +6,7 @@
       <div class="game-wrapper">
         <v-card>
           <v-card-text v-if="match?.fixture">
-            <v-chip class="ma-2">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY [at] HH:mm a") }}</v-chip>
+            <v-chip class="ma-2">{{ moment(match.fixture.date).format("ddd MMM DD, YYYY") }}</v-chip>
             <v-row class="ma-2">
               <v-col :class="{selectedBoarder: match.teams.home.name == teamPicked}" class="mx-auto text-center border"
                      cols="5"
@@ -27,15 +27,15 @@
             </v-row>
           </v-card-text>
         </v-card>
-        <p v-if="!teamPicked" class="text-green">Select a team</p>
+        <p v-if="!teamPicked && !loading" class="text-green">Select a team</p>
         <div v-else class="mx-0 my-4">
           <v-expansion-panels v-model="pickedPanel" :disabled="!teamPicked" :multiple="true"
                               class="mx-0 px-0 game-panels">
             <v-expansion-panel class="mx-0 px-0 game-type-panel">
-              <v-expansion-panel-title><h3>Game Type</h3></v-expansion-panel-title>
+              <v-expansion-panel-title><h4>Game Type</h4></v-expansion-panel-title>
               <v-expansion-panel-text class="mx-0 px-0">
                 <v-progress-circular v-if="loadingInner" color="success" indeterminate
-                                     size="small"></v-progress-circular>
+                                     size="small" class="ma-4"></v-progress-circular>
 
                 <div v-if="!game.gameType" class="mx-0 px-2">
                   <div
@@ -57,7 +57,7 @@
                   </div>
                 </div>
                 <div v-if="game.gameType">
-                  <v-chip class="mb-3 mt-2 pt-0" color="info" @click="changeGameType">{{ game.gameType }}</v-chip>
+                  <v-chip class="mb-2 mt-4 pt-0" color="info" @click="changeGameType">{{ game.gameType }}</v-chip>
                   <div v-if="game.gameType == 'Win/Loss'">
                     <p class="ma-1">You've chosen {{ teamPicked }} to win.</p>
                   </div>
@@ -69,10 +69,11 @@
                     <LineUpView :game="game"/>
                   </div>
                 </div>
+                <br>
               </v-expansion-panel-text>
             </v-expansion-panel>
             <v-expansion-panel>
-              <v-expansion-panel-title><h3>Game Mode</h3></v-expansion-panel-title>
+              <v-expansion-panel-title><h4>Game Mode</h4></v-expansion-panel-title>
               <v-expansion-panel-text>
                 <p class="mt-2">Choose PvP mode, Community or both.</p>
                 <v-row class="mode-check-box mx-0 px-0">
@@ -109,7 +110,7 @@
               </v-expansion-panel-text>
             </v-expansion-panel>
             <v-expansion-panel>
-              <v-expansion-panel-title><h3>Stake</h3></v-expansion-panel-title>
+              <v-expansion-panel-title><h4>Stake</h4></v-expansion-panel-title>
               <v-expansion-panel-text>
                 <div v-if="pvpMode || communityMode">
                   <v-row>
@@ -357,5 +358,13 @@ export default {
 
 .mode-check-box .text-sm-caption {
   font-size: 11px;
+}
+
+.game-panels .v-expansion-panel--active > .v-expansion-panel-title {
+  min-height: 38px;
+}
+
+.game-panels span.v-expansion-panel-title__icon {
+  font-size: 10px;
 }
 </style>

@@ -7,6 +7,7 @@
         v-if="filteredData.length > 0"
         placeholder="Search Players"
         v-model="searchQuery"
+        variant="underlined"
       ></v-text-field>
       <v-table class="leaderboard-table" theme="dark">
         <thead>

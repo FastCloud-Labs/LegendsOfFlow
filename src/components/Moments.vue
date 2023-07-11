@@ -1,7 +1,7 @@
 <template>
-  <v-container class="fill-height">
+  <v-container class="fill-height moments">
     <v-responsive class="align-top text-center fill-height" :width="width">
-      <h2>Moments</h2>
+      <h2><span v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}</span> Moments</h2>
       <SelectionSlider v-if="!forceSport" :blocked="true" @showSport="whichSport"></SelectionSlider>
       <v-progress-circular v-if="loading" indeterminate
                            color="success"></v-progress-circular>
@@ -11,12 +11,13 @@
       <div v-else>
         <div class="moment-wrapper">
           <v-row class="my-0 py-0">
-            <v-col cols="8" class="my-0 py-0 mt-2">
-              <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
+            <v-col cols="8" class="ma-0 pa-0">
+              <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto" variant="underlined"
+                            class="my-0 py-0"
                             v-model="search"></v-text-field>
             </v-col>
             <v-col cols="4" class="my-0 py-0">
-              <v-btn-group class="float-right mt-2">
+              <v-btn-group class="float-right mt-3">
                 <v-btn @click="changeView('list')" size="small" :disabled="view.list">
                   <v-icon icon="fas fa-list-ul"></v-icon>
                 </v-btn>
@@ -26,7 +27,6 @@
               </v-btn-group>
             </v-col>
           </v-row>
-          <h3 v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}s</h3>
           <div v-if="view.grid">
             <v-row class="mb-6 mt-0 pt-0">
               <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
@@ -72,48 +72,36 @@
                       :headers="headers"
                       :items="paginatedMoments"
                       item-value="name"
-                      class="elevation-1"
+                      class="elevation-1 ma-0 pa-0"
+                      hide-default-footer
           >
-            <template v-slot:item.action="{ item }">
-
-              <div v-if="momentsInPlay.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber)"
-                   class="text-left">
-                <v-btn size="small" color="red" variant="outlined" @click="removePlayer(item)">Remove</v-btn>
-              </div>
-              <div v-else>
-                <v-btn size="small" color="green" variant="outlined" @click="selectPlayer(item)">Select</v-btn>
-              </div>
-            </template>
             <template v-slot:item.PlayerFirstName="{ item }">
-              <p class="text-left">
-                {{ item.selectable.PlayerFirstName }}
-                {{ item.selectable.PlayerLastName }}
+              <p class="text-left mt-2 text-truncate">
+                {{ item.selectable.PlayerJerseyName }}
               </p>
+              <div v-if="momentsInPlay.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber)"
+                   class="text-left mb-2 mt-1">
+                <v-btn size="x-small" color="red" variant="outlined" @click="removePlayer(item)">Remove</v-btn>
+              </div>
+              <div v-else class="text-left mb-2 mt-1">
+                <v-btn size="x-small" color="green" variant="outlined" @click="selectPlayer(item)">Select</v-btn>
+              </div>
             </template>
             <template v-slot:item.MatchHighlightedTeam="{ item }">
-              <p class="text-left">
+              <p class="text-left mt-0 pt-0 text-truncate">
                 {{ item.selectable.MatchHighlightedTeam }}
               </p>
+              <v-chip size="x-small" class="laligachip text-left float-left mt-1" :class="item.selectable.editionTier">
+                {{ item.selectable.editionTier }}
+              </v-chip>
             </template>
-            <template v-slot:item. PlayerPosition="{ item }">
+            <template v-slot:item.PlayerPosition="{ item }">
               <p class="text-left">
                 {{ item.selectable.PlayerPosition }}
               </p>
-            </template>
-
-            <template v-slot:item.PlayType="{ item }">
-              <p class="text-left">
-                <v-chip size="x-small" class="laligachip mr-1" :class="item.selectable.PlayType">
-                  {{ item.selectable.PlayType }}
-                </v-chip>
-              </p>
-            </template>
-            <template v-slot:item.editionTier="{ item }">
-              <p class="text-left">
-                <v-chip size="x-small" class="laligachip ml-1" :class="item.selectable.editionTier">
-                  {{ item.selectable.editionTier }}
-                </v-chip>
-              </p>
+              <v-chip size="x-small" class="laligachip text-left float-left mt-1" :class="item.selectable.PlayType">
+                {{ item.selectable.PlayType }}
+              </v-chip>
             </template>
           </VDataTable>
         </div>
@@ -158,7 +146,6 @@ export default {
       width: 800,
       itemsPerPage: 5,
       headers: [
-        {title: '', align: 'start', key: 'action'},
         {
           title: 'Name',
           align: 'start',
@@ -166,8 +153,6 @@ export default {
         },
         {title: 'Team', align: 'start', key: 'MatchHighlightedTeam'},
         {title: 'Position', align: 'start', key: 'PlayerPosition'},
-        {title: 'Type', align: 'start', key: 'PlayType'},
-        {title: 'Tier', align: 'start', key: 'editionTier'},
 
       ],
       view: {
@@ -518,4 +503,25 @@ export default {
 .laligachip.POKER {
   border: 1px solid #ffd47b;
 }
+
+.moments .v-data-table {
+  width: 100%;
+  font-size: 12px;
+  margin: -13px !important;
+}
+
+.moments .v-data-table .v-field__input {
+  font-size: 12px;
+}
+
+.moments .v-data-table-footer__items-per-page {
+  display: none;
+}
+
+.moments td.v-data-table__td.v-data-table-column--align-start {
+  max-width: 120px;
+  margin: 0 !important;
+  padding: 0 6px !important;
+}
 </style>
+
