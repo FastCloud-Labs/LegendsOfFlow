@@ -182,9 +182,7 @@ export default {
     getNFLFixtures() {
       //todo
     },
-    async addEvent(match) {
-      console.log(match)
-      let fixtureId = match.fixture.id
+    saveLast() {
       let profileFields = {
         lastSport: this.sport,
         lastGameStarted: firebase.firestore.FieldValue.serverTimestamp()
@@ -194,7 +192,11 @@ export default {
         .set(profileFields, {merge: true}).then(() => {
         useUserStore().profile.lastSport = this.sport
       })
-
+    },
+    async addEvent(match) {
+      console.log(match)
+      let fixtureId = match.fixture.id
+      this.saveLast()
       const eventFields = {
         fixtureId: fixtureId,
         sport: this.sport,
@@ -239,6 +241,7 @@ export default {
         .then(docRef => {
           console.log("Document written with ID: ", docRef.id)
           this.selectedEvent = eventFields
+          this.saveLast()
           this.detailView(docRef.id)
         })
     },

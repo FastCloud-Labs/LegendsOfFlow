@@ -72,7 +72,7 @@
                       :headers="headers"
                       :items="paginatedMoments"
                       item-value="name"
-                      class="elevation-1 ma-0 pa-0"
+                      class="elevation-1 ma-0 pa-0 mb-4 pb-4"
                       hide-default-footer
           >
             <template v-slot:item.PlayerFirstName="{ item }">
@@ -180,8 +180,6 @@ export default {
       this.view.grid = false
       this.filterPosition = this.position
       this.forcePositionFilter = true
-    } else {
-      this.headers.shift()
     }
     this.getMomentsInPlay()
 
@@ -522,6 +520,14 @@ export default {
   max-width: 120px;
   margin: 0 !important;
   padding: 0 6px !important;
+}
+
+@media only screen and (min-width: 600px) {
+  .moments td.v-data-table__td.v-data-table-column--align-start {
+    max-width: 120px;
+    margin: 10 !important;
+    padding: 10px 20px !important;
+  }
 }
 </style>
 

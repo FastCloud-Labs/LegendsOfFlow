@@ -25,10 +25,11 @@
                 <v-img :src="match.teams.away.logo" class="mx-auto ma-2" height="50" width="50"/>
               </v-col>
             </v-row>
+            <p class="text-green">Select a team</p>
           </v-card-text>
         </v-card>
-        <p v-if="!teamPicked && !loading" class="text-green">Select a team</p>
-        <div v-else class="mx-0 my-4">
+
+        <div v-if="teamPicked && !loading" class="mx-0 my-4">
           <v-expansion-panels v-model="pickedPanel" :disabled="!teamPicked" :multiple="true"
                               class="mx-0 px-0 game-panels">
             <v-expansion-panel class="mx-0 px-0 game-type-panel">
