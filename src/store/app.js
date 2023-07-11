@@ -33,7 +33,7 @@ export const useUserStore = defineStore('user', {
               console.log('Error getting documents: ', error)
             })
           this.loading = false
-          router.push('/dashboard')
+          // router.push('/dashboard')
         } else {
           console.log('onAuthState Observer: user not logged in or created yet')
           this.loading = false
