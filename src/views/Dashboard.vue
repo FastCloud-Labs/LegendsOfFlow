@@ -76,7 +76,7 @@
           Moments
         </v-list-item>
         <v-list-item @click="showLeaderboard">
-          <v-icon icon="fas fa-list-ul" class="mr-1 pa-2 ma-2" size="x-small"/>
+          <v-icon icon="fas fa-list-ol" class="mr-1 pa-2 ma-2" size="x-small"/>
           Leaderboards
         </v-list-item>
         <v-list-item @click="showFriendsFoes">

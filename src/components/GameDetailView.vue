@@ -66,7 +66,7 @@
                     Opponents can choose the same team, highest scoring lineup wins.
                     <v-divider class="ma-3"></v-divider>
                     <h4>Choose LineUp</h4>
-                    <LineUpView/>
+                    <LineUpView :game="game"/>
                   </div>
                 </div>
               </v-expansion-panel-text>

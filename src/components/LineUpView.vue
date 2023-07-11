@@ -6,10 +6,14 @@
           <v-col cols="3">
           </v-col>
           <v-col cols="3">
-            <v-avatar class=" border font-weight-bold" @click="openMomentPicker">LF</v-avatar>
+            <v-btn @click="openMomentPicker('Forward', 'LF')" variant="plain" icon="LF">
+              <v-avatar class="border font-weight-bold">LF</v-avatar>
+            </v-btn>
           </v-col>
           <v-col cols="3">
-            <v-avatar class=" border font-weight-bold">RF</v-avatar>
+            <v-btn @click="openMomentPicker('Forward','RF')" variant="plain" icon="RF">
+              <v-avatar class="border font-weight-bold">RF</v-avatar>
+            </v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -53,7 +57,8 @@
     </v-card>
     <v-dialog v-model="momentPickerLineup" width="auto">
       <v-card>
-        <Moments :user="user"/>
+        <Moments :user="user" :force-sport="sport" :position="position" :subPosition="subPosition" :game="game"
+                 @closeMoment="closeMoment"/>
       </v-card>
     </v-dialog>
   </div>
@@ -67,28 +72,39 @@ export default {
   components: {
     Moments
   },
+  props: {
+    game: {
+      type: Object,
+      default: () => {
+      }
+    }
+  },
   data() {
     return {
       user: {},
       loaded: false,
       hotspotConfig: {},
       momentPickerLineup: false,
+      position: '',
+      subPosition: '',
+      sport: ''
 
     };
   },
   mounted() {
     this.user = useUserStore()
+    this.sport = this.game.sport
   },
   methods: {
-    openMomentPicker() {
+    openMomentPicker(position, subPosition) {
+      console.log(subPosition)
+      this.position = position
+      this.subPosition = subPosition
       this.momentPickerLineup = true
     },
-    saveData(data) {
-      console.log(data)
+    closeMoment() {
+      this.momentPickerLineup = false
     },
-    afterDelete(data) {
-      console.log(data)
-    }
   }
 }
 </script>

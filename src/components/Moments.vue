@@ -2,54 +2,121 @@
   <v-container class="fill-height">
     <v-responsive class="align-top text-center fill-height" :width="width">
       <h2>Moments</h2>
-      <SelectionSlider :blocked="true" @showSport="whichSport"></SelectionSlider>
+      <SelectionSlider v-if="!forceSport" :blocked="true" @showSport="whichSport"></SelectionSlider>
       <v-progress-circular v-if="loading" indeterminate
                            color="success"></v-progress-circular>
-      <h4 v-if="!sport" class="text-green">Choose a spor <v-icon ></v-icon></h4>
+      <h4 v-if="!sport" class="text-green">Choose a sport
+        <v-icon icon="fas fa-arrow-up"></v-icon>
+      </h4>
       <div v-else>
         <div class="moment-wrapper">
-          <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
-                        v-model="search"></v-text-field>
-          <v-row class="mb-6">
-            <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
-                   :key="moment.id">
-              <v-card
-                class="mx-auto fill-height"
-                variant="outlined"
-              >
-                <v-card-item>
-                  <div>
-                    <div class="font-weight-bold mb-0 text-truncate">
-                      {{ moment.PlayerFirstName }} {{ moment.PlayerLastName }}
-                    </div>
-                    <p class="text-truncate text-sm-caption">{{ moment.MatchHighlightedTeam }}</p>
-                    <v-avatar size="80" class="aborder ma-1">
-                      <v-img
-                        class="moment-stretch"
-                        v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${moment.PlayDataID}/play_${moment.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
-                    </v-avatar>
-                    <div class="text-caption">{{ moment.description }}</div>
-                    <div class="text-overline mb-0">
-                      <v-chip size="x-small" class="laligachip mr-1" :class="moment.PlayType">{{
-                          moment.PlayType
-                        }}
-                      </v-chip>
-                      <v-chip size="x-small" class="laligachip ml-1" :class="moment.editionTier">{{
-                          moment.editionTier
-                        }}
-                      </v-chip>
-                    </div>
-                  </div>
-                </v-card-item>
-              </v-card>
+          <v-row class="my-0 py-0">
+            <v-col cols="8" class="my-0 py-0 mt-2">
+              <v-text-field v-if="sport && !loading" placeholder="Search Moments" width="auto"
+                            v-model="search"></v-text-field>
+            </v-col>
+            <v-col cols="4" class="my-0 py-0">
+              <v-btn-group class="float-right mt-2">
+                <v-btn @click="changeView('list')" size="small" :disabled="view.list">
+                  <v-icon icon="fas fa-list-ul"></v-icon>
+                </v-btn>
+                <v-btn @click="changeView('grid')" size="small" :disabled="view.grid">
+                  <v-icon icon="fas fa-grip"></v-icon>
+                </v-btn>
+              </v-btn-group>
             </v-col>
           </v-row>
+          <h3 v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}'s</h3>
+          {{ subPosition }}
+          <div v-if="view.grid">
+            <v-row class="mb-6 mt-0 pt-0">
+              <v-col cols="6" class="v-col-lg-4 v-col-md-4 v-col-sm-6 v-col-xs-12 " v-for="moment in paginatedMoments"
+                     :key="moment.id">
+                <v-card
+                  class="mx-auto fill-height"
+                  variant="outlined"
+                >
+                  <v-card-item>
+                    <div>
+                      <div class="font-weight-bold mb-0 text-truncate">
+                        {{ moment.PlayerFirstName }} {{ moment.PlayerLastName }}
+                      </div>
+                      <p class="text-truncate text-sm-caption">{{ moment.MatchHighlightedTeam }}</p>
+                      <v-avatar size="80" class="aborder ma-1">
+                        <v-img
+                          class="moment-stretch"
+                          v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${moment.PlayDataID}/play_${moment.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                      </v-avatar>
+                      <div class="text-caption">{{ moment.description }}</div>
+                      <div class="text-overline mb-0">
+                        <v-chip size="x-small" class="laligachip mr-1" :class="moment.PlayType">{{
+                            moment.PlayType
+                          }}
+                        </v-chip>
+                        <v-chip size="x-small" class="laligachip ml-1" :class="moment.editionTier">{{
+                            moment.editionTier
+                          }}
+                        </v-chip>
+                      </div>
+                    </div>
+                  </v-card-item>
+                </v-card>
+              </v-col>
+            </v-row>
+            <v-pagination
+              class="mb-12"
+              v-model="page"
+              :length="Math.ceil(pages.length/perPage)"
+            ></v-pagination>
+          </div>
+          <VDataTable v-if="view.list"
+                      :headers="headers"
+                      :items="paginatedMoments"
+                      item-value="name"
+                      class="elevation-1"
+          >
+            <template v-slot:item.action="{ item }">
 
-          <v-pagination
-            class="mb-12"
-            v-model="page"
-            :length="Math.ceil(pages.length/perPage)"
-          ></v-pagination>
+              <div v-if="momentsInPlay.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber)"
+                   class="text-left">
+                <v-btn size="small" color="red" variant="outlined" @click="removePlayer(item)">Remove</v-btn>
+              </div>
+              <div v-else>
+                <v-btn size="small" color="green" variant="outlined" @click="selectPlayer(item)">Select</v-btn>
+              </div>
+            </template>
+            <template v-slot:item.PlayerFirstName="{ item }">
+              <p class="text-left">
+                {{ item.selectable.PlayerFirstName }}
+                {{ item.selectable.PlayerLastName }}
+              </p>
+            </template>
+            <template v-slot:item.MatchHighlightedTeam="{ item }">
+              <p class="text-left">
+                {{ item.selectable.MatchHighlightedTeam }}
+              </p>
+            </template>
+            <template v-slot:item. PlayerPosition="{ item }">
+              <p class="text-left">
+                {{ item.selectable.PlayerPosition }}
+              </p>
+            </template>
+
+            <template v-slot:item.PlayType="{ item }">
+              <p class="text-left">
+                <v-chip size="x-small" class="laligachip mr-1" :class="item.selectable.PlayType">
+                  {{ item.selectable.PlayType }}
+                </v-chip>
+              </p>
+            </template>
+            <template v-slot:item.editionTier="{ item }">
+              <p class="text-left">
+                <v-chip size="x-small" class="laligachip ml-1" :class="item.selectable.editionTier">
+                  {{ item.selectable.editionTier }}
+                </v-chip>
+              </p>
+            </template>
+          </VDataTable>
         </div>
       </div>
     </v-responsive>
@@ -58,9 +125,13 @@
 
 <script>
 import * as fcl from '@onflow/fcl'
-import {t} from "@onflow/fcl";
+import {t} from '@onflow/fcl'
 import SelectionSlider from "@/components/SelectionSlider.vue";
 import {useUserStore} from "@/store/app";
+import {VDataTable} from 'vuetify/labs/VDataTable'
+import db from "@/firebase/init";
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
 fcl.config({
   'discovery.wallet': 'https://accounts.meetdapper.com/fcl/authn-restricted',
@@ -68,9 +139,13 @@ fcl.config({
   'accessNode.api': 'https://access-mainnet-beta.onflow.org',
 })
 export default {
-  components: {SelectionSlider},
+  components: {SelectionSlider, VDataTable},
   props: {
-    user: Object
+    user: Object,
+    forceSport: String,
+    position: String,
+    subPosition: String,
+    game: Object
   },
   data() {
     return {
@@ -81,7 +156,29 @@ export default {
       loading: false,
       sport: '',
       search: '',
-      width: 800
+      width: 800,
+      itemsPerPage: 5,
+      headers: [
+        {title: '', align: 'start', key: 'action'},
+        {
+          title: 'Name',
+          align: 'start',
+          key: 'PlayerFirstName',
+        },
+        {title: 'Team', align: 'start', key: 'MatchHighlightedTeam'},
+        {title: 'Position', align: 'start', key: 'PlayerPosition'},
+        {title: 'Type', align: 'start', key: 'PlayType'},
+        {title: 'Tier', align: 'start', key: 'editionTier'},
+
+      ],
+      view: {
+        list: false,
+        grid: true
+      },
+      forcePositionFilter: false,
+      filterPosition: '',
+      selectedPlayer: {},
+      momentsInPlay: [],
     }
   },
   mounted() {
@@ -89,9 +186,20 @@ export default {
     if (this.width > 800) {
       this.width = 800
     }
-    if (useUserStore().profile?.lastSport) {
+    if (this.forceSport) {
+      this.whichSport(this.forceSport)
+    } else if (useUserStore().profile?.lastSport) {
       this.whichSport(useUserStore().profile.lastSport)
     }
+    if (this.position) {
+      this.view.list = true
+      this.view.grid = false
+      this.filterPosition = this.position
+      this.forcePositionFilter = true
+    } else {
+      this.headers.shift()
+    }
+    this.getMomentsInPlay()
 
   },
   computed: {
@@ -107,10 +215,12 @@ export default {
           moment.PlayerLastName.toLowerCase().includes(this.search.toLowerCase()) ||
           moment.MatchHighlightedTeam.toLowerCase().includes(this.search.toLowerCase()) ||
           moment.PlayType.toLowerCase().includes(this.search.toLowerCase()) ||
-          moment.editionTier.toLowerCase().includes(this.search.toLowerCase())
+          moment.editionTier.toLowerCase().includes(this.search.toLowerCase()) ||
+          moment.PlayerPosition.toLowerCase().includes(this.search.toLowerCase())
       })
     }
-  },
+  }
+  ,
   methods: {
     whichSport(sport) {
       this.sport = sport
@@ -271,12 +381,74 @@ export default {
           metaView.traits[`key${i}`] = elem
           traitList[metaView.traits[`key${i}`].name] = metaView.traits[`key${i}`].value
         })
-        momentObj.push(traitList)
-        this.momentsLaLiga.push(traitList)
+        if (this.forcePositionFilter) {
+          if (traitList['PlayerPosition'] === this.filterPosition) {
+            traitList['momentId'] = traitList.PlayDataID + '-' + traitList.serialNumber
+            momentObj.push(traitList)
+            this.momentsLaLiga.push(traitList)
+          }
+        } else {
+          momentObj.push(traitList)
+          this.momentsLaLiga.push(traitList)
+        }
         this.loading = false
       }
+    },
+    changeView(view) {
+      if (view == 'list') {
+        this.view.grid = false
+        this.view.list = true
+      } else {
+        this.view.grid = true
+        this.view.list = false
+      }
+    },
+    selectPlayer(item) {
+      this.selectedPlayer = item
+      this.saveMomentInPlay(item, true)
+    },
+    removePlayer(item) {
+      this.selectedPlayer = item
+      this.saveMomentInPlay(item, false)
+    },
+    getMomentsInPlay() {
+      db.collection('momentsInPlayLaLiga')
+        .where('owner', '==', useUserStore().user.uid)
+        .where('inPlay', '==', true)
+        .onSnapshot((querySnapshot) => {
+          let momentsInPlay = []
+          querySnapshot.forEach((doc) => {
+            momentsInPlay.push(doc.id)
+          })
+          this.momentsInPlay = momentsInPlay
+        })
+    },
+    async saveMomentInPlay(item, inPlay) {
+      console.log('momentsInPlayLaLiga', item)
+      console.log('game', this.game.fixtureId)
+      console.log('subPosition', this.subPosition)
+      if (useUserStore().user.uid) {
+        console.log(useUserStore().user.uid)
+        let fields = {
+          inPlay: inPlay,
+          inPlayLastModified: firebase.firestore.FieldValue.serverTimestamp(),
+          lastFixture: this.game.fixtureId,
+          subPosition: this.subPosition,
+          id: item.selectable.PlayDataID,
+          serial: item.selectable.serialNumber,
+          detail: item.selectable,
+          owner: useUserStore().user.uid
+        }
+        let momentId = item.selectable.PlayDataID + '-' + item.selectable.serialNumber
+        await db.collection('momentsInPlayLaLiga')
+          .doc(momentId)
+          .set(fields, {merge: true}).then(() => {
+            console.log('Document successfully written!')
+            this.$emit('closeMoment')
+          })
+      }
     }
-  }
+  },
 }
 </script>
 

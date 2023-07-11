@@ -84,7 +84,6 @@ export default {
   },
   methods: {
     connectDapper() {
-      console.log('connect dapper')
       fcl.authenticate()
         .then(e => {
           this.dapperAddress = e.addr
@@ -99,7 +98,6 @@ export default {
         })
     },
     logoutDapper() {
-      console.log('logout dapper')
       fcl.unauthenticate()
 
       this.dapperAddress = ''

@@ -41,7 +41,6 @@ export default {
   },
   methods: {
     connectDapper() {
-      console.log('connect dapper')
       fcl.authenticate()
         .then(async e => {
           this.dapperAddress = e.addr
@@ -55,12 +54,10 @@ export default {
             await firebase.auth().signInWithCustomToken(response.data.token)
               .then(userCredential => {
                 var user = userCredential.user;
-                console.log(user)
                 const fields = {
                   dapperAddress: this.dapperAddress,
                   dapperAddressCreated: firebase.firestore.FieldValue.serverTimestamp()
                 }
-                console.log(fields)
                 db.collection('profiles')
                   .doc(this.dapperAddress)
                   .set(fields, {merge: true})
