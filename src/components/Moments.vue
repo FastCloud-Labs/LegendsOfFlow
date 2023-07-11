@@ -4,7 +4,7 @@
       <h2><span v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}</span> Moments</h2>
       <SelectionSlider v-if="!forceSport" :blocked="true" @showSport="whichSport"></SelectionSlider>
       <v-progress-circular v-if="loading" indeterminate
-                           color="success"></v-progress-circular>
+                           color="success" class="mt-2"></v-progress-circular>
       <h4 v-if="!sport" class="text-green">Choose a sport
         <v-icon icon="fas fa-arrow-up"></v-icon>
       </h4>
@@ -75,6 +75,7 @@
                       class="elevation-1 ma-0 pa-0 mb-4 pb-4"
                       hide-default-footer
                       density="compact"
+                      :loading="tabelLoading"
           >
             <template v-slot:item.PlayerFirstName="{ item }">
               <div v-if="filterPosition">
@@ -172,6 +173,7 @@ export default {
       filterPosition: '',
       selectedPlayer: {},
       momentsInPlay: [],
+      tabelLoading: true,
     }
   },
   mounted() {
@@ -326,6 +328,7 @@ export default {
     },
     async queryMomentsLaLiga() {
       this.loading = true
+      this.tabelLoading = true
       // get owned NFT metadata
       const idsResponse = await fcl.send([
         fcl.script`
@@ -382,8 +385,9 @@ export default {
           momentObj.push(traitList)
           this.momentsLaLiga.push(traitList)
         }
-        this.loading = false
       }
+      this.loading = false
+      this.tabelLoading = false
     },
     changeView(view) {
       if (view == 'list') {
@@ -409,6 +413,7 @@ export default {
       })
     },
     getMomentsInPlay() {
+
       db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
         .where('inPlay', '==', true)

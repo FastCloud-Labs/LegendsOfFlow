@@ -25,7 +25,7 @@
                 <v-img :src="match.teams.away.logo" class="mx-auto ma-2" height="50" width="50"/>
               </v-col>
             </v-row>
-            <p class="text-green">Select a team</p>
+            <p class="text-green" v-if="!teamPicked">Select a team</p>
           </v-card-text>
         </v-card>
 
@@ -67,13 +67,13 @@
                     Opponents can choose the same team, highest scoring lineup wins.
                     <v-divider class="ma-3"></v-divider>
                     <h4>Choose LineUp</h4>
-                    <LineUpView :game="game"/>
+                    <LineUpView :game="game" :gameId="gameId"/>
                   </div>
                 </div>
                 <br>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel v-if="user.user.uid == game.owner">
               <v-expansion-panel-title><h4>Game Mode</h4></v-expansion-panel-title>
               <v-expansion-panel-text>
                 <p class="mt-2">Choose PvP mode, Community or both.</p>
@@ -97,6 +97,7 @@
                     item-title="username"
                     item-value="uid"
                     label="Opponent"
+                    @update="saveOpponent()"
                   >
                     <template v-slot:chip="{ props, item }">
                       <v-chip
@@ -199,6 +200,11 @@ export default {
       selectedOpponent: null
     }
   },
+  watch: {
+    selectedOpponent() {
+      this.saveOpponent()
+    }
+  },
   computed: {
     moment() {
       return moment
@@ -236,6 +242,16 @@ export default {
           this.getOpponentList()
         }
         this.checkPanels()
+      }).then(() => {
+        if (this.game?.opponent) {
+          console.log('get opponent', this.game.opponent)
+          db.collection('profiles')
+            .doc(this.game.opponent)
+            .get().then(doc => {
+            this.selectedOpponent = doc.id
+          })
+
+        }
       })
     },
     checkPanels() {
@@ -261,7 +277,7 @@ export default {
       } else {
         eventFields = {
           opponentSelectedTeam: team,
-          ownerSelectedTeamLogo: logo
+          opponentSelectedTeamLogo: logo
         }
       }
       db.collection('events')
@@ -303,22 +319,29 @@ export default {
       profiles.docs.forEach((doc) => {
         let opponent = doc.data()
         opponent.uid = doc.id
-        if (opponent.dapperAddress) {
-          opponent.username = `${opponent.username} - ${opponent.dapperAddress}`
+        if (opponent?.dapperAddress) {
+          opponent.username = `${opponent?.username} - ${opponent.dapperAddress}`
         }
-        if (opponent.username && opponent.uid != this.user.user.uid) {
+        if (opponent?.username && opponent.uid != this.user.user.uid) {
           this.opponentList.push(opponent)
         }
       })
     },
     changeGameType() {
-      console.log("reset")
-      this.game.gameType = ''
-      this.checkPanels()
+      if (this.user.uid == this.game.owner) {
+        console.log("reset")
+        this.game.gameType = ''
+      }
     },
     chooseMoment() {
       console.log('choose moment')
       this.momentPicker = true
+    },
+    saveOpponent() {
+      console.log('save opponent', this.selectedOpponent)
+      db.collection('events')
+        .doc(this.gameId)
+        .set({opponent: this.selectedOpponent}, {merge: true})
     },
     sendEmail() {
       this.inviteUser = false

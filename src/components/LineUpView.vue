@@ -1,5 +1,6 @@
 <template>
   <div>
+    <v-chip size="small">{{ lineupCount }}/11</v-chip>
     <div class="lineup mx-auto mt-0 pt-0">
       <div class="lineup-rows">
         <v-row clas="mt-0">
@@ -238,7 +239,12 @@ export default {
       type: Object,
       default: () => {
       }
-    }
+    },
+    gameId: {
+      type: String,
+      default: () => {
+      }
+    },
   },
   data() {
     return {
@@ -249,12 +255,16 @@ export default {
       position: '',
       subPosition: '',
       sport: '',
-      momentsInPlay: {}
-
+      momentsInPlay: {},
+      lineupCount: 0,
+      owner: false
     };
   },
   mounted() {
     this.user = useUserStore()
+    if (this.game.owner == this.user.uid) {
+      this.owner = true
+    }
     this.sport = this.game.sport
     this.updateLineUp()
   },
@@ -271,10 +281,24 @@ export default {
     clickOff() {
       this.updateLineUp()
     },
-    updateLineUp() {
+    updateLineupCount(lineupCount) {
+      this.lineupCount = lineupCount
+
+      let fields = {opponentLineupCount: this.lineupCount}
+
+      if (this.owner) {
+        fields = {ownerLineupCount: this.lineupCount}
+      }
+
+      db.collection('events')
+        .doc(this.gameId)
+        .set(fields, {merge: true})
+
+    },
+    async updateLineUp() {
       this.momentsInPlay = {}
       console.log('update lineup')
-      db.collection('momentsInPlayLaLiga')
+      await db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
         .where('inPlay', '==', true)
         .where('lastFixture', '==', this.game.fixtureId)
@@ -286,7 +310,9 @@ export default {
           momentsInPlay.forEach(e => {
             this.momentsInPlay[e['subPosition']] = e
           })
+          this.updateLineupCount(querySnapshot.size)
         })
+
     }
   }
 }
@@ -322,7 +348,7 @@ export default {
   .lineup-rows {
     width: 350px;
     margin: auto;
-    padding-top: 160px;
+    padding-top: 110px;
     margin-left: 50px;
   }
 }
