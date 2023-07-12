@@ -25,10 +25,11 @@
                 <v-img :src="match.teams.away.logo" class="mx-auto ma-2" height="50" width="50"/>
               </v-col>
             </v-row>
+            <p class="text-green" v-if="!teamPicked">Select a team</p>
           </v-card-text>
         </v-card>
-        <p v-if="!teamPicked && !loading" class="text-green">Select a team</p>
-        <div v-else class="mx-0 my-4">
+
+        <div v-if="teamPicked && !loading" class="mx-0 my-4">
           <v-expansion-panels v-model="pickedPanel" :disabled="!teamPicked" :multiple="true"
                               class="mx-0 px-0 game-panels">
             <v-expansion-panel class="mx-0 px-0 game-type-panel">
@@ -66,13 +67,13 @@
                     Opponents can choose the same team, highest scoring lineup wins.
                     <v-divider class="ma-3"></v-divider>
                     <h4>Choose LineUp</h4>
-                    <LineUpView :game="game"/>
+                    <LineUpView :game="game" :gameId="gameId" @showDapper="showDapper"/>
                   </div>
                 </div>
                 <br>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel v-if="user.user.uid == game.owner">
               <v-expansion-panel-title><h4>Game Mode</h4></v-expansion-panel-title>
               <v-expansion-panel-text>
                 <p class="mt-2">Choose PvP mode, Community or both.</p>
@@ -96,6 +97,7 @@
                     item-title="username"
                     item-value="uid"
                     label="Opponent"
+                    @update="saveOpponent()"
                   >
                     <template v-slot:chip="{ props, item }">
                       <v-chip
@@ -109,34 +111,235 @@
                 </div>
               </v-expansion-panel-text>
             </v-expansion-panel>
-            <v-expansion-panel>
+            <v-expansion-panel class="mx-0 px-0">
               <v-expansion-panel-title><h4>Stake</h4></v-expansion-panel-title>
-              <v-expansion-panel-text>
+              <v-expansion-panel-text class="mx-0 px-0">
                 <div v-if="pvpMode || communityMode">
-                  <v-row>
-                    <v-col v-if="pvpMode">
+                  <v-row class="mx-0 px-0">
+                    <v-col v-if="pvpMode" class="mx-0 px-0">
                       <h4>PVP Stake</h4>
-                      <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
-                             variant="outlined" @click="chooseMoment('pvpStake')">Choose
-                        Moment
-                      </v-btn>
+                      <v-btn-group class="my-2 mb-4 mx-0 px-0" size="small">
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('pvp','StakeMoment')">
+                          Stake Moment
+                        </v-btn>
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('pvp','StakeTokens')">
+                          Stake Tokens
+                        </v-btn>
+
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('pvp','StakeXP')">
+                          Stake XP
+                        </v-btn>
+                      </v-btn-group>
+                      <v-row>
+                        <v-col class="fill-height">
+                          <div v-if="!isOwner">
+                            <small> Your Staked Moment:</small><br>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game?.opponentPVPStaked?.stakeMoment?.detail">
+                                  {{ game.opponentPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.opponentPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+                          </div>
+                          <div v-else>
+                            <p class="text-sm-caption">Your Staked Moment</p>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game.ownerPVPStaked?.stakeMoment?.detail">
+                                  {{ game.ownerPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.ownerPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+
+                          </div>
+
+
+                        </v-col>
+                        <v-col class="fill-height">
+                          <div v-if="!isOwner" class="fill-height">
+                            <small> Your Opponent's Staked Moment:</small><br>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game.ownerPVPStaked?.stakeMoment?.detail">
+                                  {{ game.ownerPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.ownerPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+
+                          </div>
+
+                          <div v-else>
+                            <p class="text-sm-caption"> Your Opponent's Staked Moment</p>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game.opponentPVPStaked?.stakeMoment?.detail">
+                                  {{ game.opponentPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.opponentPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+
+                          </div>
+
+
+                        </v-col>
+                      </v-row>
                     </v-col>
-                    <v-col v-if="communityMode">
+                    <v-col v-if="communityMode" class="mx-0 px-0">
+                      <v-divider class="mb-5"></v-divider>
                       <h4>Community Stake</h4>
-                      <v-btn v-if="!momentLocked" class="ma-4" elevation="2" sixe="small"
-                             variant="outlined" @click="chooseMoment('pvpCommunity')">Choose
-                        Moment
-                      </v-btn>
+                      <v-btn-group class="my-2 x-0 px-0">
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('community','StakeMoment')">
+                          Stake Moment
+                        </v-btn>
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('community','StakeTokens')">
+                          Stake Tokens
+                        </v-btn>
+
+                        <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
+                               @click="chooseStake('community','StakeXP')">
+                          Stake XP
+                        </v-btn>
+                      </v-btn-group>
+                      <v-row>
+                        <v-col></v-col>
+                        <v-col>
+                          <p class="text-sm-caption">Your Staked Moment:</p>
+                          <v-card border>
+                            <v-card-text>
+                              <div v-if="game.opponentCommunityStaked?.stakeMoment?.detail">
+                                {{ game.opponentCommunityStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                  game.opponentCommunityStaked.stakeMoment.detail.PlayerLastName
+                                }}
+                                <br>
+                                <v-avatar size="80" class="aborder ma-1 rounded">
+                                  <v-img
+                                    class="moment-stretch"
+                                    v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.opponentCommunityStaked.stakeMoment.detail.PlayDataID}/play_${game.opponentCommunityStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                </v-avatar>
+                                <div class="text-overline mb-0">
+                                  <v-chip size="x-small" class="laligachip mr-1"
+                                          :class="game.opponentCommunityStaked.stakeMoment.detail.PlayType">{{
+                                      game.opponentCommunityStaked.stakeMoment.detail.PlayType
+                                    }}
+                                  </v-chip>
+                                  <v-chip size="x-small" class="laligachip ml-1"
+                                          :class="game.opponentCommunityStaked.stakeMoment.detail.editionTier">{{
+                                      game.opponentCommunityStaked.stakeMoment.detail.editionTier
+                                    }}
+                                  </v-chip>
+                                </div>
+                              </div>
+                              <div v-else class="fill-height">No moment staked yet.</div>
+                            </v-card-text>
+                          </v-card>
+                        </v-col>
+                        <v-col></v-col>
+                      </v-row>
                     </v-col>
                   </v-row>
                 </div>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
+          <br>
+          <br>
+          <br>
+          <br>
         </div>
         <v-dialog v-model="momentPicker" width="auto">
           <v-card>
-            <Moments :user="user"/>
+            <Moments :user="user" :stake="stakeMoment" :game="game" @closeMoment="closeMoment"
+                     @showDapperView="showDapper"/>
           </v-card>
         </v-dialog>
         <v-dialog v-model="inviteUser" min-width="300" width="auto">
@@ -185,6 +388,7 @@ export default {
       game: {},
       width: 700,
       momentPicker: false,
+      stakeMoment: false,
       user: {},
       pvpMode: false,
       communityMode: false,
@@ -196,6 +400,11 @@ export default {
       pickedPanel: null,
       opponentList: [],
       selectedOpponent: null
+    }
+  },
+  watch: {
+    selectedOpponent() {
+      this.saveOpponent()
     }
   },
   computed: {
@@ -235,6 +444,16 @@ export default {
           this.getOpponentList()
         }
         this.checkPanels()
+      }).then(() => {
+        if (this.game?.opponent) {
+          console.log('get opponent', this.game.opponent)
+          db.collection('profiles')
+            .doc(this.game.opponent)
+            .get().then(doc => {
+            this.selectedOpponent = doc.id
+          })
+
+        }
       })
     },
     checkPanels() {
@@ -260,7 +479,7 @@ export default {
       } else {
         eventFields = {
           opponentSelectedTeam: team,
-          ownerSelectedTeamLogo: logo
+          opponentSelectedTeamLogo: logo
         }
       }
       db.collection('events')
@@ -302,22 +521,33 @@ export default {
       profiles.docs.forEach((doc) => {
         let opponent = doc.data()
         opponent.uid = doc.id
-        if (opponent.dapperAddress) {
-          opponent.username = `${opponent.username} - ${opponent.dapperAddress}`
+        if (opponent?.dapperAddress) {
+          opponent.username = `${opponent?.username} - ${opponent.dapperAddress}`
         }
-        if (opponent.username && opponent.uid != this.user.user.uid) {
+        if (opponent?.username && opponent.uid != this.user.user.uid) {
           this.opponentList.push(opponent)
         }
       })
     },
     changeGameType() {
-      console.log("reset")
-      this.game.gameType = ''
-      this.checkPanels()
+      if (this.user.uid == this.game.owner) {
+        console.log("reset")
+        this.game.gameType = ''
+      }
     },
-    chooseMoment() {
-      console.log('choose moment')
-      this.momentPicker = true
+    chooseStake(gameType, stake) {
+      this.stakeType = gameType
+      this.stakeMode = stake
+      if (stake === 'StakeMoment') {
+        this.stakeMoment = true
+        this.momentPicker = true
+      }
+    },
+    saveOpponent() {
+      console.log('save opponent', this.selectedOpponent)
+      db.collection('events')
+        .doc(this.gameId)
+        .set({opponent: this.selectedOpponent}, {merge: true})
     },
     sendEmail() {
       this.inviteUser = false
@@ -326,6 +556,84 @@ export default {
       this.emailSubject = "You%20have%20been%20challenged%20to%20a%20game%20on%20" + site
       this.emailBody = "Join%20" + site + "%20to%20play%20.%0D%0A%0D%0AMatch%3A%20" + this.match.teams.home.name + "%20vs%20" + this.match.teams.away.name + "%0D%0A%0D%0AClick%20the%20link%20to%20accept%20Challenge:%20" + url
       window.open('mailto:' + this.email + '?subject=' + this.emailSubject + '&body=' + this.emailBody)
+    },
+    showDapper() {
+      console.log('show dapper game d')
+      this.$emit('showDapperView')
+    },
+    closeMoment() {
+      this.momentPicker = false
+      this.getStakedMoments()
+    },
+    async getStakedMoments() {
+      console.log('get staked moments')
+      // todo refactor spaghetti
+      await db.collection('momentsInPlayLaLiga')
+        .where('owner', '==', useUserStore().user.uid)
+        .where('staked', '==', true)
+        .where('lastFixture', '==', this.game.fixtureId)
+        .get()
+        .then(async (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let moment = doc.data()
+            moment.id = doc.id
+            this.stakedMomentsPicked = moment
+          })
+          let eventFields = {}
+          if (this.stakeType === "pvp") {
+            eventFields = {
+              opponentPVPStaked: {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+            this.game.opponentPVPStaked = {
+              stakeMode: this.stakeMode,
+              stakeMoment: this.stakedMomentsPicked,
+            }
+          }
+          if (this.stakeType === "community") {
+            eventFields = {
+              opponentCommunityStaked: {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+            this.game.opponentCommunityStaked = {
+              stakeMode: this.stakeMode,
+              stakeMoment: this.stakedMomentsPicked,
+            }
+          }
+          if (this.isOwner) {
+            if (this.stakeType === "pvp") {
+              eventFields = {
+                ownerPVPStaked: {
+                  stakeMode: this.stakeMode,
+                  stakeMoment: this.stakedMomentsPicked,
+                }
+              }
+              this.game.ownerPVPStaked = {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+            if (this.stakeType === "community") {
+              eventFields = {
+                ownerCommunityStaked: {
+                  stakeMode: this.stakeMode,
+                  stakeMoment: this.stakedMomentsPicked,
+                }
+              }
+              this.game.ownerCommunityStaked = {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+          }
+          await db.collection('events')
+            .doc(this.gameId)
+            .set(eventFields, {merge: true})
+        })
     }
   }
 }

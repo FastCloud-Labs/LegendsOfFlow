@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-card class="lineup mx-auto mt-0 pt-0">
+    <v-chip size="small">{{ lineupCount }}/11</v-chip>
+    <div class="lineup mx-auto mt-0 pt-0">
       <div class="lineup-rows">
         <v-row clas="mt-0">
           <v-col cols="3">
@@ -214,11 +215,11 @@
           </v-col>
         </v-row>
       </div>
-    </v-card>
+    </div>
     <v-dialog v-model="momentPickerLineup" width="auto">
       <v-card>
         <Moments :user="user" :force-sport="sport" :position="position" :subPosition="subPosition" :game="game"
-                 @closeMoment="closeMoment"/>
+                 @closeMoment="closeMoment" v-click-outside="clickOff" @showDapperView="showDapper"/>
       </v-card>
     </v-dialog>
   </div>
@@ -238,7 +239,12 @@ export default {
       type: Object,
       default: () => {
       }
-    }
+    },
+    gameId: {
+      type: String,
+      default: () => {
+      }
+    },
   },
   data() {
     return {
@@ -249,18 +255,21 @@ export default {
       position: '',
       subPosition: '',
       sport: '',
-      momentsInPlay: {}
-
+      momentsInPlay: {},
+      lineupCount: 0,
+      owner: false
     };
   },
   mounted() {
     this.user = useUserStore()
+    if (this.game.owner == this.user.uid) {
+      this.owner = true
+    }
     this.sport = this.game.sport
     this.updateLineUp()
   },
   methods: {
     openMomentPicker(position, subPosition) {
-      console.log(subPosition)
       this.position = position
       this.subPosition = subPosition
       this.momentPickerLineup = true
@@ -269,25 +278,46 @@ export default {
       this.momentPickerLineup = false
       this.updateLineUp()
     },
-    updateLineUp() {
+    clickOff() {
+      this.updateLineUp()
+    },
+    updateLineupCount(lineupCount) {
+      this.lineupCount = lineupCount
+
+      let fields = {opponentLineupCount: this.lineupCount}
+
+      if (this.owner) {
+        fields = {ownerLineupCount: this.lineupCount}
+      }
+
+      db.collection('events')
+        .doc(this.gameId)
+        .set(fields, {merge: true})
+
+    },
+    async updateLineUp() {
+      this.momentsInPlay = {}
       console.log('update lineup')
-      db.collection('momentsInPlayLaLiga')
+      await db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
         .where('inPlay', '==', true)
         .where('lastFixture', '==', this.game.fixtureId)
         .onSnapshot((querySnapshot) => {
           let momentsInPlay = []
-          console.log('momentsInPlay', momentsInPlay)
           querySnapshot.forEach((doc) => {
             momentsInPlay.push(doc.data())
           })
           momentsInPlay.forEach(e => {
-            console.log(e['subPosition'])
             this.momentsInPlay[e['subPosition']] = e
           })
-          console.log('momentsInPlay', this.momentsInPlay)
+          this.updateLineupCount(querySnapshot.size)
         })
-    }
+
+    },
+    showDapper() {
+      console.log('show dapper lineup')
+      this.$emit('showDapper')
+    },
   }
 }
 </script>
@@ -305,7 +335,7 @@ export default {
 .lineup-rows {
   width: 250px;
   margin: auto;
-  margin-top: 30px;
+  padding-top: 60px;
   margin-left: 40px;
 }
 
@@ -316,14 +346,14 @@ export default {
     background-repeat: no-repeat;
     background-position: center;
     width: 450px;
-    height: 450px;
+    height: 480px;
   }
 
   .lineup-rows {
-    width: 300px;
+    width: 350px;
     margin: auto;
-    margin-top: 60px;
-    margin-left: 75px;
+    padding-top: 110px;
+    margin-left: 50px;
   }
 }
 

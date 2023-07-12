@@ -5,7 +5,7 @@
         <v-card-text class="mx-auto text-center">
           <h2>Account:</h2>
           <v-avatar class="border ma-2" size="60">
-            <div v-html="avatar"></div>
+            <img :src="profile?.avatar"/>
           </v-avatar>
           <br>
           <v-chip @click="showDapper()" class="text-truncate" size="small" color="success" variant="outlined">{{
@@ -13,7 +13,8 @@
             }}
           </v-chip>
           <br>
-          <v-chip @click="showDapper()" class="text-truncate mt-2" size="small" color="primary"
+          <v-chip v-if="user.profile?.dapperAddress" @click="showDapper()" class="text-truncate mt-2" size="small"
+                  color="primary"
                   variant="outlined">
             {{ user.profile?.dapperAddress }}
           </v-chip>
@@ -44,7 +45,6 @@ import 'firebase/auth'
 import * as fcl from '@onflow/fcl'
 import {useUserStore} from '@/store/app.js'
 import db from '@/firebase/init.js'
-import {toSvg} from "jdenticon";
 
 export default {
   setup() {
@@ -66,19 +66,14 @@ export default {
     return {
       dialogLogin: false,
       dapperAddress: '',
-      avatar: null,
+      profile: {}
     }
   },
   mounted() {
     this.dapperAddress = useUserStore()?.profile?.dapperAddress
-    if (!useUserStore()?.profile?.avatar) {
-      if (this.dapperAddress) {
-        const svgString = toSvg(this.dapperAddress, 60);
-        this.avatar = svgString
-      } else {
-        const svgString = toSvg(useUserStore()?.profile?.username, 60);
-        this.avatar = svgString
-      }
+    this.profile = useUserStore()?.profile
+    if (!this.profile?.avatar) {
+      this.profile.avatar = `https://source.boringavatars.com/pixel/60/${this.profile?.dapperAddress | this.profile?.username}.png`
     }
 
   },

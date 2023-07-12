@@ -3,9 +3,13 @@
     <v-responsive class="align-top text-center fill-height" :width="width">
       <h2><span v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}</span> Moments</h2>
       <SelectionSlider v-if="!forceSport" :blocked="true" @showSport="whichSport"></SelectionSlider>
-      <v-progress-circular v-if="loading" indeterminate
-                           color="success"></v-progress-circular>
-      <h4 v-if="!sport" class="text-green">Choose a sport
+      <v-progress-circular v-if="loading && user.profile.dapperAddress" indeterminate
+                           color="success" class="mt-2"></v-progress-circular>
+      <div v-if="!user.profile.dapperAddress" class="mt-2">
+        <p class="ma-2">Connect Wallet to Access Moments</p>
+        <v-btn color="success" @click="dapperAccount">Connect Wallet</v-btn>
+      </div>
+      <h4 v-else-if="!sport" class="text-green">Choose a sport
         <v-icon icon="fas fa-arrow-up"></v-icon>
       </h4>
       <div v-else>
@@ -17,7 +21,7 @@
                             v-model="search"></v-text-field>
             </v-col>
             <v-col cols="4" class="my-0 py-0">
-              <v-btn-group class="float-right mt-3">
+              <v-btn-group class="float-right mt-1">
                 <v-btn @click="changeView('list')" size="small" :disabled="view.list">
                   <v-icon icon="fas fa-list-ul"></v-icon>
                 </v-btn>
@@ -56,6 +60,20 @@
                             moment.editionTier
                           }}
                         </v-chip>
+                        <div v-if="filterPosition || stake" class="text-center mx-auto">
+                          <div
+                            v-if="momentsInPlay.includes(moment.PlayDataID+'-'+moment.serialNumber) || momentsStaked.includes(moment.PlayDataID+'-'+moment.serialNumber)"
+                            class="text-center">
+                            <v-btn color="red" variant="outlined" @click="removePlayer(moment)" size="small">
+                              <span v-if="stake">Un-stake</span><span v-else>Remove</span>
+                            </v-btn>
+                          </div>
+                          <div v-else>
+                            <v-btn color="green" variant="outlined" @click="selectPlayer(moment)" size="small">
+                              <span v-if="stake">Remove</span><span v-else>Select</span>
+                            </v-btn>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </v-card-item>
@@ -70,22 +88,37 @@
           </div>
           <VDataTable v-if="view.list"
                       :headers="headers"
-                      :items="paginatedMoments"
+                      :items="filteredMoments"
                       item-value="name"
-                      class="elevation-1 ma-0 pa-0"
+                      class="elevation-1 ma-0 pa-0 mb-4 pb-4"
                       hide-default-footer
+                      density="compact"
+                      :loading="tabelLoading"
           >
             <template v-slot:item.PlayerFirstName="{ item }">
-              <p class="text-left mt-2 text-truncate">
-                {{ item.selectable.PlayerJerseyName }}
-              </p>
-              <div v-if="momentsInPlay.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber)"
-                   class="text-left mb-2 mt-1">
-                <v-btn size="x-small" color="red" variant="outlined" @click="removePlayer(item)">Remove</v-btn>
+              <div v-if="filterPosition || stake">
+                <p class="text-left mt-1 text-truncate">
+                  {{ item.selectable.PlayerFirstName }} {{ item.selectable.PlayerLastName }}
+                </p>
+                <div v-if="momentsInPlay.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber) ||
+                momentsStaked.includes(item.selectable.PlayDataID+'-'+item.selectable.serialNumber)"
+                     class="text-left mb-2 mt-1">
+                  <v-btn size="x-small" color="red" variant="outlined" @click="removePlayer(item.selectable)">
+                    <span v-if="stake">Un-stake</span><span v-else>Remove</span>
+                  </v-btn>
+                </div>
+                <div v-else class="text-left mb-2 mt-1">
+                  <v-btn size="x-small" color="green" variant="outlined" @click="selectPlayer(item.selectable)">
+                    <span v-if="stake">Stake</span><span v-else>Select</span>
+                  </v-btn>
+                </div>
               </div>
-              <div v-else class="text-left mb-2 mt-1">
-                <v-btn size="x-small" color="green" variant="outlined" @click="selectPlayer(item)">Select</v-btn>
+              <div v-else>
+                <h3 class="text-left mt-2 text-truncate text-lg-body-2">
+                  {{ item.selectable.PlayerFirstName }} {{ item.selectable.PlayerLastName }}
+                </h3>
               </div>
+
             </template>
             <template v-slot:item.MatchHighlightedTeam="{ item }">
               <p class="text-left mt-0 pt-0 text-truncate">
@@ -132,13 +165,15 @@ export default {
     forceSport: String,
     position: String,
     subPosition: String,
-    game: Object
+    game: Object,
+    stake: Boolean,
   },
   data() {
     return {
       page: 1,
       perPage: 12,
       momentsLaLiga: [],
+      momentsLaLigaRaw: [],
       momentsStrike: [],
       loading: false,
       sport: '',
@@ -163,6 +198,8 @@ export default {
       filterPosition: '',
       selectedPlayer: {},
       momentsInPlay: [],
+      momentsStaked: [],
+      tabelLoading: true,
     }
   },
   mounted() {
@@ -175,15 +212,20 @@ export default {
     } else if (useUserStore().profile?.lastSport) {
       this.whichSport(useUserStore().profile.lastSport)
     }
+    console.log(this.stake)
+    if (this.stake) {
+      this.view.list = true
+      this.view.grid = false
+      this.forcePositionFilter = false
+      this.getMomentsStaked()
+    }
     if (this.position) {
       this.view.list = true
       this.view.grid = false
       this.filterPosition = this.position
       this.forcePositionFilter = true
-    } else {
-      this.headers.shift()
+      this.getMomentsInPlay()
     }
-    this.getMomentsInPlay()
 
   },
   computed: {
@@ -194,28 +236,40 @@ export default {
       return this.filteredMoments
     },
     filteredMoments() {
-      return this.momentsLaLiga.filter((moment) => {
-        return moment.PlayerFirstName.toLowerCase().includes(this.search.toLowerCase()) ||
-          moment.PlayerLastName.toLowerCase().includes(this.search.toLowerCase()) ||
-          moment.MatchHighlightedTeam.toLowerCase().includes(this.search.toLowerCase()) ||
-          moment.PlayType.toLowerCase().includes(this.search.toLowerCase()) ||
-          moment.editionTier.toLowerCase().includes(this.search.toLowerCase()) ||
-          moment.PlayerPosition.toLowerCase().includes(this.search.toLowerCase())
-      })
+      if (this.momentsLaLiga) {
+        return this.momentsLaLiga.filter((moment) => {
+          moment['momentId'] = moment.PlayDataID + '-' + moment.serialNumber
+          return moment.PlayerFirstName.toLowerCase().includes(this.search.toLowerCase()) ||
+            moment.PlayerLastName.toLowerCase().includes(this.search.toLowerCase()) ||
+            moment.MatchHighlightedTeam.toLowerCase().includes(this.search.toLowerCase()) ||
+            moment.PlayType.toLowerCase().includes(this.search.toLowerCase()) ||
+            moment.editionTier.toLowerCase().includes(this.search.toLowerCase()) ||
+            moment.PlayerPosition.toLowerCase().includes(this.search.toLowerCase())
+        }).filter((moment) => {
+          if (this.forcePositionFilter) {
+            return moment.PlayerPosition === this.filterPosition
+          } else {
+            return true
+          }
+        })
+      } else {
+        return this.momentsLaLigaRaw
+      }
     }
-  }
-  ,
+  },
   methods: {
     whichSport(sport) {
       this.sport = sport
-      if (sport === 'LaLiga') {
-        this.queryMomentsLaLiga()
-      } else if (sport === 'UFC') {
-        this.queryMomentsUFC()
-      } else if (sport === 'NBA') {
-        this.queryMomentsNBA()
-      } else if (sport === 'NFL') {
-        this.queryMomentsNBA()
+      if (this.user.profile.dapperAddress) {
+        if (sport === 'LaLiga') {
+          this.getOwnedMoments()
+        } else if (sport === 'UFC') {
+          this.queryMomentsUFC()
+        } else if (sport === 'NBA') {
+          this.queryMomentsNBA()
+        } else if (sport === 'NFL') {
+          this.queryMomentsNBA()
+        }
       }
     },
     async queryMomentsUFC() {
@@ -317,8 +371,21 @@ export default {
 
 
     },
-    async queryMomentsLaLiga() {
+    getOwnedMoments() {
+      this.tabelLoading = true
       this.loading = true
+      db.collection('momentsLaLiga')
+        .doc(useUserStore().user.uid)
+        .get()
+        .then(doc => {
+          console.log(doc.data())
+          this.momentsLaLiga = doc.data()?.moments
+          this.tabelLoading = false
+          this.loading = false
+          this.queryMomentsLaLiga()
+        })
+    },
+    async queryMomentsLaLiga() {
       // get owned NFT metadata
       const idsResponse = await fcl.send([
         fcl.script`
@@ -365,18 +432,18 @@ export default {
           metaView.traits[`key${i}`] = elem
           traitList[metaView.traits[`key${i}`].name] = metaView.traits[`key${i}`].value
         })
-        if (this.forcePositionFilter) {
-          if (traitList['PlayerPosition'] === this.filterPosition) {
-            traitList['momentId'] = traitList.PlayDataID + '-' + traitList.serialNumber
-            momentObj.push(traitList)
-            this.momentsLaLiga.push(traitList)
-          }
-        } else {
-          momentObj.push(traitList)
-          this.momentsLaLiga.push(traitList)
-        }
-        this.loading = false
+        momentObj.push(traitList)
+        this.momentsLaLigaRaw.push(traitList)
       }
+      console.log('save moments')
+      await db.collection('momentsLaLiga')
+        .doc(useUserStore().user.uid)
+        .set({
+          moments: this.momentsLaLigaRaw,
+          lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+        }, {merge: true}).then(() => {
+          console.log('Document successfully written!')
+        })
     },
     changeView(view) {
       if (view == 'list') {
@@ -387,18 +454,26 @@ export default {
         this.view.list = false
       }
     },
-    selectPlayer(item) {
+    async selectPlayer(item) {
+      if (!this.stake) {
+        this.$emit('closeMoment')
+      }
       this.selectedPlayer = item
-      this.saveMomentInPlay(item, true)
+      await this.removePreviousMomentInPlay(this.stake).then(() => {
+        this.saveMomentInPlay(item, true, this.stake)
+      })
     },
-    removePlayer(item) {
+    async removePlayer(item) {
       this.selectedPlayer = item
-      this.saveMomentInPlay(item, false)
+      await this.saveMomentInPlay(item, false, this.stake).then(() => {
+        this.getMomentsInPlay()
+      })
     },
     getMomentsInPlay() {
       db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
         .where('inPlay', '==', true)
+        .where('lastFixture', '==', this.game.fixtureId)
         .onSnapshot((querySnapshot) => {
           let momentsInPlay = []
           querySnapshot.forEach((doc) => {
@@ -407,31 +482,104 @@ export default {
           this.momentsInPlay = momentsInPlay
         })
     },
-    async saveMomentInPlay(item, inPlay) {
-      console.log('momentsInPlayLaLiga', item)
-      console.log('game', this.game.fixtureId)
-      console.log('subPosition', this.subPosition)
+    getMomentsStaked() {
+      db.collection('momentsInPlayLaLiga')
+        .where('owner', '==', useUserStore().user.uid)
+        .where('staked', '==', true)
+        .where('lastFixture', '==', this.game.fixtureId)
+        .onSnapshot((querySnapshot) => {
+          let momentsStaked = []
+          querySnapshot.forEach((doc) => {
+            momentsStaked.push(doc.id)
+          })
+          this.momentsStaked = momentsStaked
+          console.log("momentsStaked", momentsStaked)
+        })
+    },
+    async removePreviousMomentInPlay(staked) {
+      console.log('remove momentsInPlayLaLiga')
       if (useUserStore().user.uid) {
-        console.log(useUserStore().user.uid)
+        let fields = {}
+        if (staked) {
+          console.log('remove staked')
+          fields = {
+            staked: false,
+            inPlayLastModified: firebase.firestore.FieldValue.serverTimestamp(),
+            lastFixture: this.game.fixtureId,
+          }
+          await db.collection('momentsInPlayLaLiga')
+            .where('owner', '==', useUserStore().user.uid)
+            .where('staked', '==', true)
+            .where('lastFixture', '==', this.game.fixtureId)
+            .get()
+            .then(querySnapshot => {
+              if (querySnapshot.size) {
+                querySnapshot.forEach(async doc => {
+                  await db.collection('momentsInPlayLaLiga')
+                    .doc(doc.id)
+                    .set(fields, {merge: true}).then(() => {
+                      console.log('previous players removed!')
+                    })
+                })
+              }
+            })
+        } else {
+          fields = {
+            inPlay: false,
+            inPlayLastModified: firebase.firestore.FieldValue.serverTimestamp(),
+            lastFixture: this.game.fixtureId,
+            subPosition: this.subPosition,
+          }
+          await db.collection('momentsInPlayLaLiga')
+            .where('owner', '==', useUserStore().user.uid)
+            .where('inPlay', '==', true)
+            .where('lastFixture', '==', this.game.fixtureId)
+            .where('subPosition', '==', this.subPosition)
+            .get()
+            .then(querySnapshot => {
+              if (querySnapshot.size) {
+                querySnapshot.forEach(async doc => {
+                  await db.collection('momentsInPlayLaLiga')
+                    .doc(doc.id)
+                    .set(fields, {merge: true}).then(() => {
+                      console.log('previous players removed!')
+                    })
+                })
+              }
+            })
+        }
+
+      }
+    },
+    async saveMomentInPlay(item, inPlay, stakeMoment) {
+      if (useUserStore().user.uid) {
         let fields = {
           inPlay: inPlay,
+          staked: stakeMoment,
           inPlayLastModified: firebase.firestore.FieldValue.serverTimestamp(),
           lastFixture: this.game.fixtureId,
-          subPosition: this.subPosition,
-          id: item.selectable.PlayDataID,
-          serial: item.selectable.serialNumber,
-          detail: item.selectable,
+          subPosition: this.subPosition || '',
+          id: item.PlayDataID,
+          serial: item.serialNumber,
+          detail: item,
           owner: useUserStore().user.uid
         }
-        let momentId = item.selectable.PlayDataID + '-' + item.selectable.serialNumber
+        let momentId = item.PlayDataID + '-' + item.serialNumber
         await db.collection('momentsInPlayLaLiga')
           .doc(momentId)
           .set(fields, {merge: true}).then(() => {
             console.log('Document successfully written!')
-            this.$emit('closeMoment')
+          }).then(() => {
+            if (this.stake) {
+              this.$emit('closeMoment')
+            }
           })
       }
-    }
+    },
+    dapperAccount() {
+      console.log('show dapper moment')
+      this.$emit('showDapperView')
+    },
   },
 }
 </script>
@@ -522,6 +670,14 @@ export default {
   max-width: 120px;
   margin: 0 !important;
   padding: 0 6px !important;
+}
+
+@media only screen and (min-width: 600px) {
+  .moments td.v-data-table__td.v-data-table-column--align-start {
+    max-width: 120px;
+    margin: 10 !important;
+    padding: 10px 20px !important;
+  }
 }
 </style>
 

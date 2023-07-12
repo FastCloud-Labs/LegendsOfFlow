@@ -3,7 +3,7 @@
     <v-app-bar>
       <v-img @click="showMyEvents" max-width="200" class="ml-4 hidden-sm-and-down" src="@/assets/logo-horizontal.png"/>
       <v-img max-width="200" class="ml-4 hidden-md-and-up" src="@/assets/favicon.ico"
-             @click="showMyEvents"/>
+             @click.stop="drawer = !drawer"/>
       <v-spacer/>
       <v-chip color="success" class="mr-1">
         <v-icon icon="fas fa-shield-halved" class="mr-1"/>
@@ -33,8 +33,8 @@
             <v-card>
               <v-card-text class="mx-auto text-center">
                 <h3>Account:</h3>
-                <v-avatar class="border ma-2">
-                  <div v-html="avatar"></div>
+                <v-avatar class="border ma-2" size="60">
+                  <img :src="profile.avatar"/>
                 </v-avatar>
                 <br>
                 <v-chip @click="showDapper()" class="text-truncate" size="small" color="success" variant="outlined">{{
@@ -42,7 +42,8 @@
                   }}
                 </v-chip>
                 <br>
-                <v-chip @click="showDapper()" class="text-truncate mt-2" size="small" color="primary"
+                <v-chip v-if="user.profile?.dapperAddress" @click="showDapper()" class="text-truncate mt-2"
+                        size="small" color="primary"
                         variant="outlined">
                   {{ user.profile?.dapperAddress }}
                 </v-chip>
@@ -123,7 +124,7 @@
         <UpcomingEvents :user="user" @showGameView="showGame"/>
       </div>
       <div v-if="showMomentsComponent">
-        <Moments :user="user"/>
+        <Moments :user="user" @showDapperView="showDapper"/>
       </div>
       <div v-if="showLeaderboardComponent">
         <Leaderboards :user="user"/>
@@ -133,7 +134,7 @@
       </div>
 
       <div v-if="showGameViewComponent">
-        <GameDetailView :user="user" :gameId="gameId"/>
+        <GameDetailView :user="user" :gameId="gameId" @showDapperView="showDapper"/>
       </div>
       <br>
     </v-main>
@@ -173,7 +174,6 @@ import Dapper from '@/components/ConnectDapper.vue'
 import {useUserStore} from '@/store/app.js'
 import GameDetailView from "@/components/GameDetailView.vue";
 import db from "@/firebase/init";
-import {toSvg} from "jdenticon";
 
 export default {
   components: {
@@ -203,11 +203,9 @@ export default {
       email: null,
       newEmail: null,
       username: null,
-      avatar: null,
     }
   },
   mounted() {
-
     this.width = window.innerWidth
     if (this.width > 800) {
       this.width = 800
@@ -222,16 +220,10 @@ export default {
       this.profile = user.profile
       this.email = this.user.user.email
       if (!this.profile?.avatar) {
-        if (this.profile?.dapperAddress) {
-          const svgString = toSvg(this.profile?.dapperAddress, 60);
-          this.avatar = svgString
-        } else {
-          const svgString = toSvg(this.profile?.username, 60);
-          this.avatar = svgString
-        }
+        this.profile.avatar = `https://source.boringavatars.com/pixel/60/${this.profile?.dapperAddress | this.profile?.username}.png`
       }
 
-      if (this.user.user.uid && !this.profile?.username) {
+      if (this.user.user.uid && this.profile && !this.profile?.username) {
         this.chooseUsername()
       } else if (this.user.user.uid && !this.user.user.email) {
         this.chooseUsername()

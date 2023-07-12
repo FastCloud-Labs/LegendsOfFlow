@@ -19,7 +19,15 @@ const routes = [
         path: "dashboard",
         name: "Dashboard",
         component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/Dashboard.vue"),
+          import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue"),
+      },
+      {
+        path: "dapper-account",
+        name: "DapperAccount",
+        component: () =>
+          import(
+            /* webpackChunkName: "dapperaccount" */ "@/components/ConnectDapper.vue"
+          ),
       },
       {
         path: "user",
