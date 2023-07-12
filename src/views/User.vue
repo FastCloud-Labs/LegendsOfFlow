@@ -25,15 +25,14 @@
       </v-card>
       <v-window v-model="activeTab">
         <v-window-item v-for="item in data.items" :key="item" :value="item">
-          <v-card flat>
-            <v-card-text v-if="item === 'Upcoming games'">
-              <UserGames :uid="uid" isUpcoming = "true" />
-            </v-card-text>
-            <v-card-text v-else-if="item === 'Past games'">
-              <UserGames :uid="uid" isUpcoming = "false" />
-            </v-card-text>
-            <v-card-text v-else>{{ data.text }}</v-card-text>
-          </v-card>
+          <component
+            :is="getComponent(item)"
+            :uid="uid"
+            :isUpcoming="
+              isUpcoming(item) &&
+              (item === 'Upcoming games' || item === 'Past games')
+            "
+          />
         </v-window-item>
       </v-window>
     </v-responsive>
@@ -80,8 +79,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import UserGames from "@/components/UserGames.vue";
 import { getUidByUsername } from "@/firebase/functions";
+import Overview from "@/components/profile/Overview.vue";
+import UserGames from "@/components/profile/UserGames.vue";
+import Moments from "@/components/profile/Moments.vue";
+import Friends from "@/components/profile/Friends.vue";
 
 const router = useRouter();
 
@@ -91,6 +93,24 @@ const uid = ref("");
 const data = {
   items: ["Overview", "Upcoming games", "Past games", "Moments", "Friends"],
   text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+};
+const getComponent = (item) => {
+  switch (item) {
+    case "Overview":
+      return Overview;
+    case "Moments":
+      return Moments;
+    case "Friends":
+      return Friends;
+    case "Upcoming games":
+    case "Past games":
+      return UserGames;
+    default:
+      return null;
+  }
+};
+const isUpcoming = (item) => {
+  return item === "Upcoming games";
 };
 const activeTab = ref(data.items[0]);
 onMounted(async () => {

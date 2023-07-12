@@ -98,16 +98,6 @@
       </div>
       <div v-else>
         <p>No upcoming games...</p>
-        <v-btn class="ma-2 mt-4" color="green" @click="upcoming"
-          >Choose a match to play</v-btn
-        >
-        <br />
-        <v-img
-          class="mx-auto"
-          max-width="400"
-          width="auto"
-          src="@/assets/intro.jpg"
-        />
       </div>
     </v-responsive>
   </v-container>
@@ -118,28 +108,16 @@
   margin-left: 75px;
   margin-right: 75px;
 }
-.upcoming-wrapper {
-  margin: auto;
-  width: 92%;
-}
 
 .playing {
   background-color: rgba(187, 243, 187, 0.05);
   border: 1px solid #4caf50 !important;
 }
-
-.playing-status-upcoming {
-  font-size: 12px;
-  background: #4caf50;
-  width: 51px;
-  height: 21px;
-  border-radius: 0 0 6px;
-  margin-bottom: -20px !important;
-}
 </style>
+
 <script setup>
 import { onMounted } from "vue";
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 import { getUpcomingGames, getPastGames } from "@/firebase/functions";
 import moment from "moment";
 
@@ -148,7 +126,7 @@ const props = defineProps({
     type: String,
   },
   isUpcoming: {
-    type: String,
+    type: Boolean,
   },
 });
 
@@ -159,7 +137,7 @@ onMounted(async () => {
   try {
     loading.value = true;
     let games = [];
-    if (props.isUpcoming === "true") {
+    if (props.isUpcoming === true) {
       games = await getUpcomingGames(props.uid);
     } else {
       games = await getPastGames(props.uid);
@@ -168,7 +146,7 @@ onMounted(async () => {
     loading.value = false;
   } catch (error) {
     console.error(
-      "Error fetching " + isUpcoming === "true"
+      "Error fetching " + isUpcoming === true
         ? "upcoming "
         : "past " + "games:",
       error
