@@ -12,8 +12,20 @@
           <v-list-item class="text-white">
             <template #default>
               <v-list-item-title>@{{ username }}</v-list-item-title>
+              <v-list-item-subtitle
+                class="profile-dapper-address"
+                @click="openProfileInNewTab"
+              >
+                {{ profile?.dapperAddress }}
+              </v-list-item-subtitle>
             </template>
           </v-list-item>
+        </div>
+        <div class="button-container">
+          <v-btn class="mr-2" text small color="primary" @click="addFriend">
+            Add Friend
+          </v-btn>
+          <v-btn text small color="success"> Invite to Game </v-btn>
         </div>
         <v-card-title>
           <v-tabs v-model="activeTab" align-tabs="center">
@@ -39,7 +51,7 @@
   </v-container>
 </template>
 
-<style>
+<style scoped>
 .profile-card {
   display: flex;
   justify-content: center;
@@ -56,30 +68,23 @@
   text-align: center;
   margin: 20px;
 }
-
-.section-title {
-  margin-top: 30px;
+.profile-dapper-address {
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-.game-card {
-  margin-bottom: 10px;
-}
-
-.profile-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.stat-item {
-  font-weight: bold;
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
 </style>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { getUidByUsername } from "@/firebase/functions";
+import { getProfile, getUidByUsername } from "@/firebase/functions";
 import Overview from "@/components/profile/Overview.vue";
 import UserGames from "@/components/profile/UserGames.vue";
 import Moments from "@/components/profile/Moments.vue";
@@ -89,11 +94,13 @@ const router = useRouter();
 
 const username = ref("");
 const uid = ref("");
+const profile = ref({});
+const activeTab = ref("Overview");
 
 const data = {
   items: ["Overview", "Upcoming games", "Past games", "Moments", "Friends"],
-  text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
 };
+
 const getComponent = (item) => {
   switch (item) {
     case "Overview":
@@ -109,14 +116,28 @@ const getComponent = (item) => {
       return null;
   }
 };
+
 const isUpcoming = (item) => {
   return item === "Upcoming games";
 };
-const activeTab = ref(data.items[0]);
+
+const addFriend = () => {
+  // todo: add friend
+  console.log("add friend");
+};
+
+const openProfileInNewTab = () => {
+  if (profile.value && profile.value.dapperAddress) {
+    const url = `https://flowscan.org/account/${profile.value.dapperAddress}`;
+    window.open(url, "_blank");
+  }
+};
+
 onMounted(async () => {
   const routeParams = router?.currentRoute?.value?.query;
   username.value = routeParams?.username;
   uid.value = await getUidByUsername(username.value);
-  console.log(uid.value);
+  profile.value = await getProfile(uid.value);
+  console.log(profile.value);
 });
 </script>

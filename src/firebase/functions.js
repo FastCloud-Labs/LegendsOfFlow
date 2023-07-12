@@ -88,4 +88,25 @@ const getStatsByUid = async (uid) => {
   }
 };
 
-export { getUidByUsername, getUpcomingGames, getPastGames, getStatsByUid };
+const getProfile = async (uid) => {
+  try {
+    const docSnapshot = await db.collection("profiles").doc(uid).get();
+    if (docSnapshot.exists) {
+      const data = docSnapshot.data();
+      return data;
+    } else {
+      return {};
+    }
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return null;
+  }
+};
+
+export {
+  getUidByUsername,
+  getUpcomingGames,
+  getPastGames,
+  getStatsByUid,
+  getProfile,
+};
