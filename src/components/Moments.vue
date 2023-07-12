@@ -76,7 +76,7 @@
           </div>
           <VDataTable v-if="view.list"
                       :headers="headers"
-                      :items="paginatedMoments"
+                      :items="filteredMoments"
                       item-value="name"
                       class="elevation-1 ma-0 pa-0 mb-4 pb-4"
                       hide-default-footer
@@ -155,6 +155,7 @@ export default {
       page: 1,
       perPage: 12,
       momentsLaLiga: [],
+      momentsLaLigaRaw: [],
       momentsStrike: [],
       loading: false,
       sport: '',
@@ -210,22 +211,28 @@ export default {
     },
     filteredMoments() {
       return this.momentsLaLiga.filter((moment) => {
+        moment['momentId'] = moment.PlayDataID + '-' + moment.serialNumber
         return moment.PlayerFirstName.toLowerCase().includes(this.search.toLowerCase()) ||
           moment.PlayerLastName.toLowerCase().includes(this.search.toLowerCase()) ||
           moment.MatchHighlightedTeam.toLowerCase().includes(this.search.toLowerCase()) ||
           moment.PlayType.toLowerCase().includes(this.search.toLowerCase()) ||
           moment.editionTier.toLowerCase().includes(this.search.toLowerCase()) ||
           moment.PlayerPosition.toLowerCase().includes(this.search.toLowerCase())
+      }).filter((moment) => {
+        if (this.forcePositionFilter) {
+          return moment.PlayerPosition === this.filterPosition
+        } else {
+          return true
+        }
       })
     }
-  }
-  ,
+  },
   methods: {
     whichSport(sport) {
       this.sport = sport
       if (this.user.profile.dapperAddress) {
         if (sport === 'LaLiga') {
-          this.queryMomentsLaLiga()
+          this.getOwnedMoments()
         } else if (sport === 'UFC') {
           this.queryMomentsUFC()
         } else if (sport === 'NBA') {
@@ -334,8 +341,21 @@ export default {
 
 
     },
-    async queryMomentsLaLiga() {
+    getOwnedMoments() {
       this.tabelLoading = true
+      this.loading = true
+      db.collection('momentsLaLiga')
+        .doc(useUserStore().user.uid)
+        .get()
+        .then(doc => {
+          console.log(doc.data())
+          this.momentsLaLiga = doc.data().moments
+          this.tabelLoading = false
+          this.loading = false
+          //this.queryMomentsLaLiga()
+        })
+    },
+    async queryMomentsLaLiga() {
       // get owned NFT metadata
       const idsResponse = await fcl.send([
         fcl.script`
@@ -382,19 +402,18 @@ export default {
           metaView.traits[`key${i}`] = elem
           traitList[metaView.traits[`key${i}`].name] = metaView.traits[`key${i}`].value
         })
-        if (this.forcePositionFilter) {
-          if (traitList['PlayerPosition'] === this.filterPosition) {
-            traitList['momentId'] = traitList.PlayDataID + '-' + traitList.serialNumber
-            momentObj.push(traitList)
-            this.momentsLaLiga.push(traitList)
-          }
-        } else {
-          momentObj.push(traitList)
-          this.momentsLaLiga.push(traitList)
-        }
+        momentObj.push(traitList)
+        this.momentsLaLigaRaw.push(traitList)
       }
-      this.loading = false
-      this.tabelLoading = false
+      console.log('save moments')
+      await db.collection('momentsLaLiga')
+        .doc(useUserStore().user.uid)
+        .set({
+          moments: this.momentsLaLigaRaw,
+          lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+        }, {merge: true}).then(() => {
+          console.log('Document successfully written!')
+        })
     },
     changeView(view) {
       if (view == 'list') {
@@ -420,7 +439,6 @@ export default {
       })
     },
     getMomentsInPlay() {
-
       db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
         .where('inPlay', '==', true)
