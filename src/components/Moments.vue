@@ -2,7 +2,8 @@
   <v-container class="fill-height moments">
     <v-responsive class="align-top text-center fill-height" :width="width">
       <h2><span v-if="filterPosition" class="mb-2 mt-0 pt-0">{{ filterPosition }}</span> Moments</h2>
-      <SelectionSlider v-if="!forceSport" :blocked="true" @showSport="whichSport"></SelectionSlider>
+      <SelectionSlider v-if="!forceSport" :blocked="true" @showSport="whichSport"
+                       @showLocked="showLocked"></SelectionSlider>
       <v-progress-circular v-if="loading && user.profile.dapperAddress" indeterminate
                            color="success" class="mt-2"></v-progress-circular>
       <div v-if="!user.profile.dapperAddress" class="mt-2">
@@ -200,6 +201,8 @@ export default {
       momentsInPlay: [],
       momentsStaked: [],
       tabelLoading: true,
+      stakedView: false,
+      stakedMomentsPicked: [],
     }
   },
   mounted() {
@@ -212,7 +215,7 @@ export default {
     } else if (useUserStore().profile?.lastSport) {
       this.whichSport(useUserStore().profile.lastSport)
     }
-    console.log(this.stake)
+
     if (this.stake) {
       this.view.list = true
       this.view.grid = false
@@ -236,7 +239,9 @@ export default {
       return this.filteredMoments
     },
     filteredMoments() {
-      if (this.momentsLaLiga) {
+      if (this.stakedView) {
+        return this.stakedMomentsPicked
+      } else if (this.momentsLaLiga) {
         return this.momentsLaLiga.filter((moment) => {
           moment['momentId'] = moment.PlayDataID + '-' + moment.serialNumber
           return moment.PlayerFirstName.toLowerCase().includes(this.search.toLowerCase()) ||
@@ -259,6 +264,9 @@ export default {
   },
   methods: {
     whichSport(sport) {
+      this.momentsLaLigaRaw = []
+      this.momentsLaLiga = []
+      this.stakedView = false
       this.sport = sport
       if (this.user.profile.dapperAddress) {
         if (sport === 'LaLiga') {
@@ -271,6 +279,24 @@ export default {
           this.queryMomentsNBA()
         }
       }
+    },
+    async showLocked() {
+      this.momentsLaLigaRaw = []
+      this.momentsLaLiga = []
+      this.stakedMomentsPicked = []
+      this.stakedView = true
+      console.log('show staked moments', this.stakedView)
+      await db.collection('momentsInPlayLaLiga')
+        .where('owner', '==', useUserStore().user.uid)
+        .where('staked', '==', true)
+        .get()
+        .then(async (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let moment = doc.data()
+            moment.id = doc.id
+            this.stakedMomentsPicked.push(moment.detail)
+          })
+        })
     },
     async queryMomentsUFC() {
       this.loading = true
@@ -378,7 +404,6 @@ export default {
         .doc(useUserStore().user.uid)
         .get()
         .then(doc => {
-          console.log(doc.data())
           this.momentsLaLiga = doc.data()?.moments
           this.tabelLoading = false
           this.loading = false
@@ -435,15 +460,13 @@ export default {
         momentObj.push(traitList)
         this.momentsLaLigaRaw.push(traitList)
       }
-      console.log('save moments')
+
       await db.collection('momentsLaLiga')
         .doc(useUserStore().user.uid)
         .set({
           moments: this.momentsLaLigaRaw,
           lastModified: firebase.firestore.FieldValue.serverTimestamp(),
-        }, {merge: true}).then(() => {
-          console.log('Document successfully written!')
-        })
+        }, {merge: true})
     },
     changeView(view) {
       if (view == 'list') {
@@ -493,15 +516,12 @@ export default {
             momentsStaked.push(doc.id)
           })
           this.momentsStaked = momentsStaked
-          console.log("momentsStaked", momentsStaked)
         })
     },
     async removePreviousMomentInPlay(staked) {
-      console.log('remove momentsInPlayLaLiga')
       if (useUserStore().user.uid) {
         let fields = {}
         if (staked) {
-          console.log('remove staked')
           fields = {
             staked: false,
             inPlayLastModified: firebase.firestore.FieldValue.serverTimestamp(),
@@ -517,9 +537,7 @@ export default {
                 querySnapshot.forEach(async doc => {
                   await db.collection('momentsInPlayLaLiga')
                     .doc(doc.id)
-                    .set(fields, {merge: true}).then(() => {
-                      console.log('previous players removed!')
-                    })
+                    .set(fields, {merge: true})
                 })
               }
             })
@@ -541,9 +559,7 @@ export default {
                 querySnapshot.forEach(async doc => {
                   await db.collection('momentsInPlayLaLiga')
                     .doc(doc.id)
-                    .set(fields, {merge: true}).then(() => {
-                      console.log('previous players removed!')
-                    })
+                    .set(fields, {merge: true})
                 })
               }
             })
@@ -568,8 +584,6 @@ export default {
         await db.collection('momentsInPlayLaLiga')
           .doc(momentId)
           .set(fields, {merge: true}).then(() => {
-            console.log('Document successfully written!')
-          }).then(() => {
             if (this.stake) {
               this.$emit('closeMoment')
             }
@@ -577,7 +591,6 @@ export default {
       }
     },
     dapperAccount() {
-      console.log('show dapper moment')
       this.$emit('showDapperView')
     },
   },

@@ -281,7 +281,6 @@ export default {
           })
         this.myEvents.forEach((game, index) => {
           if (game.opponent) {
-            console.log('get opponent', game.opponent)
             db.collection('profiles')
               .doc(game.opponent)
               .get().then(doc => {

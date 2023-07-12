@@ -194,7 +194,6 @@ export default {
       })
     },
     async addEvent(match) {
-      console.log(match)
       let fixtureId = match.fixture.id
       this.saveLast()
       const eventFields = {
@@ -235,11 +234,9 @@ export default {
         })
     },
     async createEvent(eventFields) {
-      console.log('Create Doc', eventFields)
       await db.collection('events')
         .add(eventFields)
         .then(docRef => {
-          console.log("Document written with ID: ", docRef.id)
           this.selectedEvent = eventFields
           this.saveLast()
           this.detailView(docRef.id)

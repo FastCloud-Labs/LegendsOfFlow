@@ -17,7 +17,7 @@
           variant="outlined"
           @click="showLocked"
         >
-          Locked
+          Staked
         </v-btn>
       </v-slide-group-item>
       <v-slide-group-item

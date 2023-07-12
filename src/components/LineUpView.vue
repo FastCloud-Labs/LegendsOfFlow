@@ -297,7 +297,6 @@ export default {
     },
     async updateLineUp() {
       this.momentsInPlay = {}
-      console.log('update lineup')
       await db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
         .where('inPlay', '==', true)
@@ -315,7 +314,6 @@ export default {
 
     },
     showDapper() {
-      console.log('show dapper lineup')
       this.$emit('showDapper')
     },
   }
