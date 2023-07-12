@@ -23,17 +23,16 @@ const getUpcomingGames = async (uid) => {
     const querySnapshot = await db
       .collection("events")
       .where("owner", "==", uid)
-      // .where("startDate", ">", new Date()) todo: need game starting date to be in the firestore
+      .where("eventDetails.fixture.status.short", "in", ["TBD", "NS", "LIVE"])
       .get();
     const opponentQuerySnapshot = await db
       .collection("events")
       .where("opponent", "==", uid)
-      // .where("startDate", ">", new Date()) todo: need game starting date to be in the firestore
+      .where("eventDetails.fixture.status.short", "in", ["TBD", "NS", "LIVE"])
       .get();
-
     const upcomingGames = [];
-    upcomingGames.push(...querySnapshot.docs.map((doc) => doc.data()));
-    upcomingGames.push(...opponentQuerySnapshot.docs.map((doc) => doc.data()));
+    querySnapshot.forEach((doc) => upcomingGames.push(doc.data()));
+    opponentQuerySnapshot.forEach((doc) => upcomingGames.push(doc.data()));
 
     return upcomingGames;
   } catch (error) {
@@ -47,17 +46,24 @@ const getPastGames = async (uid) => {
     const querySnapshot = await db
       .collection("events")
       .where("owner", "==", uid)
-      // .where("startDate", "<", new Date()) todo: need game starting date to be in the firestore
+      .where("eventDetails.fixture.status.short", "not-in", [
+        "TBD",
+        "NS",
+        "LIVE",
+      ])
       .get();
     const opponentQuerySnapshot = await db
       .collection("events")
       .where("opponent", "==", uid)
-      // .where("startDate", "<", new Date()) todo: need game starting date to be in the firestore
+      .where("eventDetails.fixture.status.short", "not-in", [
+        "TBD",
+        "NS",
+        "LIVE",
+      ])
       .get();
-
     const pastGames = [];
-    pastGames.push(...querySnapshot.docs.map((doc) => doc.data()));
-    pastGames.push(...opponentQuerySnapshot.docs.map((doc) => doc.data()));
+    querySnapshot.forEach((doc) => pastGames.push(doc.data()));
+    opponentQuerySnapshot.forEach((doc) => pastGames.push(doc.data()));
 
     return pastGames;
   } catch (error) {
