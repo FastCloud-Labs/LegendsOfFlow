@@ -118,7 +118,7 @@
                   <v-row class="mx-0 px-0">
                     <v-col v-if="pvpMode" class="mx-0 px-0">
                       <h4>PVP Stake</h4>
-                      <v-btn-group class="my-2 mx-0 px-0" size="small">
+                      <v-btn-group class="my-2 mb-4 mx-0 px-0" size="small">
                         <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
                                @click="chooseStake('pvp','StakeMoment')">
                           Stake Moment
@@ -133,8 +133,147 @@
                           Stake XP
                         </v-btn>
                       </v-btn-group>
+                      <v-row>
+                        <v-col class="fill-height">
+                          <div v-if="!isOwner">
+                            <small> Your Staked Moment:</small><br>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game?.opponentPVPStaked?.stakeMoment?.detail">
+                                  {{ game.opponentPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.opponentPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+                          </div>
+                          <div v-else>
+                            <p class="text-sm-caption">Your Staked Moment</p>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game.ownerPVPStaked?.stakeMoment?.detail">
+                                  {{ game.ownerPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.ownerPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+
+                          </div>
+
+
+                        </v-col>
+                        <v-col class="fill-height">
+                          <div v-if="!isOwner" class="fill-height">
+                            <small> Your Opponent's Staked Moment:</small><br>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game.ownerPVPStaked?.stakeMoment?.detail">
+                                  {{ game.ownerPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.ownerPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.ownerPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.ownerPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.ownerPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+
+                          </div>
+
+                          <div v-else>
+                            <p class="text-sm-caption"> Your Opponent's Staked Moment</p>
+                            <v-card border class="fill-height">
+                              <v-card-text class="fill-height">
+                                <div v-if="game.opponentPVPStaked?.stakeMoment?.detail">
+                                  {{ game.opponentPVPStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                    game.opponentPVPStaked.stakeMoment.detail.PlayerLastName
+                                  }}
+                                  <br>
+                                  <v-avatar size="80" class="aborder ma-1 rounded">
+                                    <v-img
+                                      class="moment-stretch"
+                                      v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}/play_${game.opponentPVPStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                  </v-avatar>
+                                  <div class="text-overline mb-0">
+                                    <v-chip size="x-small" class="laligachip mr-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.PlayType">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.PlayType
+                                      }}
+                                    </v-chip>
+                                    <v-chip size="x-small" class="laligachip ml-1"
+                                            :class="game.opponentPVPStaked.stakeMoment.detail.editionTier">{{
+                                        game.opponentPVPStaked.stakeMoment.detail.editionTier
+                                      }}
+                                    </v-chip>
+                                  </div>
+                                </div>
+                                <div v-else class="fill-height">No moment staked yet.</div>
+                              </v-card-text>
+                            </v-card>
+
+                          </div>
+
+
+                        </v-col>
+                      </v-row>
                     </v-col>
                     <v-col v-if="communityMode" class="mx-0 px-0">
+                      <v-divider class="mb-5"></v-divider>
                       <h4>Community Stake</h4>
                       <v-btn-group class="my-2 x-0 px-0">
                         <v-btn v-if="!momentLocked" elevation="2" size="small" variant="outlined"
@@ -151,6 +290,41 @@
                           Stake XP
                         </v-btn>
                       </v-btn-group>
+                      <v-row>
+                        <v-col></v-col>
+                        <v-col>
+                          <p class="text-sm-caption">Your Staked Moment:</p>
+                          <v-card border>
+                            <v-card-text>
+                              <div v-if="game.opponentCommunityStaked?.stakeMoment?.detail">
+                                {{ game.opponentCommunityStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                  game.opponentCommunityStaked.stakeMoment.detail.PlayerLastName
+                                }}
+                                <br>
+                                <v-avatar size="80" class="aborder ma-1 rounded">
+                                  <v-img
+                                    class="moment-stretch"
+                                    v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.opponentCommunityStaked.stakeMoment.detail.PlayDataID}/play_${game.opponentCommunityStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                </v-avatar>
+                                <div class="text-overline mb-0">
+                                  <v-chip size="x-small" class="laligachip mr-1"
+                                          :class="game.opponentCommunityStaked.stakeMoment.detail.PlayType">{{
+                                      game.opponentCommunityStaked.stakeMoment.detail.PlayType
+                                    }}
+                                  </v-chip>
+                                  <v-chip size="x-small" class="laligachip ml-1"
+                                          :class="game.opponentCommunityStaked.stakeMoment.detail.editionTier">{{
+                                      game.opponentCommunityStaked.stakeMoment.detail.editionTier
+                                    }}
+                                  </v-chip>
+                                </div>
+                              </div>
+                              <div v-else class="fill-height">No moment staked yet.</div>
+                            </v-card-text>
+                          </v-card>
+                        </v-col>
+                        <v-col></v-col>
+                      </v-row>
                     </v-col>
                   </v-row>
                 </div>
@@ -164,7 +338,8 @@
         </div>
         <v-dialog v-model="momentPicker" width="auto">
           <v-card>
-            <Moments :user="user"/>
+            <Moments :user="user" :stake="stakeMoment" :game="game" @closeMoment="closeMoment"
+                     @showDapperView="showDapper"/>
           </v-card>
         </v-dialog>
         <v-dialog v-model="inviteUser" min-width="300" width="auto">
@@ -213,6 +388,7 @@ export default {
       game: {},
       width: 700,
       momentPicker: false,
+      stakeMoment: false,
       user: {},
       pvpMode: false,
       communityMode: false,
@@ -360,8 +536,10 @@ export default {
       }
     },
     chooseStake(gameType, stake) {
-      console.log('stake', gameType, stake)
+      this.stakeType = gameType
+      this.stakeMode = stake
       if (stake === 'StakeMoment') {
+        this.stakeMoment = true
         this.momentPicker = true
       }
     },
@@ -383,6 +561,80 @@ export default {
       console.log('show dapper game d')
       this.$emit('showDapperView')
     },
+    closeMoment() {
+      this.momentPicker = false
+      this.getStakedMoments()
+    },
+    async getStakedMoments() {
+      console.log('get staked moments')
+      // todo refactor spaghetti
+      await db.collection('momentsInPlayLaLiga')
+        .where('owner', '==', useUserStore().user.uid)
+        .where('staked', '==', true)
+        .where('lastFixture', '==', this.game.fixtureId)
+        .get()
+        .then(async (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            let moment = doc.data()
+            moment.id = doc.id
+            this.stakedMomentsPicked = moment
+          })
+          let eventFields = {}
+          if (this.stakeType === "pvp") {
+            eventFields = {
+              opponentPVPStaked: {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+            this.game.opponentPVPStaked = {
+              stakeMode: this.stakeMode,
+              stakeMoment: this.stakedMomentsPicked,
+            }
+          }
+          if (this.stakeType === "community") {
+            eventFields = {
+              opponentCommunityStaked: {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+            this.game.opponentCommunityStaked = {
+              stakeMode: this.stakeMode,
+              stakeMoment: this.stakedMomentsPicked,
+            }
+          }
+          if (this.isOwner) {
+            if (this.stakeType === "pvp") {
+              eventFields = {
+                ownerPVPStaked: {
+                  stakeMode: this.stakeMode,
+                  stakeMoment: this.stakedMomentsPicked,
+                }
+              }
+              this.game.ownerPVPStaked = {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+            if (this.stakeType === "community") {
+              eventFields = {
+                ownerCommunityStaked: {
+                  stakeMode: this.stakeMode,
+                  stakeMoment: this.stakedMomentsPicked,
+                }
+              }
+              this.game.ownerCommunityStaked = {
+                stakeMode: this.stakeMode,
+                stakeMoment: this.stakedMomentsPicked,
+              }
+            }
+          }
+          await db.collection('events')
+            .doc(this.gameId)
+            .set(eventFields, {merge: true})
+        })
+    }
   }
 }
 </script>
