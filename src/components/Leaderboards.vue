@@ -5,37 +5,93 @@
       <v-text-field
         class="leaderboard-search"
         v-if="filteredData.length > 0"
-        placeholder="Search Players"
+        placeholder="Search Username"
         v-model="searchQuery"
         variant="underlined"
       ></v-text-field>
       <v-table class="leaderboard-table" theme="dark">
         <thead>
-        <tr>
-          <th class="text-center leaderboard-header">#</th>
-          <th class="text-center leaderboard-header">Name</th>
-          <th class="text-center leaderboard-header">Points &#x1F3C6;</th>
-          <th class="text-center leaderboard-header">Wins &#x1F947;</th>
-          <th class="text-center leaderboard-header">Losses &#x1F625;</th>
-          <th class="text-center leaderboard-header">Draws &#x1F914;</th>
-          <th class="text-center leaderboard-header">Total Games Played</th>
-          <th class="text-center leaderboard-header">Win Rate</th>
-        </tr>
+          <tr>
+            <th class="text-center leaderboard-header">Rank</th>
+            <th class="text-center leaderboard-header">Username</th>
+            <th class="text-center leaderboard-header">Points</th>
+            <th class="text-center leaderboard-header">Wins</th>
+            <th class="text-center leaderboard-header">Losses</th>
+            <th class="text-center leaderboard-header">Draws</th>
+            <th class="text-center leaderboard-header">Total Games Played</th>
+            <th class="text-center leaderboard-header">Win Rate</th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="(item, index) in filteredData" :key="item['player name']">
-          <td class="leaderboard-cell">{{ index + 1 }}</td>
-          <td>{{ item["player name"] }}</td>
-          <td :style="{ color: '#fddca8' }">{{ item.points }}</td>
-          <td :style="{ color: 'green' }">{{ item.win }}</td>
-          <td :style="{ color: 'red' }">{{ item.loss }}</td>
-          <td :style="{ color: 'blue' }">{{ item.draw }}</td>
-          <td>{{ item.win + item.loss + item.draw }}</td>
-          <td :style="{ color: getWinRateColor(item) }">
-            {{ getWinRateEmoji(item) }}
-            {{ getWinRate(item) }}
-          </td>
-        </tr>
+          <tr v-for="(item, index) in filteredData" :key="item.username">
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'inherit',
+                color: '#e2ff6f',
+              }"
+            >
+              {{ item.rank }}
+            </td>
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
+                cursor: 'pointer',
+              }"
+              @click="openUser(item.username)"
+            >
+              {{ item.username }}
+            </td>
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
+              }"
+            >
+              {{ item.points }}
+            </td>
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
+              }"
+            >
+              {{ item.win }}
+            </td>
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
+              }"
+            >
+              {{ item.loss }}
+            </td>
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
+              }"
+            >
+              {{ item.draw }}
+            </td>
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
+              }"
+            >
+              {{ item.win + item.loss + item.draw }}
+            </td>
+            <td
+              :style="{
+                'background-color':
+                  index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
+              }"
+            >
+              {{ getWinRate(item) }}
+            </td>
+          </tr>
         </tbody>
       </v-table>
     </v-responsive>
@@ -70,48 +126,48 @@
 </style>
 
 <script setup>
-import {ref, computed} from "vue";
+import { ref, computed } from "vue";
 
 const searchQuery = ref("");
 
 const data = ref([
   {
-    "player name": "James",
+    username: "James",
     points: 30,
     win: 7,
     loss: 1,
     draw: 1,
   },
   {
-    "player name": "John",
+    username: "John",
     points: 25,
     win: 5,
     loss: 2,
     draw: 3,
   },
   {
-    "player name": "Emily",
+    username: "Emily",
     points: 20,
     win: 4,
     loss: 1,
     draw: 2,
   },
   {
-    "player name": "Michael",
+    username: "Michael",
     points: 18,
     win: 3,
     loss: 3,
     draw: 2,
   },
   {
-    "player name": "Sarah",
+    username: "Sarah",
     points: 15,
     win: 2,
     loss: 2,
     draw: 3,
   },
   {
-    "player name": "David",
+    username: "David",
     points: 12,
     win: 1,
     loss: 3,
@@ -120,7 +176,11 @@ const data = ref([
 ]);
 
 const sortedData = computed(() => {
-  return data.value.slice().sort((a, b) => b.points - a.points);
+  const sortedArray = data.value.slice().sort((a, b) => b.points - a.points);
+  sortedArray.forEach((item, index) => {
+    item.rank = (index + 1).toString().padStart(2, "0");
+  });
+  return sortedArray;
 });
 
 const filteredData = computed(() => {
@@ -129,7 +189,7 @@ const filteredData = computed(() => {
     return sortedData.value;
   } else {
     return sortedData.value.filter((item) =>
-      item["player name"].toLowerCase().includes(query)
+      item.username.toLowerCase().includes(query)
     );
   }
 });
@@ -140,27 +200,8 @@ const getWinRate = (item) => {
   return winRate.toFixed(0) + "%";
 };
 
-const getWinRateEmoji = (item) => {
-  const winRate = (item.win / (item.win + item.loss + item.draw)) * 100 || 0;
-
-  if (winRate >= 70) {
-    return "🥇";
-  } else if (winRate >= 40) {
-    return "🥈";
-  } else {
-    return "🥉";
-  }
+const openUser = (username) => {
+  const url = "/user?username=" + username;
+  window.open(url, "_blank");
 };
-
-const getWinRateColor = (item) => {
-  const winRate = (item.win / (item.win + item.loss + item.draw)) * 100 || 0;
-  if (winRate >= 70) {
-    return "green";
-  } else if (winRate >= 40) {
-    return "orange";
-  } else {
-    return "red";
-  }
-};
-
 </script>
