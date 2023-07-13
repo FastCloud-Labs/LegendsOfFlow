@@ -162,7 +162,7 @@
                                     </v-chip>
                                   </div>
                                 </div>
-                                <div v-else class="fill-height">No moment staked yet.</div>
+                                <div v-else class="fill-height">No stake yet.</div>
                               </v-card-text>
                             </v-card>
                           </div>
@@ -193,7 +193,7 @@
                                     </v-chip>
                                   </div>
                                 </div>
-                                <div v-else class="fill-height">No moment staked yet.</div>
+                                <div v-else class="fill-height">No stake yet.</div>
                               </v-card-text>
                             </v-card>
 
@@ -229,7 +229,7 @@
                                     </v-chip>
                                   </div>
                                 </div>
-                                <div v-else class="fill-height">No moment staked yet.</div>
+                                <div v-else class="fill-height">No stake yet.</div>
                               </v-card-text>
                             </v-card>
 
@@ -262,7 +262,7 @@
                                     </v-chip>
                                   </div>
                                 </div>
-                                <div v-else class="fill-height">No moment staked yet.</div>
+                                <div v-else class="fill-height">No stake yet.</div>
                               </v-card-text>
                             </v-card>
 
@@ -296,7 +296,30 @@
                           <p class="text-sm-caption">Your Staked Moment:</p>
                           <v-card border>
                             <v-card-text>
-                              <div v-if="game.opponentCommunityStaked?.stakeMoment?.detail">
+                              <div v-if="isOwner && game?.ownerCommunityStaked?.stakeMoment?.detail">
+                                {{ game.ownerCommunityStaked.stakeMoment.detail.PlayerFirstName }} {{
+                                  game.ownerCommunityStaked.stakeMoment.detail.PlayerLastName
+                                }}
+                                <br>
+                                <v-avatar size="80" class="aborder ma-1 rounded">
+                                  <v-img
+                                    class="moment-stretch"
+                                    v-bind:src="`https://laligagolazos.com/cdn-cgi/image/width=110,height=110,quality=100/https://assets.laligagolazos.com/editions/${game.ownerCommunityStaked.stakeMoment.detail.PlayDataID}/play_${game.ownerCommunityStaked.stakeMoment.detail.PlayDataID}__capture_Hero_Black_2880_2880_default.png`"></v-img>
+                                </v-avatar>
+                                <div class="text-overline mb-0">
+                                  <v-chip size="x-small" class="laligachip mr-1"
+                                          :class="game.ownerCommunityStaked.stakeMoment.detail.PlayType">{{
+                                      game.ownerCommunityStaked.stakeMoment.detail.PlayType
+                                    }}
+                                  </v-chip>
+                                  <v-chip size="x-small" class="laligachip ml-1"
+                                          :class="game.ownerCommunityStaked.stakeMoment.detail.editionTier">{{
+                                      game.ownerCommunityStaked.stakeMoment.detail.editionTier
+                                    }}
+                                  </v-chip>
+                                </div>
+                              </div>
+                              <div v-else-if="game?.opponentCommunityStaked?.stakeMoment?.detail">
                                 {{ game.opponentCommunityStaked.stakeMoment.detail.PlayerFirstName }} {{
                                   game.opponentCommunityStaked.stakeMoment.detail.PlayerLastName
                                 }}
@@ -319,7 +342,7 @@
                                   </v-chip>
                                 </div>
                               </div>
-                              <div v-else class="fill-height">No moment staked yet.</div>
+                              <div v-else class="fill-height">No stake yet.</div>
                             </v-card-text>
                           </v-card>
                         </v-col>
@@ -446,7 +469,6 @@ export default {
         this.checkPanels()
       }).then(() => {
         if (this.game?.opponent) {
-          console.log('get opponent', this.game.opponent)
           db.collection('profiles')
             .doc(this.game.opponent)
             .get().then(doc => {
@@ -544,7 +566,6 @@ export default {
       }
     },
     saveOpponent() {
-      console.log('save opponent', this.selectedOpponent)
       db.collection('events')
         .doc(this.gameId)
         .set({opponent: this.selectedOpponent}, {merge: true})
@@ -558,7 +579,6 @@ export default {
       window.open('mailto:' + this.email + '?subject=' + this.emailSubject + '&body=' + this.emailBody)
     },
     showDapper() {
-      console.log('show dapper game d')
       this.$emit('showDapperView')
     },
     closeMoment() {
@@ -566,7 +586,6 @@ export default {
       this.getStakedMoments()
     },
     async getStakedMoments() {
-      console.log('get staked moments')
       // todo refactor spaghetti
       await db.collection('momentsInPlayLaLiga')
         .where('owner', '==', useUserStore().user.uid)
@@ -580,28 +599,30 @@ export default {
             this.stakedMomentsPicked = moment
           })
           let eventFields = {}
-          if (this.stakeType === "pvp") {
-            eventFields = {
-              opponentPVPStaked: {
+          if (!this.isOwner) {
+            if (this.stakeType === "pvp") {
+              eventFields = {
+                opponentPVPStaked: {
+                  stakeMode: this.stakeMode,
+                  stakeMoment: this.stakedMomentsPicked,
+                }
+              }
+              this.game.opponentPVPStaked = {
                 stakeMode: this.stakeMode,
                 stakeMoment: this.stakedMomentsPicked,
               }
             }
-            this.game.opponentPVPStaked = {
-              stakeMode: this.stakeMode,
-              stakeMoment: this.stakedMomentsPicked,
-            }
-          }
-          if (this.stakeType === "community") {
-            eventFields = {
-              opponentCommunityStaked: {
+            if (this.stakeType === "community") {
+              eventFields = {
+                opponentCommunityStaked: {
+                  stakeMode: this.stakeMode,
+                  stakeMoment: this.stakedMomentsPicked,
+                }
+              }
+              this.game.opponentCommunityStaked = {
                 stakeMode: this.stakeMode,
                 stakeMoment: this.stakedMomentsPicked,
               }
-            }
-            this.game.opponentCommunityStaked = {
-              stakeMode: this.stakeMode,
-              stakeMoment: this.stakedMomentsPicked,
             }
           }
           if (this.isOwner) {
