@@ -4,7 +4,6 @@
       <h2 class="mb-4">Leaderboards</h2>
       <v-text-field
         class="leaderboard-search"
-        v-if="filteredData.length > 0"
         placeholder="Search Username"
         v-model="searchQuery"
         variant="underlined"
@@ -38,8 +37,10 @@
                 'background-color':
                   index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
                 cursor: 'pointer',
+                textDecoration: 'underline',
               }"
               @click="openUser(item.username)"
+              title="View Profile"
             >
               {{ item.username }}
             </td>
