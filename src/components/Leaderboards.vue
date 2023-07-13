@@ -50,7 +50,7 @@
                   index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
               }"
             >
-              {{ item.points }}
+              {{ item.stats.points }}
             </td>
             <td
               :style="{
@@ -58,7 +58,7 @@
                   index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
               }"
             >
-              {{ item.win }}
+              {{ item.stats.win }}
             </td>
             <td
               :style="{
@@ -66,7 +66,7 @@
                   index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
               }"
             >
-              {{ item.loss }}
+              {{ item.stats.loss }}
             </td>
             <td
               :style="{
@@ -74,7 +74,7 @@
                   index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
               }"
             >
-              {{ item.draw }}
+              {{ item.stats.draw }}
             </td>
             <td
               :style="{
@@ -82,7 +82,7 @@
                   index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
               }"
             >
-              {{ item.win + item.loss + item.draw }}
+              {{ item.stats.win + item.stats.loss + item.stats.draw }}
             </td>
             <td
               :style="{
@@ -99,7 +99,7 @@
   </v-container>
 </template>
 
-<style>
+<style scoped>
 .leaderboard-table {
   margin-top: 0px;
   width: 90vw;
@@ -127,57 +127,16 @@
 </style>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watchEffect } from "vue";
+import { getAllProfiles } from "@/firebase/functions";
 
 const searchQuery = ref("");
-
-const data = ref([
-  {
-    username: "James",
-    points: 30,
-    win: 7,
-    loss: 1,
-    draw: 1,
-  },
-  {
-    username: "John",
-    points: 25,
-    win: 5,
-    loss: 2,
-    draw: 3,
-  },
-  {
-    username: "Emily",
-    points: 20,
-    win: 4,
-    loss: 1,
-    draw: 2,
-  },
-  {
-    username: "Michael",
-    points: 18,
-    win: 3,
-    loss: 3,
-    draw: 2,
-  },
-  {
-    username: "Sarah",
-    points: 15,
-    win: 2,
-    loss: 2,
-    draw: 3,
-  },
-  {
-    username: "David",
-    points: 12,
-    win: 1,
-    loss: 3,
-    draw: 3,
-  },
-]);
+const data = ref([]);
 
 const sortedData = computed(() => {
-  const sortedArray = data.value.slice().sort((a, b) => b.points - a.points);
+  const sortedArray = data.value
+    .slice()
+    .sort((a, b) => b.stats.points - a.stats.points);
   sortedArray.forEach((item, index) => {
     item.rank = (index + 1).toString().padStart(2, "0");
   });
@@ -196,8 +155,8 @@ const filteredData = computed(() => {
 });
 
 const getWinRate = (item) => {
-  const totalGames = item.win + item.loss + item.draw;
-  const winRate = (item.win / totalGames) * 100 || 0;
+  const totalGames = item.stats.win + item.stats.loss + item.stats.draw;
+  const winRate = (item.stats.win / totalGames) * 100 || 0;
   return winRate.toFixed(0) + "%";
 };
 
@@ -205,4 +164,13 @@ const openUser = (username) => {
   const url = "/user?username=" + username;
   window.open(url, "_blank");
 };
+
+watchEffect(async () => {
+  try {
+    const res = await getAllProfiles();
+    data.value = res;
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+  }
+});
 </script>

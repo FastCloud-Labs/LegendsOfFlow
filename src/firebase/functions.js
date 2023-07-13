@@ -103,10 +103,23 @@ const getProfile = async (uid) => {
   }
 };
 
+const getAllProfiles = async () => {
+  try {
+    const querySnapshot = await db.collection("profiles").get();
+    const profiles = [];
+    querySnapshot.forEach((doc) => profiles.push(doc.data()));
+    return profiles;
+  } catch (error) {
+    console.error("Error fetching user collection:", error);
+    return null;
+  }
+};
+
 export {
   getUidByUsername,
   getUpcomingGames,
   getPastGames,
   getStatsByUid,
   getProfile,
+  getAllProfiles,
 };
