@@ -5,7 +5,19 @@
       v-model="searchQuery"
       variant="underlined"
     ></v-text-field>
-    <div v-for="friend in filteredData" :key="friend.uid">
+    <div v-if="loading">
+      <v-progress-circular
+        indeterminate
+        color="success"
+        class="ma-4 mb-4"
+      ></v-progress-circular>
+    </div>
+
+    <div v-if="!loading && filteredData.length === 0">
+      <p>No friends found!</p>
+    </div>
+
+    <div v-if="!loading" v-for="friend in filteredData" :key="friend.uid">
       <v-card class="invite-card">
         <v-card-title class="d-flex align-center">
           <v-avatar size="50">
@@ -100,6 +112,7 @@ import { useUserStore } from "@/store/app";
 const user = ref({});
 const searchQuery = ref("");
 const friends = ref([]);
+const loading = ref(false);
 const defaultAvatarUrl =
   "https://res.cloudinary.com/dmovdfcta/image/upload/v1689055906/avatar-default_c8rpgq.png";
 
@@ -125,8 +138,10 @@ const filteredData = computed(() => {
 });
 
 onMounted(async () => {
+  loading.value = true;
   const userStore = useUserStore();
   user.value = userStore.user;
   friends.value = await getInviteFriendsList(user.value.uid);
+  loading.value = false;
 });
 </script>
