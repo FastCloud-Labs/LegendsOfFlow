@@ -153,6 +153,8 @@ import {VDataTable} from 'vuetify/labs/VDataTable'
 import db from "@/firebase/init";
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import TopShotMoments from '@/cadence/TopShotMomentsIds.cdc?raw'
+import TopShotMetaData from '@/cadence/TopShotMomentMetaData.cdc?raw'
 import LaLigaMoments from '@/cadence/LaLigaMoments.cdc?raw'
 import LaLigaMetaView from '@/cadence/LaLigaMetaView.cdc?raw'
 import UfcStrikeMoments from '@/cadence/UfcStrikeMoments.cdc?raw'
@@ -178,6 +180,8 @@ export default {
       perPage: 12,
       momentsLaLiga: [],
       momentsLaLigaRaw: [],
+      momentsTopShot: [],
+      momentsTopShotRaw: [],
       momentsStrike: [],
       loading: false,
       sport: '',
@@ -269,15 +273,17 @@ export default {
     whichSport(sport) {
       this.momentsLaLigaRaw = []
       this.momentsLaLiga = []
+      this.momentsTopShotRaw = []
+      this.momentsTopShot = []
       this.stakedView = false
       this.sport = sport
       if (this.user.profile.dapperAddress) {
         if (sport === 'LaLiga') {
-          this.getOwnedMoments()
+          this.getLaLigaMoments()
         } else if (sport === 'UFC') {
           this.queryMomentsUFC()
         } else if (sport === 'NBA') {
-          this.queryMomentsNBA()
+          this.getTopShotMoments()
         } else if (sport === 'NFL') {
           this.queryMomentsNBA()
         }
@@ -313,7 +319,7 @@ export default {
 
 
     },
-    getOwnedMoments() {
+    getLaLigaMoments() {
       this.tabelLoading = true
       this.loading = true
       db.collection('momentsLaLiga')
@@ -347,6 +353,45 @@ export default {
         })
         momentObj.push(traitList)
         this.momentsLaLigaRaw.push(traitList)
+      }
+
+      await db.collection('momentsLaLiga')
+        .doc(useUserStore().user.uid)
+        .set({
+          moments: this.momentsLaLigaRaw,
+          lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+        }, {merge: true})
+    },
+
+    getTopShotMoments() {
+      this.tabelLoading = true
+      this.loading = true
+      db.collection('momentsTopShot')
+        .doc(useUserStore().user.uid)
+        .get()
+        .then(doc => {
+          this.momentsLaLiga = doc.data()?.moments
+          this.tabelLoading = false
+          this.loading = false
+          this.queryMomentsTopShot()
+        })
+    },
+    async queryMomentsTopShot() {
+      // get owned NFT metadata
+      const idsResponse = await fcl.send([
+        fcl.script`${TopShotMoments}`,
+        fcl.args([fcl.arg(this.user.profile.dapperAddress, t.Address)]),
+      ])
+      let moments = await fcl.decode(idsResponse)
+      console.log(moments)
+      for (const moment of moments) {
+        const metaViewResponse = await fcl.send([
+          fcl.script`${TopShotMetaData}`,
+          fcl.args([fcl.arg(this.user.profile.dapperAddress, t.Address), fcl.arg(moment, t.UInt64)]),
+        ])
+        let metaView = await fcl.decode(metaViewResponse)
+        console.log(metaView)
+        this.momentsTopShotRaw.push(metaView)
       }
 
       await db.collection('momentsLaLiga')

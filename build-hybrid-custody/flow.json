@@ -1,0 +1,159 @@
+{
+	"contracts": {
+		"AddressUtils": {
+			"source": "./cadence/contracts/flow-utils/AddressUtils.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "a340dc0a4ec828ab",
+				"testnet": "31ad40c07a2a9788"
+			}
+		},
+		"ArrayUtils": {
+			"source": "./cadence/contracts/flow-utils/ArrayUtils.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "a340dc0a4ec828ab",
+				"testnet": "31ad40c07a2a9788"
+			}
+		},
+		"CapabilityDelegator": {
+			"source": "./cadence/contracts/hybrid-custody/CapabilityDelegator.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"CapabilityFactory": {
+			"source": "./cadence/contracts/hybrid-custody/CapabilityFactory.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"CapabilityFilter": {
+			"source": "./cadence/contracts/hybrid-custody/CapabilityFilter.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"ExampleNFT": {
+			"source": "./cadence/contracts/standards/ExampleNFT.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"FTProviderFactory": {
+			"source": "./cadence/contracts/hybrid-custody/factories/FTProviderFactory.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"FlowToken": {
+			"source": "",
+			"aliases": {
+				"emulator": "0ae53cb6e3f42a79",
+				"mainnet": "1654653399040a61",
+				"testnet": "7e60df042a9c0868"
+			}
+		},
+		"FungibleToken": {
+			"source": "",
+			"aliases": {
+				"emulator": "ee82856bf20e2aa6",
+				"mainnet": "f233dcee88fe0abe",
+				"testnet": "9a0766d93b6608b7"
+			}
+		},
+		"HybridCustody": {
+			"source": "./cadence/contracts/hybrid-custody/HybridCustody.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"MetadataViews": {
+			"source": "./cadence/contracts/standards/MetadataViews.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"NFTCollectionPublicFactory": {
+			"source": "./cadence/contracts/hybrid-custody/factories/NFTCollectionPublicFactory.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"NFTProviderAndCollectionFactory": {
+			"source": "./cadence/contracts/hybrid-custody/factories/NFTProviderAndCollectionFactory.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"NFTProviderFactory": {
+			"source": "./cadence/contracts/hybrid-custody/factories/NFTProviderFactory.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "96b15ff6dfde11fe"
+			}
+		},
+		"NonFungibleToken": {
+			"source": "./cadence/contracts/standards/NonFungibleToken.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"StringUtils": {
+			"source": "./cadence/contracts/flow-utils/StringUtils.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "a340dc0a4ec828ab",
+				"testnet": "31ad40c07a2a9788"
+			}
+		},
+		"ViewResolver": {
+			"source": "./cadence/contracts/standards/ViewResolver.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		}
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"sandboxnet": "access.sandboxnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "686779d775e5fcbf8d2f4a85cb4c53525d02b7ef53230d180fc16f35d9b7d025"
+		}
+	},
+	"deployments": {
+		"emulator": {
+			"emulator-account": [
+				"AddressUtils",
+				"StringUtils",
+				"ArrayUtils",
+				"HybridCustody",
+				"CapabilityDelegator",
+				"CapabilityFilter",
+				"CapabilityFactory",
+				"FTProviderFactory",
+				"NFTProviderFactory",
+				"NFTProviderAndCollectionFactory",
+				"NFTCollectionPublicFactory"
+			]
+		}
+	}
+}
