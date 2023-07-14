@@ -1,7 +1,11 @@
 <template>
   <div class="pending-invites">
-    <h2>Pending Invites</h2>
-    <div v-for="friend in friends" :key="friend.uid">
+    <v-text-field
+      placeholder="Search Username"
+      v-model="searchQuery"
+      variant="underlined"
+    ></v-text-field>
+    <div v-for="friend in filteredData" :key="friend.uid">
       <v-card class="pending-invites-card">
         <v-card-title class="d-flex align-center">
           <v-avatar size="50">
@@ -97,10 +101,11 @@
 </style>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { getPendingFriendsList } from "@/firebase/functions";
 import { useUserStore } from "@/store/app";
 
+const searchQuery = ref("");
 const friends = ref([]);
 const user = ref({});
 const defaultAvatarUrl =
@@ -115,6 +120,17 @@ const openProfileInNewTab = (dapperAddress) => {
   const url = `https://flowscan.org/account/${dapperAddress}`;
   window.open(url, "_blank");
 };
+
+const filteredData = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  if (query === "") {
+    return friends.value;
+  } else {
+    return friends.value.filter((item) =>
+      item.username.toLowerCase().includes(query)
+    );
+  }
+});
 
 onMounted(async () => {
   const userStore = useUserStore();

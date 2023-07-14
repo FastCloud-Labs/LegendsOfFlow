@@ -1,7 +1,11 @@
 <template>
   <div class="friends">
-    <h2>Friends</h2>
-    <div v-for="friend in friends" :key="friend.uid">
+    <v-text-field
+      placeholder="Search Username"
+      v-model="searchQuery"
+      variant="underlined"
+    ></v-text-field>
+    <div v-for="friend in filteredData" :key="friend.uid">
       <v-card class="friends-card">
         <v-card-title class="d-flex align-center">
           <v-avatar size="50">
@@ -71,14 +75,27 @@
 </style>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { getFriendsList } from "@/firebase/functions";
 import { useUserStore } from "@/store/app";
 
 const friends = ref([]);
 const user = ref({});
+const searchQuery = ref("");
+
 const defaultAvatarUrl =
   "https://res.cloudinary.com/dmovdfcta/image/upload/v1689055906/avatar-default_c8rpgq.png";
+
+const filteredData = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  if (query === "") {
+    return friends.value;
+  } else {
+    return friends.value.filter((item) =>
+      item.username.toLowerCase().includes(query)
+    );
+  }
+});
 
 onMounted(async () => {
   const userStore = useUserStore();
