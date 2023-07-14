@@ -573,7 +573,7 @@ export default {
     sendEmail() {
       this.inviteUser = false
       const site = 'Legends%20of%20Flow'
-      const url = 'https%3A%2F%2Fpvplegends.web.app%2F%3FgameId%3D' + this.gameId
+      const url = 'https%3A%2F%2Flegendsoflfow.web.app%2F%3FgameId%3D' + this.gameId
       this.emailSubject = "You%20have%20been%20challenged%20to%20a%20game%20on%20" + site
       this.emailBody = "Join%20" + site + "%20to%20play%20.%0D%0A%0D%0AMatch%3A%20" + this.match.teams.home.name + "%20vs%20" + this.match.teams.away.name + "%0D%0A%0D%0AClick%20the%20link%20to%20accept%20Challenge:%20" + url
       window.open('mailto:' + this.email + '?subject=' + this.emailSubject + '&body=' + this.emailBody)

@@ -1,4 +1,4 @@
-# default
+# Legends of Flow
 
 ## Project setup
 
@@ -58,7 +58,7 @@ command from your app's root directory:
 
 `npm run build`
 `firebase deploy`
-After deploying, view your app at https://pvplegends.web.app
+After deploying, view your app at https://legendsofflow.web.app
 
 ## firebase serverless functions
 
