@@ -1,4 +1,7 @@
 # Legends of Flow
+Play your moments. Gamifying dapper digital collectables
+
+https://legendsofflow.web.app/
 
 ## Project setup
 

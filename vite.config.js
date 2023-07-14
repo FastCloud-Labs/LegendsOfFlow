@@ -6,6 +6,8 @@ import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
 import {defineConfig} from 'vite'
 import {fileURLToPath, URL} from 'node:url'
 
+const cadenceRawPlugin = require('vite-raw-plugin')
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -16,8 +18,12 @@ export default defineConfig({
     vuetify({
       autoImport: true,
     }),
+    cadenceRawPlugin({
+      fileRegex: /\.cdc$/
+    })
   ],
   define: {'process.env': {},},
+  assetsInclude: ['**/*.cdc'],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

@@ -53,7 +53,7 @@ export default {
       'discovery.wallet.method': 'POP/RPC',
       'accessNode.api': 'https://access-mainnet-beta.onflow.org',
       'app.detail.title': 'Legnrds of Flow',
-      'app.detail.icon': 'https://legendsoflfow.web.app/assets/logo.png',
+      'app.detail.icon': 'https://legendsofflow.web.app/assets/logo.png',
     })
   },
   props: {
