@@ -115,6 +115,27 @@ const getAllProfiles = async () => {
   }
 };
 
+const getInviteFriendsList = async (uid) => {
+  try {
+    const querySnapshot = await db.collection("profiles").get();
+    const profiles = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return { uid: doc.id, ...data };
+    });
+    const querySnapshot2 = await db.collection("friends").doc(uid).get();
+    const friendsData = querySnapshot2.data();
+    const friends = friendsData?.accepted?.map((friend) => friend.uid) || [];
+    const inviteFriends = profiles.filter((profile) => {
+      return !friends.includes(profile.uid) && profile.uid !== uid;
+    });
+    return inviteFriends;
+  } catch (error) {
+    console.error("Error fetching user collection:", error);
+    return null;
+  }
+};
+
+
 export {
   getUidByUsername,
   getUpcomingGames,
@@ -122,4 +143,5 @@ export {
   getStatsByUid,
   getProfile,
   getAllProfiles,
+  getInviteFriendsList,
 };

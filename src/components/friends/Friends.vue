@@ -35,7 +35,3 @@
   margin-left: 10px;
 }
 </style>
-
-<script setup>
-import { ref } from "vue";
-</script>
