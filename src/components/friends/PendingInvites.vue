@@ -51,11 +51,19 @@
           </div>
           <v-spacer></v-spacer>
           <div class="button-container">
-            <v-btn class="ma-2 accept-button" color="primary">
+            <v-btn
+              class="ma-2 accept-button"
+              color="primary"
+              @click="handleAcceptFriend(friend)"
+            >
               Accept&nbsp;
               <v-icon icon="mdi:mdi-check-circle" right />
             </v-btn>
-            <v-btn class="ma-2 decline-button" color="red">
+            <v-btn
+              class="ma-2 decline-button"
+              color="red"
+              @click="handleRejectFriend(friend)"
+            >
               Decline&nbsp;
               <v-icon icon="mdi:mdi-cancel" right />
             </v-btn>
@@ -115,7 +123,11 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { getPendingFriendsList } from "@/firebase/functions";
+import {
+  getPendingFriendsList,
+  acceptFriend,
+  rejectFriend,
+} from "@/firebase/functions";
 import { useUserStore } from "@/store/app";
 
 const searchQuery = ref("");
@@ -145,6 +157,20 @@ const filteredData = computed(() => {
     );
   }
 });
+
+const handleAcceptFriend = async (friend) => {
+  loading.value = true;
+  await acceptFriend(user.value.uid, friend.uid);
+  friends.value = friends.value.filter((item) => item.uid !== friend.uid);
+  loading.value = false;
+};
+
+const handleRejectFriend = async (friend) => {
+  loading.value = true;
+  await rejectFriend(user.value.uid, friend.uid);
+  friends.value = friends.value.filter((item) => item.uid !== friend.uid);
+  loading.value = false;
+};
 
 onMounted(async () => {
   loading.value = true;

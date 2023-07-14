@@ -157,7 +157,6 @@ const getPendingFriendsList = async (uid) => {
   try {
     const querySnapshot = await db.collection("friends").doc(uid).get();
     const friendsData = querySnapshot?.data().pending;
-
     const friends = friendsData?.map((friend) => friend.uid);
     const friendsProfiles = await Promise.all(
       friends?.map(async (friend) => {
@@ -172,6 +171,150 @@ const getPendingFriendsList = async (uid) => {
   }
 };
 
+const addFriend = async (uid, friendUid) => {
+  try {
+    // check if friendUid is already in the sent list of the requester
+    const requesterSnapshot = await db.collection("friends").doc(uid).get();
+    const requesterData = requesterSnapshot?.data() || {
+      sent: [],
+      pending: [],
+    };
+    const isAlreadySent = requesterData.sent.some(
+      (sentFriend) => sentFriend.uid === friendUid
+    );
+
+    if (isAlreadySent) {
+      throw new Error("Friend request already sent");
+    }
+
+    // add uid to sent list of requester
+    requesterData.sent.push({ uid: friendUid, time: Date.now() });
+
+    // add uid to pending list of friend
+    const friendSnapshot = await db.collection("friends").doc(friendUid).get();
+    const friendData = friendSnapshot?.data() || { sent: [], pending: [] };
+    friendData.pending.push({ uid: uid, time: Date.now() });
+
+    // update requester and friend documents
+    await Promise.all([
+      db.collection("friends").doc(uid).set(requesterData),
+      db.collection("friends").doc(friendUid).set(friendData),
+    ]);
+
+    return true;
+  } catch (error) {
+    console.error("Error adding friend:", error);
+    return null;
+  }
+};
+
+const acceptFriend = async (uid, friendUid) => {
+  try {
+    // check if friendUid is already in the accepted list of requester
+    const requesterSnapshot = await db.collection("friends").doc(uid).get();
+    const requesterData = requesterSnapshot?.data() || { accepted: [] };
+    const isFriendAccepted = requesterData.accepted.some(
+      (friend) => friend.uid === friendUid
+    );
+    if (isFriendAccepted) {
+      throw new Error("Friend request already accepted");
+    }
+
+    // add uid to accepted list of requester
+    requesterData.accepted.push({ uid: friendUid, time: Date.now() });
+
+    // add uid to accepted list of friend
+    const friendSnapshot = await db.collection("friends").doc(friendUid).get();
+    const friendData = friendSnapshot?.data() || { accepted: [] };
+    friendData.accepted.push({ uid: uid, time: Date.now() });
+
+    // update requester and friend documents
+    await Promise.all([
+      db.collection("friends").doc(uid).set(requesterData),
+      db.collection("friends").doc(friendUid).set(friendData),
+    ]);
+
+    return true;
+  } catch (error) {
+    console.error("Error accepting friend:", error);
+    return null;
+  }
+};
+
+const rejectFriend = async (uid, friendUid) => {
+  try {
+    // check if friendUid is already in the pending list of requester
+    const requesterSnapshot = await db.collection("friends").doc(uid).get();
+    const requesterData = requesterSnapshot?.data() || { pending: [] };
+    const isFriendPending = requesterData.pending.some(
+      (friend) => friend.uid === friendUid
+    );
+    if (!isFriendPending) {
+      throw new Error("Friend request already rejected");
+    }
+
+    // remove uid from pending list of requester
+    requesterData.pending = requesterData.pending.filter(
+      (friend) => friend.uid !== friendUid
+    );
+
+    // remove uid from sent list of friend
+    const friendSnapshot = await db.collection("friends").doc(friendUid).get();
+    const friendData = friendSnapshot?.data() || { sent: [] };
+    friendData.sent = friendData.sent.filter(
+      (friend) => friend.uid !== friendUid
+    );
+
+    // update requester and friend documents
+    await Promise.all([
+      db.collection("friends").doc(uid).set(requesterData),
+      db.collection("friends").doc(friendUid).set(friendData),
+    ]);
+
+    return true;
+  } catch (error) {
+    console.error("Error rejecting friend:", error);
+    return null;
+  }
+};
+
+const removeFriend = async (uid, friendUid) => {
+  try {
+    // check if friendUid is already in the accepted list of requester
+    const requesterSnapshot = await db.collection("friends").doc(uid).get();
+    const requesterData = requesterSnapshot?.data() || { accepted: [] };
+    const isFriendAccepted = requesterData.accepted.some(
+      (friend) => friend.uid === friendUid
+    );
+    if (!isFriendAccepted) {
+      throw new Error("Friend already removed");
+    }
+
+    // remove uid from accepted list of requester
+    requesterData.accepted = requesterData.accepted.filter(
+      (friend) => friend.uid !== friendUid
+    );
+
+    // remove uid from accepted list of friend
+    const friendSnapshot = await db.collection("friends").doc(friendUid).get();
+    const friendData = friendSnapshot?.data() || { accepted: [] };
+    friendData.accepted = friendData.accepted.filter(
+      (friend) => friend.uid !== friendUid
+    );
+
+    // update requester and friend documents
+    await Promise.all([
+      db.collection("friends").doc(uid).set(requesterData),
+      db.collection("friends").doc(friendUid).set(friendData),
+    ]);
+
+    return true;
+  } catch (error) {
+    console.error("Error removing friend:", error);
+    return null;
+  }
+};
+
 export {
   getUidByUsername,
   getUpcomingGames,
@@ -182,4 +325,8 @@ export {
   getInviteFriendsList,
   getFriendsList,
   getPendingFriendsList,
+  addFriend,
+  acceptFriend,
+  rejectFriend,
+  removeFriend,
 };

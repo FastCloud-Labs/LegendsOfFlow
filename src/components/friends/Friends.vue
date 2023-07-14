@@ -51,7 +51,12 @@
           </div>
           <v-spacer></v-spacer>
           <div class="button-container">
-            <v-btn class="ma-2 decline-button" color="red">Remove</v-btn>
+            <v-btn
+              class="ma-2 decline-button"
+              color="red"
+              @click="handleRemoveFriend(friend)"
+              >Remove</v-btn
+            >
           </div>
         </v-card-title>
       </v-card>
@@ -89,7 +94,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { getFriendsList } from "@/firebase/functions";
+import { getFriendsList, removeFriend } from "@/firebase/functions";
 import { useUserStore } from "@/store/app";
 
 const friends = ref([]);
@@ -110,6 +115,13 @@ const filteredData = computed(() => {
     );
   }
 });
+
+const handleRemoveFriend = async (friend) => {
+  loading.value = true;
+  await removeFriend(user.value.uid, friend.uid);
+  friends.value = await getFriendsList(user.uid);
+  loading.value = false;
+};
 
 onMounted(async () => {
   loading.value = true;

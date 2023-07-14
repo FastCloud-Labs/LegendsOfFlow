@@ -50,7 +50,12 @@
           </div>
           <v-spacer></v-spacer>
           <div class="button-container">
-            <v-btn class="ma-2 accept-button" color="primary">Add Friend</v-btn>
+            <v-btn
+              class="ma-2 accept-button"
+              color="primary"
+              @click="handleAddFriend(friend)"
+              >Add Friend</v-btn
+            >
             <v-btn class="ma-2 decline-button" color="success"
               >Invite to game</v-btn
             >
@@ -106,7 +111,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { getInviteFriendsList } from "@/firebase/functions";
+import { getInviteFriendsList, addFriend } from "@/firebase/functions";
 import { useUserStore } from "@/store/app";
 
 const user = ref({});
@@ -124,6 +129,13 @@ const openUser = (username) => {
 const openProfileInNewTab = (dapperAddress) => {
   const url = `https://flowscan.org/account/${dapperAddress}`;
   window.open(url, "_blank");
+};
+
+const handleAddFriend = async (friend) => {
+  loading.value = true;
+  await addFriend(user.value.uid, friend.uid);
+  friends.value = friends.value.filter((item) => item.uid !== friend.uid);
+  loading.value = false;
 };
 
 const filteredData = computed(() => {
