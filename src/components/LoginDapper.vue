@@ -25,8 +25,8 @@ export default {
       'discovery.wallet': 'https://accounts.meetdapper.com/fcl/authn-restricted',
       'discovery.wallet.method': 'POP/RPC',
       'accessNode.api': 'https://access-mainnet-beta.onflow.org',
-      'app.detail.title': '{{PVP Legends}}',
-      'app.detail.icon': 'https://pvplegends.web.app/assets/logo.png',
+      'app.detail.title': 'Legends of Flow',
+      'app.detail.icon': 'https://legendsoflfow.web.app/assets/logo.png',
     })
   },
   data() {
