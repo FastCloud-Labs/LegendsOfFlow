@@ -122,12 +122,21 @@ const getInviteFriendsList = async (uid) => {
       const data = doc.data();
       return { uid: doc.id, ...data };
     });
-    const querySnapshot2 = await db.collection("friends").doc(uid).get();
-    const friendsData = querySnapshot2?.data();
-    const friends = friendsData?.accepted?.map((friend) => friend.uid) || [];
+
+    const friendsSnapshot = await db.collection("friends").doc(uid).get();
+    const friendsData = friendsSnapshot?.data();
+    const acceptedFriends =
+      friendsData?.accepted?.map((friend) => friend.uid) || [];
+    const sentFriends = friendsData?.sent?.map((friend) => friend.uid) || [];
+
     const inviteFriends = profiles?.filter((profile) => {
-      return !friends?.includes(profile.uid) && profile.uid !== uid;
+      return (
+        !acceptedFriends?.includes(profile.uid) &&
+        !sentFriends?.includes(profile.uid) &&
+        profile.uid !== uid
+      );
     });
+
     return inviteFriends;
   } catch (error) {
     console.error("Error fetching user collection:", error);
@@ -138,11 +147,11 @@ const getInviteFriendsList = async (uid) => {
 const getFriendsList = async (uid) => {
   try {
     const querySnapshot = await db.collection("friends").doc(uid).get();
-    const friendsData = querySnapshot?.data().accepted;
-    const friends = friendsData?.map((friend) => friend.uid);
+    const friendsData = querySnapshot?.data()?.accepted;
+    const friendUids = friendsData?.map((friend) => friend.uid) || [];
     const friendsProfiles = await Promise.all(
-      friends?.map(async (friend) => {
-        const profile = await getProfile(friend);
+      friendUids.map(async (friendUid) => {
+        const profile = await getProfile(friendUid);
         return profile;
       })
     );
