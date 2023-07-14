@@ -12,12 +12,10 @@
         <span class="username">John Doe</span>
         <v-spacer></v-spacer>
         <div class="button-container">
-          <v-btn class="ma-2 accept-button" color="primary">
-            Add Friend&nbsp;
-          </v-btn>
-          <v-btn class="ma-2 decline-button" color="success">
-            Invite to gaame&nbsp;
-          </v-btn>
+          <v-btn class="ma-2 accept-button" color="primary">Add Friend</v-btn>
+          <v-btn class="ma-2 decline-button" color="success"
+            >Invite to game</v-btn
+          >
         </div>
       </v-card-title>
     </v-card>

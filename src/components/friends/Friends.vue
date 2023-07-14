@@ -1,6 +1,6 @@
 <template>
   <div class="friends">
-    <h2>Invite Friends</h2>
+    <h2>Friends</h2>
     <v-card class="friends-card">
       <v-card-title class="d-flex align-center">
         <v-avatar>
@@ -11,6 +11,9 @@
         </v-avatar>
         <span class="username">John Doe</span>
         <v-spacer></v-spacer>
+        <div class="button-container">
+          <v-btn class="ma-2 decline-button" color="red">Remove</v-btn>
+        </div>
       </v-card-title>
     </v-card>
   </div>
