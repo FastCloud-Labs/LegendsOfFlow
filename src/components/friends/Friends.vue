@@ -12,8 +12,6 @@
               <span
                 class="username"
                 :style="{
-                  'background-color':
-                    index % 2 === 0 ? 'rgb(56, 60, 45)' : 'none',
                   cursor: 'pointer',
                 }"
                 title="View Profile"
@@ -86,6 +84,5 @@ onMounted(async () => {
   const userStore = useUserStore();
   user.value = userStore.user;
   friends.value = await getFriendsList(user.value.uid);
-  console.log(friends.value);
 });
 </script>
