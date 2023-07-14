@@ -4,7 +4,7 @@
     <div v-for="friend in friends" :key="friend.uid">
       <v-card class="invite-card">
         <v-card-title class="d-flex align-center">
-          <v-avatar>
+          <v-avatar size="50">
             <img :src="friend.avatar || defaultAvatarUrl" alt="Avatar" />
           </v-avatar>
           <div class="user-details">

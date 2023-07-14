@@ -93,7 +93,7 @@ const getProfile = async (uid) => {
     const docSnapshot = await db.collection("profiles").doc(uid).get();
     if (docSnapshot.exists) {
       const data = docSnapshot.data();
-      return data;
+      return { uid: docSnapshot.id, ...data };
     } else {
       return {};
     }
@@ -135,6 +135,23 @@ const getInviteFriendsList = async (uid) => {
   }
 };
 
+const getFriendsList = async (uid) => {
+  try {
+    const querySnapshot = await db.collection("friends").doc(uid).get();
+    const friendsData = querySnapshot.data().accepted;
+    const friends = friendsData.map((friend) => friend.uid);
+    const friendsProfiles = await Promise.all(
+      friends.map(async (friend) => {
+        const profile = await getProfile(friend);
+        return profile;
+      })
+    );
+    return friendsProfiles;
+  } catch (error) {
+    console.error("Error fetching user collection:", error);
+    return null;
+  }
+};
 
 export {
   getUidByUsername,
@@ -144,4 +161,5 @@ export {
   getProfile,
   getAllProfiles,
   getInviteFriendsList,
+  getFriendsList,
 };
