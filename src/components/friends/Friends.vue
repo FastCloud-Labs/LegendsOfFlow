@@ -116,6 +116,11 @@ const filteredData = computed(() => {
   }
 });
 
+const openUser = (username) => {
+  const url = "/user?username=" + username;
+  window.open(url, "_blank");
+};
+
 const handleRemoveFriend = async (friend) => {
   loading.value = true;
   await removeFriend(user.value.uid, friend.uid);
