@@ -200,11 +200,13 @@ const addFriend = async (uid, friendUid) => {
     }
 
     // add uid to sent list of requester
+    requesterData.sent = requesterData.sent || [];
     requesterData.sent.push({ uid: friendUid, time: Date.now() });
 
     // add uid to pending list of friend
     const friendSnapshot = await db.collection("friends").doc(friendUid).get();
     const friendData = friendSnapshot?.data() || { sent: [], pending: [] };
+    friendData.pending = friendData.pending || [];
     friendData.pending.push({ uid: uid, time: Date.now() });
 
     // update requester and friend documents
@@ -294,9 +296,7 @@ const rejectFriend = async (uid, friendUid) => {
     // remove uid from sent list of friend
     const friendSnapshot = await db.collection("friends").doc(friendUid).get();
     const friendData = friendSnapshot?.data() || { sent: [] };
-    friendData.sent = friendData.sent.filter(
-      (friend) => friend.uid !== friendUid
-    );
+    friendData.sent = friendData.sent.filter((friend) => friend.uid !== uid);
 
     // update requester and friend documents
     await Promise.all([

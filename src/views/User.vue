@@ -138,6 +138,5 @@ onMounted(async () => {
   username.value = routeParams?.username;
   uid.value = await getUidByUsername(username.value);
   profile.value = await getProfile(uid.value);
-  console.log(profile.value);
 });
 </script>
