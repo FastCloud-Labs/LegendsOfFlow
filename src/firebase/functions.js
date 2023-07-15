@@ -128,11 +128,14 @@ const getInviteFriendsList = async (uid) => {
     const acceptedFriends =
       friendsData?.accepted?.map((friend) => friend.uid) || [];
     const sentFriends = friendsData?.sent?.map((friend) => friend.uid) || [];
+    const pendingFriends =
+      friendsData?.pending?.map((friend) => friend.uid) || [];
 
     const inviteFriends = profiles?.filter((profile) => {
       return (
         !acceptedFriends?.includes(profile.uid) &&
         !sentFriends?.includes(profile.uid) &&
+        !pendingFriends?.includes(profile.uid) &&
         profile.uid !== uid
       );
     });
@@ -219,27 +222,48 @@ const addFriend = async (uid, friendUid) => {
 
 const acceptFriend = async (uid, friendUid) => {
   try {
-    // check if friendUid is already in the accepted list of requester
-    const requesterSnapshot = await db.collection("friends").doc(uid).get();
-    const requesterData = requesterSnapshot?.data() || { accepted: [] };
-    const isFriendAccepted = requesterData.accepted.some(
+    // check if friendUid is already in the accepted list of current user
+    const currUserSnapshot = await db.collection("friends").doc(uid).get();
+    const currUserData = currUserSnapshot?.data() || {
+      accepted: [],
+      sent: [],
+    };
+    const acceptedList = currUserData.accepted ?? [];
+    const isFriendAccepted = acceptedList.some(
       (friend) => friend.uid === friendUid
     );
     if (isFriendAccepted) {
       throw new Error("Friend request already accepted");
     }
 
-    // add uid to accepted list of requester
-    requesterData.accepted.push({ uid: friendUid, time: Date.now() });
+    // add uid to current user list of requester
+    currUserData.accepted = acceptedList.concat({
+      uid: friendUid,
+      time: Date.now(),
+    });
+
+    // remove friendUid from current user pending list
+    currUserData.pending = (currUserData.pending || []).filter(
+      (friend) => friend.uid !== friendUid
+    );
 
     // add uid to accepted list of friend
     const friendSnapshot = await db.collection("friends").doc(friendUid).get();
-    const friendData = friendSnapshot?.data() || { accepted: [] };
-    friendData.accepted.push({ uid: uid, time: Date.now() });
+    const friendData = friendSnapshot?.data() || { accepted: [], pending: [] };
+    const friendAcceptedList = friendData.accepted ?? [];
+    friendData.accepted = friendAcceptedList.concat({
+      uid: uid,
+      time: Date.now(),
+    });
+
+    // remove uid from friend sent list
+    friendData.sent = (friendData.sent || []).filter(
+      (friend) => friend.uid !== uid
+    );
 
     // update requester and friend documents
     await Promise.all([
-      db.collection("friends").doc(uid).set(requesterData),
+      db.collection("friends").doc(uid).set(currUserData),
       db.collection("friends").doc(friendUid).set(friendData),
     ]);
 
