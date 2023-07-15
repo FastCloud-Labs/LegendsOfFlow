@@ -14,7 +14,7 @@
               <v-list-item-title>@{{ username }}</v-list-item-title>
               <v-list-item-subtitle
                 class="profile-dapper-address"
-                @click="openProfileInNewTab"
+                @click="openWalletOnFlowScan"
               >
                 {{ profile?.dapperAddress }}
               </v-list-item-subtitle>
@@ -126,7 +126,7 @@ const addFriend = () => {
   console.log("add friend");
 };
 
-const openProfileInNewTab = () => {
+const openWalletOnFlowScan = () => {
   if (profile.value && profile.value.dapperAddress) {
     const url = `https://flowscan.org/account/${profile.value.dapperAddress}`;
     window.open(url, "_blank");

@@ -43,7 +43,7 @@
                   textDecoration: 'underline',
                 }"
                 title="View Wallet on FlowScan"
-                @click="openProfileInNewTab(friend?.dapperAddress)"
+                @click="openWalletOnFlowScan(friend?.dapperAddress)"
                 >{{ friend?.dapperAddress }}</span
               >
             </div>
@@ -126,7 +126,7 @@ const openUser = (username) => {
   window.open(url, "_blank");
 };
 
-const openProfileInNewTab = (dapperAddress) => {
+const openWalletOnFlowScan = (dapperAddress) => {
   const url = `https://flowscan.org/account/${dapperAddress}`;
   window.open(url, "_blank");
 };
