@@ -262,7 +262,7 @@ export default {
   },
   mounted() {
     this.user = useUserStore()
-    if (this.game.owner == this.user.uid) {
+    if (this.game.owner == this.user.user.uid) {
       this.owner = true
     }
     this.sport = this.game.sport
@@ -287,6 +287,9 @@ export default {
       let fields = {opponentLineupCount: this.lineupCount}
 
       if (this.owner) {
+        console.log(this.game.owner)
+        console.log(this.user.user.uid)
+        console.log(this.owner)
         fields = {ownerLineupCount: this.lineupCount}
       }
 

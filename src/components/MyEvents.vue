@@ -36,8 +36,8 @@
                           <v-chip size="small" class="ma-1"> {{ match.gameType }}</v-chip>
                         </div>
                         <div v-if="match.gameType == 'Team Points'">
-                          <v-chip color="error" class="ma-2" size="small">{{ match.ownerlineupCount || 0 }}/11
-                            Players
+                          <v-chip color="error" class="ma-2" size="small">{{ match.ownerLineupCount || 0 }}/11
+                            Players ow
                           </v-chip>
                         </div>
                       </div>
@@ -75,7 +75,7 @@
                         </div>
                         <div v-if="match.gameType == 'Team Points'">
                           <v-chip color="error" class="ma-2" size="small">{{ match.opponentLineupCount || 0 }}/11
-                            Players
+                            Players op
                           </v-chip>
                         </div>
                       </div>
