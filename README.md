@@ -61,6 +61,9 @@ command from your app's root directory:
 
 `npm run build`
 `firebase deploy`
+
+** Production envs are stored in github secrets and deployed as part of action workflow when "production" branch is merged **
+
 After deploying, view your app at https://legendsofflow.web.app
 
 ## firebase serverless functions
