@@ -3,6 +3,9 @@ Play your moments. Gamifying dapper digital collectables
 
 https://legendsofflow.web.app/
 
+[![Deploy to Firebase Hosting on merge](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-merge.yml)
+[![Deploy to Firebase Hosting on PR](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-pull-request.yml/badge.svg?branch=production)](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-pull-request.yml)
+
 ## Project setup
 
 ```
