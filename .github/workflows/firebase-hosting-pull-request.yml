@@ -7,19 +7,19 @@ jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
-    env:
-      VITE_APP_FBDB_APIKEY: ${{ secrets.VITE_APP_FBDB_APIKEY}}
-      VITE_APP_FBDB_authDomain: ${{ secrets.VITE_APP_FBDB_authDomain}}
-      VITE_APP_FBDB_projectId: ${{ secrets.VITE_APP_FBDB_projectId}}
-      VITE_APP_FBDB_storageBucket: ${{ secrets.VITE_APP_FBDB_storageBucket}}
-      VITE_APP_FBDB_messagingSenderID: ${{ secrets.VITE_APP_FBDB_messagingSenderID}}
-      VITE_APP_FBDB_appId: ${{ secrets.VITE_APP_FBDB_appId}}
-      VITE_APP_FBDB_measurementId: ${{ secrets.VITE_APP_FBDB_measurementId}}
-      VITE_APP_FBDB_databaseURL: ${{ secrets.VITE_APP_FBDB_databaseURL}}
-      VITE_APP_API_FOOTBALL: ${{ secrets.VITE_APP_API_FOOTBALL}}
     steps:
       - uses: actions/checkout@v3
       - run: npm ci && npm run build
+        env:
+          VITE_APP_FBDB_APIKEY: ${{ secrets.VITE_APP_FBDB_APIKEY}}
+          VITE_APP_FBDB_authDomain: ${{ secrets.VITE_APP_FBDB_authDomain}}
+          VITE_APP_FBDB_projectId: ${{ secrets.VITE_APP_FBDB_projectId}}
+          VITE_APP_FBDB_storageBucket: ${{ secrets.VITE_APP_FBDB_storageBucket}}
+          VITE_APP_FBDB_messagingSenderID: ${{ secrets.VITE_APP_FBDB_messagingSenderID}}
+          VITE_APP_FBDB_appId: ${{ secrets.VITE_APP_FBDB_appId}}
+          VITE_APP_FBDB_measurementId: ${{ secrets.VITE_APP_FBDB_measurementId}}
+          VITE_APP_FBDB_databaseURL: ${{ secrets.VITE_APP_FBDB_databaseURL}}
+          VITE_APP_API_FOOTBALL: ${{ secrets.VITE_APP_API_FOOTBALL}}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
