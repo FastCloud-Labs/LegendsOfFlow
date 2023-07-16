@@ -10,7 +10,7 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     env:
-      VITE_APP_FBDB_APIKEY:  ${{ secrets.VITE_APP_FBDB_APIKEY}}
+      VITE_APP_FBDB_APIKEY: ${{ secrets.VITE_APP_FBDB_APIKEY}}
       VITE_APP_FBDB_authDomain: ${{ secrets.VITE_APP_FBDB_authDomain}}
       VITE_APP_FBDB_projectId: ${{ secrets.VITE_APP_FBDB_projectId}}
       VITE_APP_FBDB_storageBucket: ${{ secrets.VITE_APP_FBDB_storageBucket}}
