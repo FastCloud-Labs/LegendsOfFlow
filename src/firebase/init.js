@@ -5,12 +5,12 @@ import 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FBDB_APIKEY,
-  authDomain: import.meta.env.VITE_APP_FBDB_authDomain,
-  projectId: import.meta.env.VITE_APP_FBDB_projectId,
-  storageBucket: import.meta.env.VITE_APP_FBDB_storageBucket,
-  messagingSenderId: import.meta.env.VITE_APP_FBDB_messagingSenderId,
-  appId: import.meta.env.VITE_APP_FBDB_appId,
-  measurementId: import.meta.env.VITE_APP_FBDB_measurementId,
+  authDomain: import.meta.env.VITE_APP_FBDB_AuTHDOMAIN,
+  projectId: import.meta.env.VITE_APP_FBDB_PROJECTID,
+  storageBucket: import.meta.env.VITE_APP_FBDB_STORAGEBUCKET,
+  messagingSenderId: import.meta.env.VITE_APP_FBDB_MESSAGESENDERID,
+  appId: import.meta.env.VITE_APP_FBDB_APPID,
+  measurementId: import.meta.env.VITE_APP_FBDB_MEASUREMENTID,
 
 }
 console.log(firebaseConfig)
