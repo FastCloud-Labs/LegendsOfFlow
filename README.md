@@ -3,10 +3,6 @@ Play your moments. Gamifying dapper digital collectables
 
 https://legendsofflow.web.app/
 
-[![Deploy to Firebase Hosting on merge](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-merge.yml)
-
-[![Deploy to Firebase Hosting on PR](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-pull-request.yml/badge.svg?branch=production)](https://github.com/FastCloud-Labs/FlowHackathonS2/actions/workflows/firebase-hosting-pull-request.yml)
-
 ## Project setup
 
 ```
@@ -50,8 +46,6 @@ pnpm build
 
 ## Deploy
 
-** merging inot "production" branch will automatically trigger a github action to deploy to firebase **
-
 ### Using Firebase
 
 `firebase login`
@@ -67,8 +61,6 @@ command from your app's root directory:
 
 `npm run build`
 `firebase deploy`
-
-** Production envs are stored in github secrets and deployed as part of action workflow when "production" branch is merged **
 
 After deploying, view your app at https://legendsofflow.web.app
 
