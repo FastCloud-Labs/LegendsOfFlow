@@ -46,6 +46,8 @@ pnpm build
 
 ## Deploy
 
+** merging inot "production" branch will automatically trigger a github action to deploy to firebase **
+
 ### Using Firebase
 
 `firebase login`
