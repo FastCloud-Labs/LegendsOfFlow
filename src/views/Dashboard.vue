@@ -9,7 +9,7 @@
         <v-icon icon="fas fa-shield-halved" class="mr-1"/>
         XP Points: {{ user.profile?.xpPoints || 0 }}
       </v-chip>
-      <v-chip color="warning" class="mr-2">
+      <v-chip color="info" class="mr-2">
         <v-icon icon="fas fa-coins" class="mr-1"/>
         LF Tokens: {{ user.profile?.tokens || 0 }}
       </v-chip>

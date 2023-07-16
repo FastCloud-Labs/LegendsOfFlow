@@ -74,7 +74,7 @@
                           </v-chip>
                         </div>
                         <div v-if="match.gameType == 'Team Points'">
-                          <v-chip color="error" class="ma-2" size="small">{{ match.ownerLineupCount || 0 }}/11
+                          <v-chip color="error" class="ma-2" size="small">{{ match.opponentLineupCount || 0 }}/11
                             Players
                           </v-chip>
                         </div>
@@ -160,7 +160,7 @@
                         <h3>{{ match.ownerSelectedTeam }}</h3>
                         <v-img :src="match.ownerSelectedTeamLogo" width="50" height="50" class="mx-auto ma-2"/>
                         <div class="stakeinfo">
-                          <v-chip size="small" class="ma-1">{{ match.opponentStake || '2 XP points' }}</v-chip>
+                          <v-chip size="small" class="ma-1">{{ match.ownerStake || '2 XP points' }}</v-chip>
                           <v-chip size="small" class="ma-1"> {{ match.gameType }}</v-chip>
                         </div>
                         <div v-if="match.gameType == 'Team Points'">
