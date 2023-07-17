@@ -6,7 +6,7 @@
       <v-card>
         <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="center">
           <v-tab value="1">Invite Friends</v-tab>
-          <v-tab value="2">Freinds</v-tab>
+          <v-tab value="2">Friends</v-tab>
           <v-tab value="3">Pending Invites</v-tab>
         </v-tabs>
         <v-window v-model="tab">
