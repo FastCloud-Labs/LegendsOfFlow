@@ -127,7 +127,7 @@
 </style>
 
 <script setup>
-import { ref, computed, watchEffect } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { getAllProfiles } from "@/firebase/functions";
 
 const searchQuery = ref("");
@@ -136,7 +136,7 @@ const data = ref([]);
 const sortedData = computed(() => {
   const sortedArray = data.value
     .slice()
-    .sort((a, b) => b.stats.points - a.stats.points);
+    .sort((a, b) => (b.stats?.points || 0) - (a.stats?.points || 0));
   sortedArray.forEach((item, index) => {
     item.rank = (index + 1).toString().padStart(2, "0");
   });
@@ -155,20 +155,29 @@ const filteredData = computed(() => {
 });
 
 const getWinRate = (item) => {
-  const totalGames = item.stats.win + item.stats.loss + item.stats.draw;
-  const winRate = (item.stats.win / totalGames) * 100 || 0;
+  const totalGames =
+    (item.stats?.win || 0) + (item.stats?.loss || 0) + (item.stats?.draw || 0);
+  const winRate = (item.stats?.win / totalGames) * 100 || 0;
   return winRate.toFixed(0) + "%";
 };
 
 const openUser = (username) => {
   const url = "/user?username=" + username;
-  window.open(url, "_blank");
+  window.location.href = url;
 };
 
-watchEffect(async () => {
+onMounted(async () => {
   try {
     const res = await getAllProfiles();
-    data.value = res;
+    data.value = res.map((item) => ({
+      ...item,
+      stats: {
+        points: item.stats?.points || 0,
+        win: item.stats?.win || 0,
+        loss: item.stats?.loss || 0,
+        draw: item.stats?.draw || 0,
+      },
+    }));
   } catch (error) {
     console.error("Error fetching stats:", error);
   }
