@@ -552,7 +552,7 @@ export default {
       })
     },
     changeGameType() {
-      if (this.user.uid == this.game.owner) {
+      if (this.user.user.uid == this.game.owner) {
         console.log("reset")
         this.game.gameType = ''
       }
