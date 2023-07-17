@@ -52,7 +52,7 @@ export default {
       'discovery.wallet': 'https://accounts.meetdapper.com/fcl/authn-restricted',
       'discovery.wallet.method': 'POP/RPC',
       'accessNode.api': 'https://access-mainnet-beta.onflow.org',
-      'app.detail.title': 'Legnrds of Flow',
+      'app.detail.title': 'Legends of Flow',
       'app.detail.icon': 'https://legendsofflow.web.app/assets/logo.png',
     })
   },
@@ -73,12 +73,20 @@ export default {
     this.dapperAddress = useUserStore()?.profile?.dapperAddress
     this.profile = useUserStore()?.profile
     if (!this.profile?.avatar) {
-      this.profile.avatar = `https://source.boringavatars.com/pixel/60/${this.profile?.dapperAddress | this.profile?.username}.png`
+      let fields = {
+        avatar: `https://source.boringavatars.com/pixel/60/${this.profile?.dapperAddress | this.profile?.username}.png`
+      }
+      db.collection('profiles')
+        .doc(useUserStore().user.uid)
+        .set(fields, {merge: true}).then(() => {
+        this.profile.avatar = `https://source.boringavatars.com/pixel/60/${this.profile?.dapperAddress | this.profile?.username}.png`
+      })
     }
 
   },
   methods: {
     connectDapper() {
+      console.log('connectDapper')
       fcl.authenticate()
         .then(e => {
           this.dapperAddress = e.addr
