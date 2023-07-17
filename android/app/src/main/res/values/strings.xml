@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Legends of Flow</string>
+    <string name="title_activity_main">Legends of Flow</string>
+    <string name="package_name">com.FlowHackathonS2</string>
+    <string name="custom_url_scheme">com.FlowHackathonS2</string>
+</resources>

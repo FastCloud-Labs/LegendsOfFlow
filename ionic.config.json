@@ -1,0 +1,7 @@
+{
+  "name": "FlowHackathonS2",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}
