@@ -21,8 +21,14 @@
             </template>
           </v-list-item>
         </div>
-        <div class="button-container">
-          <v-btn class="mr-2" text small color="primary" @click="addFriend">
+        <div v-if="!isSameUser" class="button-container">
+          <v-btn
+            class="mr-2"
+            text
+            small
+            color="primary"
+            @click="handleAddFriend"
+          >
             Add Friend
           </v-btn>
           <v-btn text small color="success"> Invite to Game </v-btn>
@@ -84,18 +90,21 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { getProfile, getUidByUsername } from "@/firebase/functions";
+import { addFriend, getProfile, getUidByUsername } from "@/firebase/functions";
 import Overview from "@/components/profile/Overview.vue";
 import UserGames from "@/components/profile/UserGames.vue";
 import Moments from "@/components/profile/Moments.vue";
 import Friends from "@/components/profile/Friends.vue";
+import { useUserStore } from "@/store/app";
 
 const router = useRouter();
-
+const currUser = ref({});
 const username = ref("");
 const uid = ref("");
 const profile = ref({});
 const activeTab = ref("Overview");
+const isSameUser = ref(false);
+const friendStatus = ref("");
 
 const data = {
   items: ["Overview", "Upcoming games", "Past games", "Moments", "Friends"],
@@ -121,9 +130,8 @@ const isUpcoming = (item) => {
   return item === "Upcoming games";
 };
 
-const addFriend = () => {
-  // todo: add friend
-  console.log("add friend");
+const handleAddFriend = async () => {
+  await addFriend(currUser.value.uid, uid.value);
 };
 
 const openWalletOnFlowScan = () => {
@@ -138,5 +146,8 @@ onMounted(async () => {
   username.value = routeParams?.username;
   uid.value = await getUidByUsername(username.value);
   profile.value = await getProfile(uid.value);
+  const userStore = useUserStore();
+  currUser.value = userStore.user;
+  isSameUser.value = currUser.value.uid === uid.value;
 });
 </script>
