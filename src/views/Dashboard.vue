@@ -258,6 +258,8 @@ import Dapper from "@/components/ConnectDapper.vue";
 import { useUserStore } from "@/store/app.js";
 import GameDetailView from "@/components/GameDetailView.vue";
 import db from "@/firebase/init";
+import { watch } from "vue";
+import { toRaw } from "vue";
 
 export default {
   components: {
@@ -295,9 +297,16 @@ export default {
       this.width = 800;
     }
     this.user = useUserStore();
-    if (this.user.loading === false) {
-      this.checkUser(this.user);
-    }
+
+    const unwatch = watch(
+      () => this.user.loading,
+      (loading) => {
+        if (!loading) {
+          this.checkUser(this.user);
+          unwatch();
+        }
+      }
+    );
   },
   methods: {
     checkUser(user) {
@@ -309,7 +318,6 @@ export default {
           this.profile?.dapperAddress | this.profile?.username
         }.png`;
       }
-
       if (this.user.user.uid && this.profile && !this.profile?.username) {
         this.chooseUsername();
       } else if (this.user.user.uid && !this.user.user.email) {
