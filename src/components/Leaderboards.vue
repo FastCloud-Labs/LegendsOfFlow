@@ -39,10 +39,15 @@
                 cursor: 'pointer',
                 textDecoration: 'underline',
               }"
-              @click="openUser(item.username)"
+              @click="
+                openUser(
+                  item?.username ? 'username' : 'dapperAddress',
+                  item?.username || item?.dapperAddress
+                )
+              "
               title="View Profile"
             >
-              {{ item.username }}
+              {{ item?.username || item?.dapperAddress }}
             </td>
             <td
               :style="{
@@ -161,8 +166,8 @@ const getWinRate = (item) => {
   return winRate.toFixed(0) + "%";
 };
 
-const openUser = (username) => {
-  const url = "/user?username=" + username;
+const openUser = (type, value) => {
+  const url = `/user?${type}=` + value;
   window.location.href = url;
 };
 
