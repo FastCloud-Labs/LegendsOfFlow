@@ -18,6 +18,24 @@ const getUidByUsername = async (username) => {
   }
 };
 
+const getUidByDappAddress = async (dappAddress) => {
+  try {
+    const querySnapshot = await db
+      .collection("profiles")
+      .where("dapperAddress", "==", dappAddress)
+      .get();
+
+    if (querySnapshot.empty) {
+      return null;
+    } else {
+      return querySnapshot.docs[0].id;
+    }
+  } catch (error) {
+    console.error("Error fetching user collection:", error);
+    return null;
+  }
+};
+
 const getUpcomingGames = async (uid) => {
   try {
     const querySnapshot = await db
@@ -362,4 +380,5 @@ export {
   acceptFriend,
   rejectFriend,
   removeFriend,
+  getUidByDappAddress,
 };

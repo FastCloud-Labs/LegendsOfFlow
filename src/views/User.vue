@@ -11,7 +11,9 @@
           </v-avatar>
           <v-list-item class="text-white">
             <template #default>
-              <v-list-item-title>@{{ username }}</v-list-item-title>
+              <v-list-item-title v-if="username"
+                >@{{ username }}</v-list-item-title
+              >
               <v-list-item-subtitle
                 class="profile-dapper-address"
                 @click="openWalletOnFlowScan"
@@ -90,7 +92,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { addFriend, getProfile, getUidByUsername } from "@/firebase/functions";
+import {
+  addFriend,
+  getProfile,
+  getUidByUsername,
+  getUidByDappAddress,
+} from "@/firebase/functions";
 import Overview from "@/components/profile/Overview.vue";
 import UserGames from "@/components/profile/UserGames.vue";
 import Moments from "@/components/profile/Moments.vue";
@@ -99,6 +106,7 @@ import { useUserStore } from "@/store/app";
 
 const router = useRouter();
 const currUser = ref({});
+const dapperAddress = ref("");
 const username = ref("");
 const uid = ref("");
 const profile = ref({});
@@ -143,8 +151,13 @@ const openWalletOnFlowScan = () => {
 
 onMounted(async () => {
   const routeParams = router?.currentRoute?.value?.query;
+  dapperAddress.value = routeParams?.dapperAddress;
   username.value = routeParams?.username;
-  uid.value = await getUidByUsername(username.value);
+  if (!username.value) {
+    uid.value = await getUidByDappAddress(dapperAddress.value);
+  } else {
+    uid.value = await getUidByUsername(username.value);
+  }
   profile.value = await getProfile(uid.value);
   const userStore = useUserStore();
   currUser.value = userStore.user;
