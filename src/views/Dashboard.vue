@@ -207,7 +207,12 @@
         Menu
       </v-btn>
     </div>
-    <v-dialog v-model="showUsername" width="auto" min-width="300">
+    <v-dialog
+      v-model="showUsername"
+      :persistent="true"
+      width="auto"
+      min-width="300"
+    >
       <v-card class="pa-2">
         <v-card-title
           ><span v-if="!email"> Email &</span> Username:</v-card-title
