@@ -229,6 +229,9 @@
             label="Username"
             type="text"
           ></v-text-field>
+          <v-alert v-if="errorMessages" type="error" style="margin-bottom: 15px;">
+            {{ errorMessages }}
+          </v-alert>
           <v-btn
             v-if="email"
             @click="saveUsername(username)"
@@ -294,6 +297,7 @@ export default {
       email: null,
       newEmail: null,
       username: null,
+      errorMessages: null,
     };
   },
   mounted() {
@@ -339,6 +343,25 @@ export default {
       const fields = {
         username: username,
       };
+      // check if username exists
+      const usernameExists = await db
+        .collection("profiles")
+        .where("username", "==", username)
+        .get()
+        .then((querySnapshot) => {
+          if (querySnapshot.size > 0) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+      if (usernameExists) {
+        this.errorMessages = "Username already exists";
+        return;
+      }
+      else{
+        this.errorMessages = null;
+      }
       db.collection("profiles")
         .doc(useUserStore().user.uid)
         .set(fields, { merge: true })
