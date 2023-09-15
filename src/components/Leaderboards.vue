@@ -153,8 +153,8 @@ const filteredData = computed(() => {
   if (query === "") {
     return sortedData.value;
   } else {
-    return sortedData.value.filter((item) =>
-      item.username.toLowerCase().includes(query)
+    return sortedData.value.filter(
+      (item) => item.username && item.username.toLowerCase().includes(query)
     );
   }
 });
